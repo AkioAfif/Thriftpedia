@@ -1,0 +1,13 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "description": "Dummy client package for CI",
+  "main": "index.js",
+  "scripts": {
+    "lint": "echo \"Dummy lint\" && exit 0",
+    "build": "echo \"Dummy build\" && exit 0",
+    "test": "echo \"Dummy test\" && exit 0"
+  },
+  "author": "",
+  "license": "ISC"
+}
