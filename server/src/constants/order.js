@@ -1,0 +1,17 @@
+const ORDER_STATUS = Object.freeze({
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+});
+
+// allowed next states for each current state
+const ORDER_TRANSITIONS = Object.freeze({
+  [ORDER_STATUS.PENDING]: [ORDER_STATUS.COMPLETED, ORDER_STATUS.CANCELLED],
+  [ORDER_STATUS.COMPLETED]: [],
+  [ORDER_STATUS.CANCELLED]: [],
+});
+
+// statuses an admin may set via PATCH
+const ADMIN_SETTABLE_STATUSES = Object.freeze([ORDER_STATUS.COMPLETED, ORDER_STATUS.CANCELLED]);
+
+module.exports = { ORDER_STATUS, ORDER_TRANSITIONS, ADMIN_SETTABLE_STATUSES };
