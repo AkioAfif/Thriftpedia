@@ -1,10 +1,12 @@
 const Order = require('../models/Order');
-const Product = require('../models/Product');
 const AppError = require('../utils/AppError');
 const { PRODUCT_STATUS } = require('../constants/product');
 const { ORDER_STATUS } = require('../constants/order');
+const { getProductModel } = require('./product-reference.service');
 
 async function createOrder({ buyerId, productId }) {
+  const Product = getProductModel();
+
   // Steps 4+5: availability check and claim in ONE atomic, conditional write.
   const claimed = await Product.findOneAndUpdate(
     { _id: productId, status: PRODUCT_STATUS.AVAILABLE },
