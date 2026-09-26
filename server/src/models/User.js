@@ -2,17 +2,17 @@ const { Schema, model } = require('mongoose');
 
 const userSchema = new Schema(
   {
-    name: { type: String, required: true, trim: true },
+    name: { type: String, required: [true, 'Name is required'], trim: true },
     email: {
       type: String,
-      required: true,
+      required: [true, 'Email is required'],
       unique: true,
       trim: true,
       lowercase: true,
       match: [/^\S+@\S+\.\S+$/, 'Invalid email format'],
     },
-    passwordHash: { type: String, required: true },
-    role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    password: { type: String, required: [true, 'Password is required'], select: false },
+    role: { type: String, enum: ['ADMIN', 'BUYER'], default: 'BUYER' },
   },
   { timestamps: true }
 );
