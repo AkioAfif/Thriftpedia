@@ -4,7 +4,11 @@ const User = require('../models/User');
 const AppError = require('../utils/AppError');
 const ROLES = require('../constants/roles');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'development_secret_only';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("FATAL ERROR: JWT_SECRET is missing. Check your .env file!");
+}
+
 const JWT_EXPIRES_IN = '1d';
 
 const registerUser = async ({ name, email, password }) => {
@@ -41,7 +45,7 @@ const loginUser = async ({ email, password }) => {
   }
 
   const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
+    expiresIn: '1d',
   });
 
   return {
