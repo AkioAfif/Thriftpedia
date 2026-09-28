@@ -39,7 +39,7 @@ async function updateProduct(id, data) {
   const product = await Product.findByIdAndUpdate(
     id,
     { $set: updates },
-    { new: true, runValidators: true }
+    { returnDocument: 'after', runValidators: true }
   );
 
   if (!product) throw new AppError(404, 'Product not found');
