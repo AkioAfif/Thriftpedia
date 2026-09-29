@@ -48,10 +48,14 @@ async function deleteProduct(id) {
   if (await productHasOrders(id)) {
     throw new AppError(409, 'Product has orders and cannot be deleted');
   }
-  return Product.findOneAndDelete({
+  const deleted = await Product.findOneAndDelete({
     _id: id,
     status: PRODUCT_STATUS.AVAILABLE,
   });
+  if (!deleted) {
+    throw new AppError(409, 'Product has just been purchased and cannot be deleted');
+  }
+  return deleted;
 }
 
 module.exports = {
