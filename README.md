@@ -1,16 +1,18 @@
 # Thriftpedia
 
-Thriftpedia adalah backend untuk toko online barang bekas (thrift). Di toko thrift, setiap barang biasanya hanya ada satu: satu jaket, dengan satu ukuran dan satu kondisi. Karena itu, sistem ini dibuat supaya satu barang tidak mungkin terjual ke dua orang, bahkan ketika dua pembeli menekan tombol beli di detik yang sama.
+Thriftpedia adalah backend untuk toko online barang bekas (thrift). Barang thrift umumnya hanya tersedia dalam satu unit dengan ukuran dan kondisi tertentu. Sistem ini dirancang untuk memastikan setiap barang hanya dapat dibeli oleh satu pembeli.
 
-Repo ini berisi hasil Milestone 1, yaitu bagian backend (REST API). Folder `client/` masih kosong dan akan diisi pada milestone berikutnya.
+Mekanisme single-stock digunakan untuk mencegah satu barang terbeli oleh dua pembeli secara bersamaan, termasuk ketika keduanya melakukan pembelian pada waktu yang sama.
+
+Repository ini merupakan hasil Milestone 1 yang berfokus pada pengembangan backend berbasis REST API. Folder `client/` masih berupa placeholder dan akan dikembangkan pada milestone berikutnya.
 
 ## Apa yang Bisa Dilakukan?
 
 Ada dua jenis pengguna, yaitu **admin** dan **buyer**.
 
-- Siapa pun bisa melihat daftar produk dan review tanpa perlu login.
-- Buyer bisa mendaftar, login, membeli produk, melihat riwayat pesanannya, menyimpan produk ke wishlist, dan memberi review setelah pesanannya selesai.
-- Admin bisa menambah, mengubah, dan menghapus produk, melihat semua pesanan, lalu menandai pesanan sebagai selesai atau dibatalkan.
+- Semua pengguna dapat melihat daftar produk dan review tanpa perlu login.
+- Buyer dapat mendaftar, login, membeli produk, melihat riwayat pesanan, menyimpan produk ke wishlist, dan memberikan review setelah pesanan selesai.
+- Admin dapat menambah, mengubah, dan menghapus produk, melihat seluruh pesanan, serta mengubah status pesanan menjadi selesai atau dibatalkan.
 
 ## Tim
 
@@ -65,7 +67,7 @@ Thriftpedia/
 └── README.md
 ```
 
-Setiap request masuk lewat **route**, lalu dicek oleh **middleware**: apakah pengguna sudah login, apakah role-nya sesuai, dan apakah datanya valid. Setelah itu request diteruskan ke **controller**, yang memanggil **service**. Semua aturan bisnis ada di service, dan service inilah yang mengakses database melalui **model** Mongoose.
+Setiap request masuk melalui route, kemudian diperiksa oleh middleware untuk memastikan pengguna sudah login, memiliki role yang sesuai, dan mengirimkan data yang valid. Setelah itu, request diteruskan ke controller yang memanggil service. Aturan bisnis dikelola di dalam service, sedangkan akses ke database dilakukan melalui model Mongoose.
 
 ## Laporan
 
