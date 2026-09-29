@@ -71,7 +71,7 @@ Setiap request masuk melalui route, kemudian diperiksa oleh middleware untuk mem
 
 ## Laporan
 
-📄 Laporan PDF Milestone 1: <!-- TODO: ganti dengan URL GDrive (akses: Anyone with the link — Viewer) -->
+📄 Laporan PDF Milestone 1: https://drive.google.com/file/d/1h5bTzoM4HFPyNh0qxDZ02kCJdPa_Tzxi/view?usp=sharing
 
 ## Menjalankan di Komputer Sendiri
 
