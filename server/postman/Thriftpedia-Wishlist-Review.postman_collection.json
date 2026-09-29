@@ -1,0 +1,141 @@
+{
+  "info": {
+    "name": "Thriftpedia - Wishlist, Review & API Security",
+    "description": "Milestone 1 requests for Wishlist and Review. Set buyerToken and productId before running the collection.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "buyerToken", "value": "" },
+    { "key": "productId", "value": "507f1f77bcf86cd799439011" }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/health"
+      }
+    },
+    {
+      "name": "Wishlist",
+      "item": [
+        {
+          "name": "Add Product to Wishlist",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Created or duplicate is handled', () => pm.expect([201, 409]).to.include(pm.response.code));"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{buyerToken}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": \"{{productId}}\"\n}" },
+            "url": "{{baseUrl}}/api/wishlist"
+          }
+        },
+        {
+          "name": "Get My Wishlist",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{buyerToken}}", "type": "text" }],
+            "url": "{{baseUrl}}/api/wishlist"
+          }
+        },
+        {
+          "name": "Remove Product from Wishlist",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{buyerToken}}", "type": "text" }],
+            "url": "{{baseUrl}}/api/wishlist/{{productId}}"
+          }
+        },
+        {
+          "name": "Security - Request without Token",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Unauthorized', () => pm.response.to.have.status(401));"] }
+          }],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/wishlist"
+          }
+        },
+        {
+          "name": "Security - Reject Client-Supplied Buyer",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Invalid sensitive field', () => pm.response.to.have.status(400));"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{buyerToken}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"buyer\": \"507f1f77bcf86cd799439012\"\n}" },
+            "url": "{{baseUrl}}/api/wishlist"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Review",
+      "item": [
+        {
+          "name": "Get Product Reviews",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/products/{{productId}}/reviews"
+          }
+        },
+        {
+          "name": "Create Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{buyerToken}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Barang sesuai deskripsi.\"\n}" },
+            "url": "{{baseUrl}}/api/products/{{productId}}/reviews"
+          }
+        },
+        {
+          "name": "Security - Invalid Rating",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Invalid rating', () => pm.response.to.have.status(400));"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{buyerToken}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"rating\": 6,\n  \"comment\": \"Rating tidak valid\"\n}" },
+            "url": "{{baseUrl}}/api/products/{{productId}}/reviews"
+          }
+        },
+        {
+          "name": "Security - Reject Client-Supplied Buyer",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["pm.test('Invalid sensitive field', () => pm.response.to.have.status(400));"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{buyerToken}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"rating\": 5,\n  \"buyer\": \"507f1f77bcf86cd799439012\"\n}" },
+            "url": "{{baseUrl}}/api/products/{{productId}}/reviews"
+          }
+        }
+      ]
+    }
+  ]
+}

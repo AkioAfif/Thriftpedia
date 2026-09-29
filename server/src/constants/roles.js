@@ -1,1 +1,1 @@
-module.exports = Object.freeze({ ADMIN: 'admin', BUYER: 'user' });
+module.exports = Object.freeze({ ADMIN: 'ADMIN', BUYER: 'BUYER' });
