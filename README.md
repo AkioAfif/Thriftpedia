@@ -1,6 +1,6 @@
 # Thriftpedia
 
-Thriftpedia adalah backend untuk toko online barang bekas (thrift). Barang thrift umumnya hanya tersedia dalam satu unit dengan ukuran dan kondisi tertentu. Sistem ini dirancang untuk memastikan setiap barang hanya dapat dibeli oleh satu pembeli.
+Thriftpedia adalah aplikasi berbasis web untuk toko online barang bekas (thrift). Barang thrift umumnya hanya tersedia dalam satu unit dengan ukuran dan kondisi tertentu. Sistem ini dirancang untuk memastikan setiap barang hanya dapat dibeli oleh satu pembeli.
 
 Mekanisme single-stock digunakan untuk mencegah satu barang terbeli oleh dua pembeli secara bersamaan, termasuk ketika keduanya melakukan pembelian pada waktu yang sama.
 
