@@ -1,26 +1,83 @@
 @import "tailwindcss";
 
+/*
+ * Design tokens Thriftpedia.
+ * Semua warna, radius, dan shadow didefinisikan di sini.
+ * Komponen WAJIB memakai utility token (bg-cream, text-ink, shadow-sticker, ...),
+ * bukan hex langsung.
+ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Palet utama */
+  --ink: #1c1b19;
+  --cream: #f5efe3;
+  --primary: #c2410c; /* karat */
+  --success: #5b6b2f; /* zaitun */
+  --warning: #d9a21b; /* mustard */
+  --muted: #8a857c; /* abu */
+
+  /* Turunan (hover, permukaan, error) */
+  --paper: #fffdf8; /* permukaan kartu/input di atas cream */
+  --primary-strong: #9a3412; /* hover/active primary */
+  --danger: #b42318; /* error, tombol hapus */
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Warna → bg-*, text-*, border-*, ring-* */
+  --color-ink: var(--ink);
+  --color-cream: var(--cream);
+  --color-paper: var(--paper);
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-muted: var(--muted);
+  --color-danger: var(--danger);
+
+  /* Font dari next/font (lihat app/layout.js) */
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-archivo-black);
+  --font-heading: var(--font-space-grotesk);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  /* Gaya "stiker": border tebal + shadow offset tanpa blur */
+  --radius-sticker: 0.75rem;
+  --radius-pill: 9999px;
+
+  --shadow-sticker-sm: 2px 2px 0 0 var(--ink);
+  --shadow-sticker: 4px 4px 0 0 var(--ink);
+  --shadow-sticker-lg: 6px 6px 0 0 var(--ink);
+
+  /* Lebar konten utama (dipakai Container) */
+  --container-page: 80rem;
+}
+
+@layer base {
+  html {
+    background-color: var(--cream);
+  }
+
+  body {
+    @apply bg-cream font-sans text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-heading font-bold tracking-tight;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+
+  ::selection {
+    @apply bg-warning text-ink;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility sticker {
+  /* Kartu/permukaan bergaya stiker: pakai class `sticker` */
+  @apply rounded-sticker border-2 border-ink bg-paper shadow-sticker;
 }
