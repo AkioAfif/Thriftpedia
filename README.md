@@ -139,6 +139,7 @@ Endpoint yang membutuhkan login memakai header `Authorization: Bearer <token>`, 
 | GET | `/api/health` | Semua | Cek apakah server berjalan |
 | POST | `/api/auth/register` | Semua | Membuat akun baru |
 | POST | `/api/auth/login` | Semua | Login dan mendapatkan token |
+| GET | `/api/auth/me` | Buyer, Admin | Melihat data user yang sedang login |
 | GET | `/api/products` | Semua | Melihat semua produk |
 | GET | `/api/products/:id` | Semua | Melihat detail produk |
 | POST | `/api/products` | Admin | Menambah produk |
