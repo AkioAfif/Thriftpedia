@@ -105,28 +105,8 @@ export function ProductCard({ product }) {
             </span>
           </div>
 
-          {/* Seller row */}
-          {product.sellerName && (
-            <div
-              className={`flex items-center justify-between text-xs pt-0.5 font-mono ${
-                isSold ? 'text-[#5C4D40]' : 'text-[#2B2118]'
-              }`}
-            >
-              <span className="font-semibold truncate">
-                @{product.sellerName}
-              </span>
-              {product.sellerRating !== null &&
-                product.sellerRating !== undefined && (
-                  <span className="flex items-center gap-1 font-bold shrink-0">
-                    <span className="text-[#E0A838]">★</span>
-                    <span>{Number(product.sellerRating).toFixed(1)}</span>
-                  </span>
-                )}
-            </div>
-          )}
         </div>
       </div>
-
       {/* Action Button */}
       <div className="pt-3 mt-3 border-t border-[#E6DDD2]/60">
         {isSold ? (

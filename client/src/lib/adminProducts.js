@@ -2,7 +2,7 @@ import { apiFetch } from './adminApi';
 
 export const PAGE_SIZE = 10;
 export const MAX_PHOTOS = 5;
-export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB, sama dengan batas backend
+export const MAX_FILE_SIZE = 5 * 1024 * 1024;
 export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'FREE'].map((value) => ({
@@ -11,10 +11,10 @@ export const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'FREE'].map((valu
 }));
 
 export const CONDITION_OPTIONS = [
-  { value: 'NEW_WITH_TAGS', label: 'New With Tags' },
-  { value: 'LIKE_NEW', label: 'Like New' },
-  { value: 'GOOD_VINTAGE', label: 'Good Vintage' },
-  { value: 'FAIR_DISTRESSED', label: 'Fair / Distressed' },
+  { value: 'NEW_WITH_TAGS', label: 'Baru dengan Tag', hint: 'Belum pernah dipakai, tag masih menempel.' },
+  { value: 'LIKE_NEW', label: 'Seperti Baru', hint: 'Dipakai sangat jarang, hampir tanpa bekas.' },
+  { value: 'GOOD_VINTAGE', label: 'Bekas Pakai', hint: 'Ada tanda pemakaian normal, tidak ada cacat besar.' },
+  { value: 'FAIR_DISTRESSED', label: 'Ada Cacat', hint: 'Ada noda, pudar, atau kerusakan terlihat. Jelaskan di deskripsi.' },
 ];
 
 export const SORT_OPTIONS = [
@@ -26,10 +26,10 @@ export const SORT_OPTIONS = [
 
 export const DEFAULT_FILTERS = {
   q: '',
-  category: '', // slug
+  category: '',
   size: '',
   condition: '',
-  status: '', // '' | AVAILABLE | SOLD
+  status: '',
   sort: 'newest',
   page: 1,
 };
@@ -37,7 +37,7 @@ export const DEFAULT_FILTERS = {
 export const EMPTY_META = { total: 0, page: 1, limit: PAGE_SIZE, totalPages: 0 };
 
 export const formatNumber = (n) => new Intl.NumberFormat('id-ID').format(Number(n) || 0);
-export const formatRupiah = (n) => `Rp ${formatNumber(n)}`;
+export const formatRupiah = (n) => `Rp ${(Number(n) || 0).toLocaleString('en-US')}`;
 
 export function sizeLabel(size) {
   return size === 'FREE' ? 'Free Size' : size;
@@ -52,19 +52,6 @@ export function getPhotoSrc(product) {
   return typeof first === 'string' ? first.trim() : '';
 }
 
-// "90s-denim, Workwear" -> ['90s-denim', 'workwear']
-export function parseTags(text) {
-  const seen = new Set();
-  String(text)
-    .split(',')
-    .forEach((raw) => {
-      const tag = raw.trim().toLowerCase();
-      if (tag) seen.add(tag);
-    });
-  return [...seen];
-}
-
-// Hanya mengirim parameter yang diterima GET /api/products.
 export function buildProductQuery(filters) {
   const params = new URLSearchParams();
   if (filters.q) params.set('q', filters.q);
@@ -84,6 +71,11 @@ export async function fetchProducts(filters) {
     items: Array.isArray(body?.data) ? body.data : [],
     meta: { ...EMPTY_META, ...(body?.meta ?? {}) },
   };
+}
+
+export async function fetchProduct(id) {
+  const body = await apiFetch(`/products/${id}`);
+  return body?.data ?? null;
 }
 
 export async function fetchCategories() {
@@ -113,7 +105,6 @@ export function deleteProduct(id) {
   return apiFetch(`/products/${id}`, { method: 'DELETE' });
 }
 
-// Mencoba beberapa bentuk respons unggah yang umum.
 export function extractUploadedUrls(body) {
   const source = body?.data ?? body?.urls ?? body?.photos ?? body?.files ?? [];
   const list = Array.isArray(source)
@@ -132,7 +123,7 @@ export async function uploadPhotos(files) {
   const body = await apiFetch('/products/upload', { method: 'POST', body: formData });
   const urls = extractUploadedUrls(body);
   if (urls.length === 0) {
-    throw new Error('Unggah berhasil, tetapi URL foto tidak ditemukan pada respons server.');
+    throw new Error('Upload succeeded but no photo URL was returned by the server.');
   }
   return urls;
 }

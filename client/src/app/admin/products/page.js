@@ -1,11 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import DeleteProductDialog from '../../../components/admin/products/DeleteProductDialog';
 import ProductFilters from '../../../components/admin/products/ProductFilters';
-import ProductFormModal from '../../../components/admin/products/ProductFormModal';
 import ProductPagination from '../../../components/admin/products/ProductPagination';
 import ProductStatCards from '../../../components/admin/products/ProductStatCards';
 import ProductTable from '../../../components/admin/products/ProductTable';
@@ -13,28 +13,16 @@ import { clearToken } from '../../../lib/adminAuth';
 import {
   DEFAULT_FILTERS,
   EMPTY_META,
-  createProduct,
   deleteProduct,
   fetchCategories,
   fetchProductStats,
   fetchProducts,
   formatNumber,
-  updateProduct,
 } from '../../../lib/adminProducts';
 
 function PlusIcon() {
   return (
-    <svg
-      aria-hidden="true"
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.25"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 5v14M5 12h14" />
     </svg>
   );
@@ -49,7 +37,6 @@ export default function ProductManagementPage() {
   const [result, setResult] = useState({ key: null, items: [], meta: EMPTY_META, error: '' });
   const [stats, setStats] = useState(null);
   const [categories, setCategories] = useState([]);
-  const [modal, setModal] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -138,29 +125,6 @@ export default function ProductManagementPage() {
     setFilters({ ...DEFAULT_FILTERS });
   }
 
-  async function handleSaveProduct(payload) {
-    try {
-      if (modal.mode === 'edit') {
-        await updateProduct(modal.product._id, payload);
-        toast.success('Product updated');
-      } else {
-        await createProduct(payload);
-        toast.success('Product added');
-      }
-    } catch (err) {
-      if (handleAuthError(err)) return;
-      throw err;
-    }
-
-    const wasCreate = modal.mode === 'create';
-    setModal(null);
-    if (wasCreate) {
-      setSearchInput('');
-      setFilters({ ...DEFAULT_FILTERS });
-    }
-    refresh();
-  }
-
   async function handleConfirmDelete() {
     if (!deleteTarget) return;
     setDeleting(true);
@@ -195,14 +159,13 @@ export default function ProductManagementPage() {
           <h1 className="text-3xl font-semibold sm:text-4xl">Product Management</h1>
           <p className="mt-2 text-sm text-[#6E5D4F]">Status updates automatically when buyers order.</p>
         </div>
-        <button
-          type="button"
-          onClick={() => setModal({ mode: 'create', product: null })}
+        <Link
+          href="/admin/products/new"
           className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-[#a3452a] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#8f3b23] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 sm:w-auto"
         >
           <PlusIcon />
           Add Product
-        </button>
+        </Link>
       </div>
 
       <div className="mt-6">
@@ -233,7 +196,6 @@ export default function ProductManagementPage() {
           hasActiveFilters={hasActiveFilters}
           onRetry={refresh}
           onResetFilters={resetFilters}
-          onEdit={(product) => setModal({ mode: 'edit', product })}
           onDelete={setDeleteTarget}
         />
       </div>
@@ -247,21 +209,17 @@ export default function ProductManagementPage() {
         />
       </div>
 
-      {modal && (
-        <ProductFormModal
-          key={modal.product?._id ?? 'new'}
-          mode={modal.mode}
-          product={modal.product}
-          categories={categories}
-          onSubmit={handleSaveProduct}
-          onClose={() => setModal(null)}
-          onAuthError={handleAuthError}
-        />
-      )}
-
-            {deleteTarget && (
+      {deleteTarget && (
         <DeleteProductDialog
           product={deleteTarget}
+          busy={deleting}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
+    </div>
+  );
+}
           busy={deleting}
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeleteTarget(null)}
