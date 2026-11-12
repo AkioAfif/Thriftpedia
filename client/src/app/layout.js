@@ -1,37 +1,46 @@
-import { Archivo_Black, Inter, Space_Grotesk } from "next/font/google";
-import "./globals.css";
+import { Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from '@/context/AuthContext';
+import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
+import HideOnAdmin from '@/components/layout/HideOnAdmin';
+import './globals.css';
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const archivoBlack = Archivo_Black({
-  variable: "--font-archivo-black",
-  subsets: ["latin"],
-  weight: "400",
-  display: "swap",
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-plus-jakarta',
+  display: 'swap',
 });
 
 const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-  display: "swap",
+  subsets: ['latin'],
+  variable: '--font-space-grotesk',
+  display: 'swap',
 });
 
 export const metadata = {
-  title: "Thriftpedia",
-  description: "Marketplace barang thrift: 1 barang, 1 stok.",
+  title: 'Vintage & Pre-Loved Catalog — Thriftpedia',
+  description: 'Every piece is curated, one-of-one, and 100% original.',
 };
 
 export default function RootLayout({ children }) {
   return (
     <html
-      lang="id"
-      className={`${inter.variable} ${archivoBlack.variable} ${spaceGrotesk.variable} h-full`}
+      lang="en"
+      className={`${plusJakarta.variable} ${spaceGrotesk.variable} h-full`}
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="bg-[#FAF7F2] font-body text-[#2B2118] antialiased min-h-screen flex flex-col">
+        <AuthProvider>
+          <Toaster position="bottom-right" />
+          <HideOnAdmin>
+            <Navbar />
+          </HideOnAdmin>
+          {children}
+          <HideOnAdmin>
+            <Footer />
+          </HideOnAdmin>
+        </AuthProvider>
+      </body>
     </html>
   );
 }
