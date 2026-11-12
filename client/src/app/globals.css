@@ -116,6 +116,7 @@
   body {
     @apply bg-canvas font-sans text-text antialiased;
   }
+}
 
   h1,
   h2,
@@ -123,9 +124,22 @@
     @apply font-sans font-semibold tracking-tight;
   }
 
-  :focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary;
-  }
+.shimmer-effect::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.6s infinite;
+  content: '';
+}
 
   ::selection {
     @apply bg-primary-tint text-text;
