@@ -24,11 +24,11 @@ export const ALLOWED_QUERY_KEYS = [
   'page',
 ];
 
-// TEBAKAN: sesuaikan dengan enum `size` dan `condition` di model Product backend
 export const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
 export const CONDITIONS = [
-  { value: 'Like New', label: 'Like New' },
-  { value: 'Good', label: 'Good' },
-  { value: 'Fair', label: 'Fair' },
+  { value: 'NEW_WITH_TAGS', label: 'Baru dengan Tag' },
+  { value: 'LIKE_NEW', label: 'Seperti Baru' },
+  { value: 'GOOD_VINTAGE', label: 'Bekas Pakai' },
+  { value: 'FAIR_DISTRESSED', label: 'Ada Cacat' },
 ];

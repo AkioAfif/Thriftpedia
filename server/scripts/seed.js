@@ -14,17 +14,17 @@ const CATEGORIES = [
 ];
 
 const PRODUCTS = [
-  { name: 'Denim Trucker Jacket', brand: "Levi's Authentic", cat: 'jackets', tags: ['90s-denim'], sellerName: 'vintagestudio', sellerRating: 4.9, size: 'M', condition: 'LIKE_NEW', price: 680000 },
-  { name: 'Sherpa Denim Jacket', brand: 'Vintage Aviation', cat: 'jackets', tags: ['90s-denim'], sellerName: 'airforcevintage', sellerRating: 4.9, size: 'M', condition: 'GOOD_VINTAGE', price: 820000 },
-  { name: 'Harrington Jacket', brand: 'Baracuta England', cat: 'jackets', tags: ['everyday-classic'], sellerName: 'modrevival', sellerRating: 4.9, size: 'M', condition: 'LIKE_NEW', price: 650000 },
-  { name: 'Corduroy Pants', brand: 'Polo Ralph Lauren', cat: 'pants', tags: ['workwear'], sellerName: 'alpinearchive', sellerRating: 4.9, size: 'M', condition: 'GOOD_VINTAGE', price: 460000 },
-  { name: 'Suede Bucket Hat', brand: 'California Archive', cat: 'hats', tags: ['everyday-classic'], sellerName: 'sunsetsurf', sellerRating: 4.9, size: 'M', condition: 'LIKE_NEW', price: 290000 },
-  { name: 'Cable-Knit Wool Sweater', brand: 'Aran Crafts Ireland', cat: 'knitwear', tags: ['everyday-classic'], sellerName: 'celticrelics', sellerRating: 5.0, size: 'M', condition: 'GOOD_VINTAGE', price: 540000, status: 'SOLD' },
+  { name: 'Denim Trucker Jacket', brand: "Levi's Authentic", cat: 'jackets', tags: ['90s-denim'], size: 'M', condition: 'LIKE_NEW', price: 680000 },
+  { name: 'Sherpa Denim Jacket', brand: 'Vintage Aviation', cat: 'jackets', tags: ['90s-denim'], size: 'M', condition: 'GOOD_VINTAGE', price: 820000 },
+  { name: 'Harrington Jacket', brand: 'Baracuta England', cat: 'jackets', tags: ['everyday-classic'], size: 'M', condition: 'LIKE_NEW', price: 650000 },
+  { name: 'Corduroy Pants', brand: 'Polo Ralph Lauren', cat: 'pants', tags: ['workwear'], size: 'M', condition: 'GOOD_VINTAGE', price: 460000 },
+  { name: 'Suede Bucket Hat', brand: 'California Archive', cat: 'hats', tags: ['everyday-classic'], size: 'M', condition: 'LIKE_NEW', price: 290000 },
+  { name: 'Cable-Knit Wool Sweater', brand: 'Aran Crafts Ireland', cat: 'knitwear', tags: ['everyday-classic'], size: 'M', condition: 'GOOD_VINTAGE', price: 540000, status: 'SOLD' },
   // Data tambahan agar filter terasa berbeda
-  { name: 'Leather Biker Jacket', brand: 'Schott NYC', cat: 'jackets', tags: ['leather-jacket'], sellerName: 'leatherlab', sellerRating: 4.8, size: 'L', condition: 'GOOD_VINTAGE', price: 1250000 },
-  { name: 'Chore Coat', brand: 'Carhartt', cat: 'jackets', tags: ['workwear'], sellerName: 'workwearco', sellerRating: 4.7, size: 'L', condition: 'FAIR_DISTRESSED', price: 520000 },
-  { name: 'Baggy Jeans 90s', brand: 'Guess', cat: 'pants', tags: ['90s-denim'], sellerName: 'y2kvault', sellerRating: 4.6, size: 'S', condition: 'GOOD_VINTAGE', price: 380000 },
-  { name: 'Wool Beanie', brand: 'Kangol', cat: 'hats', tags: ['everyday-classic'], sellerName: 'beaniebarn', sellerRating: 4.9, size: 'FREE', condition: 'NEW_WITH_TAGS', price: 150000 },
+  { name: 'Leather Biker Jacket', brand: 'Schott NYC', cat: 'jackets', tags: ['leather-jacket'], size: 'L', condition: 'GOOD_VINTAGE', price: 1250000 },
+  { name: 'Chore Coat', brand: 'Carhartt', cat: 'jackets', tags: ['workwear'], size: 'L', condition: 'FAIR_DISTRESSED', price: 520000 },
+  { name: 'Baggy Jeans 90s', brand: 'Guess', cat: 'pants', tags: ['90s-denim'], size: 'S', condition: 'GOOD_VINTAGE', price: 380000 },
+  { name: 'Wool Beanie', brand: 'Kangol', cat: 'hats', tags: ['everyday-classic'], size: 'FREE', condition: 'NEW_WITH_TAGS', price: 150000 },
 ];
 
 async function seed() {
