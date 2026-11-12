@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import StatCard from '../../../components/admin/StatCard';
 import { BagIcon, BoxIcon } from '../../../components/admin/icons';
@@ -15,40 +15,41 @@ function CardSkeleton() {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [status, setStatus] = useState('loading'); // loading | ready | error
-  const [summary, setSummary] = useState(null);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const fetchSummary = useCallback(async () => {
-    try {
-      const body = await apiFetch('/dashboard/summary');
-      setSummary(body?.data ?? {});
-      setErrorMessage('');
-      setStatus('ready');
-    } catch (err) {
-      if (err.status === 401) {
-        clearToken();
-        router.replace('/login');
-        return;
-      }
-      setErrorMessage(err.message);
-      setStatus('error');
-    }
-  }, [router]);
+  const [state, setState] = useState({ status: 'loading', summary: null, errorMessage: '' });
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    fetchSummary();
-  }, [fetchSummary]);
+    let active = true;
+
+    apiFetch('/dashboard/summary')
+      .then((body) => {
+        if (!active) return;
+        setState({ status: 'ready', summary: body?.data ?? {}, errorMessage: '' });
+      })
+      .catch((err) => {
+        if (!active) return;
+        if (err?.status === 401) {
+          clearToken();
+          router.replace('/login');
+          return;
+        }
+        setState({ status: 'error', summary: null, errorMessage: err.message });
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [attempt, router]);
 
   function retry() {
-    setStatus('loading');
-    fetchSummary();
+    setState({ status: 'loading', summary: null, errorMessage: '' });
+    setAttempt((n) => n + 1);
   }
 
+  const { status, summary, errorMessage } = state;
   const products = summary?.products ?? {};
   const orders = summary?.orders ?? {};
 
-  // Urutan sesuai desain. Dipetakan per nama field, bukan per urutan response.
   const productStats = [
     { label: 'Total', value: formatNumber(products.total) },
     { label: 'Available', value: formatNumber(products.available) },
@@ -73,12 +74,12 @@ export default function DashboardPage() {
 
       {status === 'error' && (
         <div className="mt-8 max-w-xl rounded-[20px] border border-[#e6b8a2] bg-[#fdefe6] p-7">
-          <h2 className="text-xl font-semibold">Gagal memuat ringkasan</h2>
-          <p className="mt-2 text-sm text-[#6b5d52]">{errorMessage}</p>
+          <h2 className="text-xl font-semibold">Failed to load summary</h2>
+          <p className="mt-2 text-sm text-[#6E5D4F]">{errorMessage}</p>
           <button
             type="button"
             onClick={retry}
-            className="mt-5 rounded-[10px] bg-[#a3452a] px-5 py-2 text-sm font-semibold text-white"
+            className="mt-5 min-h-[40px] rounded-[10px] bg-[#a3452a] px-5 py-2 text-sm font-semibold text-white hover:bg-[#8f3b23] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2"
           >
             Try again
           </button>
