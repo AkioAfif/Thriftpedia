@@ -73,7 +73,7 @@ export default function DashboardPage() {
       )}
 
       {status === 'error' && (
-        <div className="mt-8 max-w-xl rounded-[20px] border border-[#e6b8a2] bg-[#fdefe6] p-7">
+        <div className="mt-8 max-w-[36rem] rounded-[20px] border border-[#e6b8a2] bg-[#fdefe6] p-7">
           <h2 className="text-xl font-semibold">Failed to load summary</h2>
           <p className="mt-2 text-sm text-[#6E5D4F]">{errorMessage}</p>
           <button

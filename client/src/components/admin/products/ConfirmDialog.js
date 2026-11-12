@@ -24,7 +24,7 @@ export default function ConfirmDialog({ title, message, confirmLabel, busy, onCo
         aria-modal="true"
         aria-labelledby="confirm-title"
         aria-describedby="confirm-message"
-        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+        className="w-full max-w-[28rem] rounded-2xl bg-white p-6 shadow-xl"
       >
         <h2 id="confirm-title" className="text-xl font-semibold text-[#2b1d14]">
           {title}
