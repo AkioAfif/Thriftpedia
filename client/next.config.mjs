@@ -1,4 +1,5 @@
 const API_URL = process.env.API_URL || 'http://localhost:5000/api';
+const BACKEND_URL = API_URL.replace(/\/api\/?$/, '');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -6,7 +7,10 @@ const nextConfig = {
     root: 'D:/PAW PROJECT/client',
   },
   async rewrites() {
-    return [{ source: '/api/:path*', destination: `${API_URL}/:path*` }];
+    return [
+      { source: '/api/:path*', destination: `${API_URL}/:path*` },
+      { source: '/uploads/:path*', destination: `${BACKEND_URL}/uploads/:path*` },
+    ];
   },
   images: {
     remotePatterns: [
