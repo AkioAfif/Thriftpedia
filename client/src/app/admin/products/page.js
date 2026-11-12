@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import ConfirmDialog from '../../../components/admin/products/ConfirmDialog';
+import DeleteProductDialog from '../../../components/admin/products/DeleteProductDialog';
 import ProductFilters from '../../../components/admin/products/ProductFilters';
 import ProductFormModal from '../../../components/admin/products/ProductFormModal';
 import ProductPagination from '../../../components/admin/products/ProductPagination';
@@ -120,7 +120,7 @@ export default function ProductManagementPage() {
       .then((list) => {
         if (active) setCategories(list);
       })
-      .catch(() => {});
+      .catch(() => { });
 
     return () => {
       active = false;
@@ -260,10 +260,15 @@ export default function ProductManagementPage() {
       )}
 
       {deleteTarget && (
+<<<<<<< Updated upstream
         <ConfirmDialog
           title="Delete product?"
           message={`"${deleteTarget.name}" will be removed permanently. Products that already have orders cannot be deleted.`}
           confirmLabel="Delete"
+=======
+        <DeleteProductDialog
+          product={deleteTarget}
+>>>>>>> Stashed changes
           busy={deleting}
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeleteTarget(null)}
