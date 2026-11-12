@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import ConfirmDialog from '../../../components/admin/products/ConfirmDialog';
+import DeleteProductDialog from '../../../components/admin/products/DeleteProductDialog';
 import ProductFilters from '../../../components/admin/products/ProductFilters';
 import ProductPagination from '../../../components/admin/products/ProductPagination';
 import ProductStatCards from '../../../components/admin/products/ProductStatCards';
@@ -107,7 +107,7 @@ export default function ProductManagementPage() {
       .then((list) => {
         if (active) setCategories(list);
       })
-      .catch(() => {});
+      .catch(() => { });
 
     return () => {
       active = false;
@@ -210,10 +210,8 @@ export default function ProductManagementPage() {
       </div>
 
       {deleteTarget && (
-        <ConfirmDialog
-          title="Delete this product?"
-          message={`"${deleteTarget.name}" will be removed permanently. This action cannot be undone. Products that already have orders cannot be deleted.`}
-          confirmLabel="Delete"
+        <DeleteProductDialog
+          product={deleteTarget}
           busy={deleting}
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeleteTarget(null)}
@@ -222,3 +220,4 @@ export default function ProductManagementPage() {
     </div>
   );
 }
+      

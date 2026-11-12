@@ -4,7 +4,7 @@ import { SearchOffIcon } from '@/components/ui/Icons';
 export default function NotFound() {
   return (
     <main className="w-full flex-1 flex items-center justify-center px-4 py-16">
-      <div className="bg-white rounded-2xl border border-[#E6DDD2] p-10 sm:p-14 flex flex-col items-center justify-center text-center gap-3 shadow-card max-w-md w-full">
+      <div className="bg-white rounded-2xl border border-[#E6DDD2] p-10 sm:p-14 flex flex-col items-center justify-center text-center gap-3 shadow-card max-w-[28rem] w-full">
         <div className="w-14 h-14 rounded-full bg-[#FBEDE6] flex items-center justify-center text-[#B5532E] mb-1">
           <SearchOffIcon className="w-7 h-7 text-[#B5532E]" />
         </div>

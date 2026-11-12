@@ -48,7 +48,7 @@ export default async function CatalogPage({ searchParams }) {
       <section className="w-full px-4 sm:px-8 pt-8 pb-4">
         <div className="max-w-7xl mx-auto flex flex-col gap-6 sm:gap-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-5">
-            <div className="flex flex-col gap-1.5 max-w-xl">
+            <div className="flex flex-col gap-1.5 max-w-[36rem]">
               <h1 className="font-display font-bold text-3xl sm:text-4xl text-[#2B2118] tracking-tight leading-tight">
                 Find Your Favorite Items
               </h1>

@@ -11,6 +11,8 @@ const CATEGORIES = [
   { name: 'Pants', slug: 'pants' },
   { name: 'Hats', slug: 'hats' },
   { name: 'Knitwear', slug: 'knitwear' },
+  { name: 'Tops', slug: 'tops' },
+  { name: 'Accessories', slug: 'accessories' },
 ];
 
 const PRODUCTS = [

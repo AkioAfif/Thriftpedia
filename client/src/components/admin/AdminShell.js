@@ -9,7 +9,7 @@ import { clearToken, extractUser, getToken } from '../../lib/adminAuth';
 function FullScreenMessage({ title, message, children }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#faf7f2] px-6">
-      <div className="max-w-md text-center">
+      <div className="max-w-[28rem] text-center">
         <h1 className="text-2xl font-bold text-[#2b1d14]">{title}</h1>
         <p className="mt-3 text-sm text-[#6b5d52]">{message}</p>
         <div className="mt-6">{children}</div>

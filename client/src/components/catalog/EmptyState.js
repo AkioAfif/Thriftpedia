@@ -15,7 +15,7 @@ export function EmptyState() {
         <SearchOffIcon className="w-7 h-7 text-[#B5532E]" />
       </div>
       <h4 className="font-bold text-lg text-[#2B2118]">No matching products</h4>
-      <p className="text-sm text-[#5C4D40] max-w-md">
+      <p className="text-sm text-[#5C4D40] max-w-[28rem]">
         Try adjusting your size, price range, or categories to find more vintage pieces.
       </p>
       <button
