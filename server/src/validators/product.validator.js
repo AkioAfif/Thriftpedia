@@ -7,10 +7,9 @@ const PRODUCT_FIELDS = [
   'name',
   'photos',
   'brand',
+  'description',
   'category',
   'tags',
-  'sellerName',
-  'sellerRating',
   'size',
   'condition',
   'price',
@@ -33,18 +32,20 @@ const isValidPhotos = (v) =>
 const isValidPrice = (v) => typeof v === 'number' && Number.isFinite(v) && v >= 0;
 const isValidSize = (v) => PRODUCT_SIZE_VALUES.includes(v);
 const isValidCondition = (v) => PRODUCT_CONDITION_VALUES.includes(v);
-const isValidSellerName = (v) => typeof v === 'string' && v.trim().length <= 50;
-const isValidSellerRating = (v) =>
-  v === null || (typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 5);
 const getUnknownFields = (body) => Object.keys(body).filter((field) => !PRODUCT_FIELDS.includes(field));
 
 const SIZE_MESSAGE = `size must be one of: ${PRODUCT_SIZE_VALUES.join(', ')}`;
 const CONDITION_MESSAGE = `condition must be one of: ${PRODUCT_CONDITION_VALUES.join(', ')}`;
 const PHOTOS_MESSAGE = 'photos must be 1-5 valid image URLs';
+const BRAND_MESSAGE = 'brand is required (max 100 characters)';
+const DESCRIPTION_MESSAGE = 'description must be a string (max 1000 characters)';
 
 function getCatalogFieldError(body) {
-  if ('brand' in body && !(typeof body.brand === 'string' && body.brand.trim().length <= 100)) {
-    return 'brand must be a string (max 100 characters)';
+  if ('brand' in body && !(isNonEmptyString(body.brand) && body.brand.trim().length <= 100)) {
+    return BRAND_MESSAGE;
+  }
+  if ('description' in body && !(typeof body.description === 'string' && body.description.trim().length <= 1000)) {
+    return DESCRIPTION_MESSAGE;
   }
   if ('category' in body && body.category !== null && !isObjectIdString(body.category)) {
     return 'category must be a valid category id or null';
@@ -54,12 +55,6 @@ function getCatalogFieldError(body) {
     !(Array.isArray(body.tags) && body.tags.length <= 20 && body.tags.every((t) => isNonEmptyString(t)))
   ) {
     return 'tags must be an array of non-empty strings (max 20)';
-  }
-  if ('sellerName' in body && !isValidSellerName(body.sellerName)) {
-    return 'sellerName must be a string (max 50 characters)';
-  }
-  if ('sellerRating' in body && !isValidSellerRating(body.sellerRating)) {
-    return 'sellerRating must be a number between 0 and 5, or null';
   }
   return null;
 }
@@ -76,6 +71,7 @@ function validateCreateProduct(req, res, next) {
   if (Object.prototype.hasOwnProperty.call(body, 'status')) return next(new AppError(400, 'status cannot be set by client'));
   if (unknownFields.length > 0) return next(new AppError(400, `Unknown field: ${unknownFields.join(', ')}`));
   if (!isNonEmptyString(body.name)) return next(new AppError(400, 'name is required'));
+  if (!isNonEmptyString(body.brand)) return next(new AppError(400, BRAND_MESSAGE));
   if (!isValidPhotos(body.photos)) return next(new AppError(400, PHOTOS_MESSAGE));
   if (!isNonEmptyString(body.size)) return next(new AppError(400, 'size is required'));
   if (!isValidSize(body.size)) return next(new AppError(400, SIZE_MESSAGE));
