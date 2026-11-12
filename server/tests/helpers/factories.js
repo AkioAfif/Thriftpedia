@@ -23,7 +23,7 @@ async function createProduct(overrides = {}) {
     name: `Jaket ${++seq}`,
     photos: ['https://example.com/photo.jpg'],
     size: 'L',
-    condition: 'Bekas baik',
+    condition: 'GOOD_VINTAGE',
     price: 150000,
     ...overrides,
   });
