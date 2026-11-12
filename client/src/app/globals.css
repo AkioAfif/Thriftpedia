@@ -1,83 +1,108 @@
 @import "tailwindcss";
 
-/*
- * Design tokens Thriftpedia.
- * Semua warna, radius, dan shadow didefinisikan di sini.
- * Komponen WAJIB memakai utility token (bg-cream, text-ink, shadow-sticker, ...),
- * bukan hex langsung.
- */
-
 :root {
-  /* Palet utama */
-  --ink: #1c1b19;
-  --cream: #f5efe3;
-  --primary: #c2410c; /* karat */
-  --success: #5b6b2f; /* zaitun */
-  --warning: #d9a21b; /* mustard */
-  --muted: #8a857c; /* abu */
-
-  /* Turunan (hover, permukaan, error) */
-  --paper: #fffdf8; /* permukaan kartu/input di atas cream */
-  --primary-strong: #9a3412; /* hover/active primary */
-  --danger: #b42318; /* error, tombol hapus */
-}
-
-@theme inline {
-  /* Warna → bg-*, text-*, border-*, ring-* */
-  --color-ink: var(--ink);
-  --color-cream: var(--cream);
-  --color-paper: var(--paper);
-  --color-primary: var(--primary);
-  --color-primary-strong: var(--primary-strong);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-muted: var(--muted);
-  --color-danger: var(--danger);
-
-  /* Font dari next/font (lihat app/layout.js) */
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-archivo-black);
-  --font-heading: var(--font-space-grotesk);
+  --page-bg: #FAF7F2;
+  --text-primary: #2B2118;
+  --text-secondary: #5C4D40;
+  --border-subtle: #E6DDD2;
+  --brand-orange: #F25A2A;
+  --terracotta: #B5532E;
+  --terracotta-hover: #9C4425;
+  --terracotta-tint: #FBEDE6;
+  --accent-sage: #4B654A;
+  --chip-neutral: #F1EBE1;
+  --chip-text: #4A3F35;
+  --archived-bg: #E7E2DA;
+  --archived-text: #8C7E72;
+  --cond-likenew: #DCEBF2;
+  --cond-likenew-text: #0F2D3D;
+  --cond-good: #F6E7C1;
+  --cond-good-text: #3D2E07;
+  --cond-nwt: #DDEBD8;
+  --cond-nwt-text: #224822;
+  --cond-fair: #EFD9D2;
+  --cond-fair-text: #592B20;
 }
 
 @theme {
-  /* Gaya "stiker": border tebal + shadow offset tanpa blur */
-  --radius-sticker: 0.75rem;
-  --radius-pill: 9999px;
+  --color-page-bg: var(--page-bg);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border-subtle: var(--border-subtle);
+  --color-brand-orange: var(--brand-orange);
+  --color-terracotta: var(--terracotta);
+  --color-terracotta-hover: var(--terracotta-hover);
+  --color-terracotta-tint: var(--terracotta-tint);
+  --color-accent-sage: var(--accent-sage);
+  --color-chip-neutral: var(--chip-neutral);
+  --color-chip-text: var(--chip-text);
+  --color-archived-bg: var(--archived-bg);
+  --color-archived-text: var(--archived-text);
+  --color-cond-likenew: var(--cond-likenew);
+  --color-cond-likenew-text: var(--cond-likenew-text);
+  --color-cond-good: var(--cond-good);
+  --color-cond-good-text: var(--cond-good-text);
+  --color-cond-nwt: var(--cond-nwt);
+  --color-cond-nwt-text: var(--cond-nwt-text);
+  --color-cond-fair: var(--cond-fair);
+  --color-cond-fair-text: var(--cond-fair-text);
 
-  --shadow-sticker-sm: 2px 2px 0 0 var(--ink);
-  --shadow-sticker: 4px 4px 0 0 var(--ink);
-  --shadow-sticker-lg: 6px 6px 0 0 var(--ink);
+  --font-body: var(--font-plus-jakarta), sans-serif;
+  --font-display: var(--font-plus-jakarta), sans-serif;
+  --font-mono: var(--font-space-grotesk), monospace;
 
-  /* Lebar konten utama (dipakai Container) */
-  --container-page: 80rem;
+  --shadow-card: 0 1px 3px rgba(60, 40, 20, 0.06);
+  --shadow-pop: 0 4px 16px rgba(60, 40, 20, 0.08);
 }
 
-@layer base {
-  html {
-    background-color: var(--cream);
-  }
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #FAF7F2;
+  color: #2B2118;
+  font-family: var(--font-plus-jakarta), sans-serif;
+}
 
-  body {
-    @apply bg-cream font-sans text-ink antialiased;
-  }
-
-  h1,
-  h2,
-  h3 {
-    @apply font-heading font-bold tracking-tight;
-  }
-
-  :focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary;
-  }
-
-  ::selection {
-    @apply bg-warning text-ink;
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
   }
 }
 
-@utility sticker {
-  /* Kartu/permukaan bergaya stiker: pakai class `sticker` */
-  @apply rounded-sticker border-2 border-ink bg-paper shadow-sticker;
+.shimmer-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-effect::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.6s infinite;
+  content: '';
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-effect::after {
+    animation: none;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
