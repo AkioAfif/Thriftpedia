@@ -7,8 +7,11 @@ export class ApiError extends Error {
   }
 }
 
+// browser goes through the same-origin /api rewrite (backend has no CORS); server calls the API directly
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  typeof window !== 'undefined'
+    ? '/api'
+    : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export async function apiClient(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
