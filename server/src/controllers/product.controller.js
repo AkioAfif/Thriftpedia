@@ -1,4 +1,5 @@
 const productService = require('../services/product.service');
+const AppError = require('../utils/AppError');
 
 async function create(req, res) {
   const product = await productService.createProduct(req.body);
@@ -9,10 +10,11 @@ async function create(req, res) {
 }
 
 async function getAll(req, res) {
-  const products = await productService.getProducts();
+  const { items, meta } = await productService.listProducts(req.productQuery);
   res.status(200).json({
     message: 'Products retrieved',
-    data: products,
+    data: items,
+    meta,
   });
 }
 
@@ -39,10 +41,23 @@ async function remove(req, res) {
   });
 }
 
+async function uploadPhotos(req, res) {
+  if (!req.files || req.files.length === 0) {
+    throw new AppError(400, 'No photos uploaded (field name: photos)');
+  }
+  const base = process.env.PUBLIC_BASE_URL || `${req.protocol}://${req.get('host')}`;
+  const urls = req.files.map((f) => `${base}/uploads/products/${f.filename}`);
+  res.status(201).json({
+    message: 'Photos uploaded',
+    data: { urls },
+  });
+}
+
 module.exports = {
   create,
   getAll,
   getById,
   update,
   remove,
+  uploadPhotos,
 };

@@ -1,0 +1,35 @@
+### Semua produk
+GET http://localhost:5000/api/products
+
+### Sembunyikan produk Sold
+GET http://localhost:5000/api/products?hideSold=true
+
+### Filter sesuai desain
+GET http://localhost:5000/api/products?size=M&condition=LIKE_NEW,GOOD_VINTAGE&minPrice=150000&maxPrice=850000
+
+### Urut harga termurah
+GET http://localhost:5000/api/products?sort=price_asc
+
+### Kategori
+GET http://localhost:5000/api/categories
+
+### Cari nama (harus 2 hasil: denim)
+GET http://localhost:5000/api/products?q=denim
+
+### Filter tag (harus 3 hasil)
+GET http://localhost:5000/api/products?tag=90s-denim
+
+### Filter kategori (harus 2 hasil)
+GET http://localhost:5000/api/products?category=hats
+
+### Pagination (totalPages harus 4)
+GET http://localhost:5000/api/products?page=1&limit=3
+
+### ERROR: min lebih besar dari max (harus 400)
+GET http://localhost:5000/api/products?minPrice=900000&maxPrice=100000
+
+### ERROR: parameter tidak dikenal (harus 400)
+GET http://localhost:5000/api/products?foo=1
+
+### ERROR: size tidak valid (harus 400, 3XL sudah tidak ada)
+GET http://localhost:5000/api/products?size=3XL
