@@ -68,9 +68,7 @@ export default function OrderStatusTabs({ counts, active, onSelect, panelId }) {
                   : 'font-medium text-[#4A3F35] hover:bg-[#faf7f2]'
               }`}
             >
-              {tab.value && (
-                <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${statusMeta(tab.value).dot}`} />
-              )}
+              
               {tab.label}
               <span
                 className={`min-w-6 rounded-full px-1.5 py-0.5 text-xs tabular-nums ${
