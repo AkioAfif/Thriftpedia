@@ -144,7 +144,6 @@
   ::selection {
     @apply bg-primary-tint text-text;
   }
-}
 
 @utility display-lg {
   @apply font-sans text-display-lg font-bold;
