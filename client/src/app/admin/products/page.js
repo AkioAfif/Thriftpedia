@@ -259,16 +259,9 @@ export default function ProductManagementPage() {
         />
       )}
 
-      {deleteTarget && (
-<<<<<<< Updated upstream
-        <ConfirmDialog
-          title="Delete product?"
-          message={`"${deleteTarget.name}" will be removed permanently. Products that already have orders cannot be deleted.`}
-          confirmLabel="Delete"
-=======
+            {deleteTarget && (
         <DeleteProductDialog
           product={deleteTarget}
->>>>>>> Stashed changes
           busy={deleting}
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeleteTarget(null)}
