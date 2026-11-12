@@ -3,6 +3,7 @@ const Category = require('../models/Category');
 const AppError = require('../utils/AppError');
 const { PRODUCT_STATUS } = require('../constants/product');
 const { productHasOrders } = require('./order.service');
+const photoStorage = require('./photoStorage.service');
 
 const CREATABLE_FIELDS = [
   'name', 'photos', 'brand', 'description', 'category', 'tags',
@@ -50,6 +51,7 @@ async function normalizeCatalogFields(payload) {
 
 async function createProduct(data) {
   const payload = await normalizeCatalogFields(pickFields(data, CREATABLE_FIELDS));
+  payload.photoAssets = photoStorage.photoAssetsFor(payload.photos);
   return Product.create(payload);
 }
 
@@ -114,17 +116,27 @@ async function getProductById(id) {
 
 async function updateProduct(id, data) {
   const updates = await normalizeCatalogFields(pickFields(data, EDITABLE_FIELDS));
-  const product = await Product.findOneAndUpdate(
+  const replacingPhotos = Object.prototype.hasOwnProperty.call(updates, 'photos');
+  if (replacingPhotos) updates.photoAssets = photoStorage.photoAssetsFor(updates.photos);
+
+  // 'before' tells us which Cloudinary files the new photo list dropped.
+  const previous = await Product.findOneAndUpdate(
     { _id: id, status: PRODUCT_STATUS.AVAILABLE },
     { $set: updates },
-    { returnDocument: 'after', runValidators: true }
+    { returnDocument: 'before', runValidators: true, projection: { photos: 1 } }
   );
-  if (!product) {
+  if (!previous) {
     const exists = await Product.exists({ _id: id });
     if (!exists) throw new AppError(404, 'Product not found');
     throw new AppError(409, 'Sold products cannot be edited');
   }
-  return product;
+
+  if (replacingPhotos) {
+    const kept = new Set(updates.photoAssets.map((p) => p.publicId).filter(Boolean));
+    const dropped = photoStorage.photoAssetsFor(previous.photos).map((p) => p.publicId).filter((pid) => pid && !kept.has(pid));
+    releasePhotos(dropped);
+  }
+  return Product.findById(id);
 }
 
 async function deleteProduct(id) {
@@ -140,8 +152,26 @@ async function deleteProduct(id) {
   if (!deleted) {
     throw new AppError(409, 'Product has just been purchased and cannot be deleted');
   }
+  releasePhotos(photoStorage.photoAssetsFor(deleted.photos).map((p) => p.publicId));
   return deleted;
 }
+
+// Removes Cloudinary files that no product references any more. Runs after the DB change
+// has succeeded and never fails the request: errors are only logged.
+function releasePhotos(publicIds) {
+  const ids = [...new Set(publicIds.filter(Boolean))];
+  if (ids.length === 0) return Promise.resolve();
+  const task = Product.distinct('photoAssets.publicId', { 'photoAssets.publicId': { $in: ids } })
+    .then((stillUsed) => photoStorage.destroyPhotos(ids.filter((pid) => !stillUsed.includes(pid))))
+    .catch((err) => console.warn('[product] photo cleanup skipped:', err.message));
+  pendingCleanups.add(task);
+  task.finally(() => pendingCleanups.delete(task));
+  return task;
+}
+
+// Lets tests (and graceful shutdown) wait for background photo cleanup.
+const pendingCleanups = new Set();
+const settlePhotoCleanups = () => Promise.allSettled([...pendingCleanups]);
 
 module.exports = {
   createProduct,
@@ -150,4 +180,5 @@ module.exports = {
   getProductById,
   updateProduct,
   deleteProduct,
+  settlePhotoCleanups,
 };

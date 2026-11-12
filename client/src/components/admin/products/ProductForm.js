@@ -60,6 +60,33 @@ function validate(values, photos) {
   return errors;
 }
 
+// A photo that no longer loads (e.g. an old local /uploads URL) shows a clear placeholder,
+// so the admin knows to remove it and upload a new one.
+function PhotoPreview({ src, alt }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div
+        role="img"
+        aria-label={`${alt} could not be loaded`}
+        className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[#CFBEAE] bg-[#EFEBE4] px-3 text-center"
+      >
+        <span className="text-xs font-semibold text-[#5C4D40]">Image unavailable</span>
+        <span className="text-[11px] text-[#6E5D4F]">Remove it and upload again</span>
+      </div>
+    );
+  }
+  return (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setFailed(true)}
+      className="aspect-[4/5] w-full rounded-xl border border-[#e6ddd2] bg-[#EFEBE4] object-cover"
+    />
+  );
+}
+
 function UploadIcon() {
   return (
     <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -293,12 +320,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
               <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3">
                 {photos.map((src, index) => (
                   <li key={src} className="relative">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={src}
-                      alt={`Product photo ${index + 1}`}
-                      className="aspect-[4/5] w-full rounded-xl border border-[#e6ddd2] bg-[#EFEBE4] object-cover"
-                    />
+                    <PhotoPreview src={src} alt={`Product photo ${index + 1}`} />
                     {index === 0 ? (
                       <span className="absolute bottom-2 left-2 rounded-full bg-[#2B2118] px-2.5 py-1 text-xs font-semibold text-white">
                         Cover
