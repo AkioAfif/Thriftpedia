@@ -1,71 +1,126 @@
 @import "tailwindcss";
 
 /*
- * Design tokens Thriftpedia.
- * Semua warna, radius, dan shadow didefinisikan di sini.
- * Komponen WAJIB memakai utility token (bg-cream, text-ink, shadow-sticker, ...),
- * bukan hex langsung.
+ * Curated Archive design tokens.
+ * Komponen wajib memakai utility token, bukan nilai warna/radius langsung.
  */
 
 :root {
-  /* Palet utama */
-  --ink: #1c1b19;
-  --cream: #f5efe3;
-  --primary: #c2410c; /* karat */
-  --success: #5b6b2f; /* zaitun */
-  --warning: #d9a21b; /* mustard */
-  --muted: #8a857c; /* abu */
-
-  /* Turunan (hover, permukaan, error) */
-  --paper: #fffdf8; /* permukaan kartu/input di atas cream */
-  --primary-strong: #9a3412; /* hover/active primary */
-  --danger: #b42318; /* error, tombol hapus */
+  --canvas: #faf7f2;
+  --surface: #ffffff;
+  --surface-muted: #f5f0e8;
+  --border: #eae4da;
+  --text: #2b2118;
+  --text-secondary: #6f6358;
+  --text-muted: #9c9084;
+  --primary: #b5532e;
+  --primary-hover: #9c4425;
+  --primary-tint: #f8efea;
+  --on-primary: #ffffff;
+  --secondary: #5f7a5e;
+  --secondary-hover: #4d644c;
+  --secondary-tint: #eff4ee;
+  --error: #ba1a1a;
+  --error-tint: #ffdad6;
+  --scrim: #2b2118;
+  --badge-success: #ddebd8;
+  --badge-info: #dcebf2;
+  --badge-warning: #f6e7c1;
+  --badge-danger: #efd9d2;
+  --badge-neutral: #eae4da;
 }
 
 @theme inline {
-  /* Warna → bg-*, text-*, border-*, ring-* */
-  --color-ink: var(--ink);
-  --color-cream: var(--cream);
-  --color-paper: var(--paper);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
   --color-primary: var(--primary);
-  --color-primary-strong: var(--primary-strong);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-muted: var(--muted);
-  --color-danger: var(--danger);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-tint: var(--primary-tint);
+  --color-on-primary: var(--on-primary);
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-tint: var(--secondary-tint);
+  --color-error: var(--error);
+  --color-error-tint: var(--error-tint);
+  --color-scrim: var(--scrim);
+  --color-badge-success: var(--badge-success);
+  --color-badge-info: var(--badge-info);
+  --color-badge-warning: var(--badge-warning);
+  --color-badge-danger: var(--badge-danger);
+  --color-badge-neutral: var(--badge-neutral);
 
-  /* Font dari next/font (lihat app/layout.js) */
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-archivo-black);
-  --font-heading: var(--font-space-grotesk);
-}
+  --font-sans: var(--font-plus-jakarta);
+  --font-metadata: var(--font-space-grotesk);
 
-@theme {
-  /* Gaya "stiker": border tebal + shadow offset tanpa blur */
-  --radius-sticker: 0.75rem;
-  --radius-pill: 9999px;
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
 
-  --shadow-sticker-sm: 2px 2px 0 0 var(--ink);
-  --shadow-sticker: 4px 4px 0 0 var(--ink);
-  --shadow-sticker-lg: 6px 6px 0 0 var(--ink);
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 40px;
+  --spacing-gutter-mobile: 12px;
+  --spacing-gutter-tablet: 20px;
+  --spacing-gutter-desktop: 24px;
+  --spacing-margin-mobile: 16px;
+  --spacing-margin-tablet: 24px;
+  --spacing-margin-desktop: 48px;
+  --container-page: 1360px;
 
-  /* Lebar konten utama (dipakai Container) */
-  --container-page: 80rem;
+  --shadow-level-1: 0 2px 8px -2px rgb(43 33 24 / 4%);
+  --shadow-level-2: 0 8px 24px -4px rgb(43 33 24 / 8%);
+  --shadow-level-3: 0 20px 48px -8px rgb(43 33 24 / 14%);
+
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 56px;
+  --text-display-mobile: 34px;
+  --text-display-mobile--line-height: 42px;
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 40px;
+  --text-headline-mobile: 26px;
+  --text-headline-mobile--line-height: 34px;
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 32px;
+  --text-headline-sm: 20px;
+  --text-headline-sm--line-height: 28px;
+  --text-title-md: 16px;
+  --text-title-md--line-height: 24px;
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 26px;
+  --text-body-md: 14px;
+  --text-body-md--line-height: 22px;
+  --text-body-sm: 12px;
+  --text-body-sm--line-height: 18px;
+  --text-label-lg: 13px;
+  --text-label-lg--line-height: 18px;
+  --text-label-md: 12px;
+  --text-label-md--line-height: 16px;
+  --text-price: 18px;
+  --text-price--line-height: 24px;
 }
 
 @layer base {
   html {
-    background-color: var(--cream);
+    background-color: var(--canvas);
   }
 
   body {
-    @apply bg-cream font-sans text-ink antialiased;
+    @apply bg-canvas font-sans text-text antialiased;
   }
 
   h1,
   h2,
   h3 {
-    @apply font-heading font-bold tracking-tight;
+    @apply font-sans font-semibold tracking-tight;
   }
 
   :focus-visible {
@@ -73,11 +128,79 @@
   }
 
   ::selection {
-    @apply bg-warning text-ink;
+    @apply bg-primary-tint text-text;
   }
 }
 
-@utility sticker {
-  /* Kartu/permukaan bergaya stiker: pakai class `sticker` */
-  @apply rounded-sticker border-2 border-ink bg-paper shadow-sticker;
+@utility display-lg {
+  @apply font-sans text-display-lg font-bold;
+  letter-spacing: -0.02em;
+}
+
+@utility display-mobile {
+  @apply font-sans text-display-mobile font-bold;
+  letter-spacing: -0.015em;
+}
+
+@utility headline-lg {
+  @apply font-sans text-headline-lg font-semibold;
+  letter-spacing: -0.015em;
+}
+
+@utility headline-mobile {
+  @apply font-sans text-headline-mobile font-semibold;
+}
+
+@utility headline-md {
+  @apply font-sans text-headline-md font-semibold;
+}
+
+@utility headline-sm {
+  @apply font-sans text-headline-sm font-semibold;
+}
+
+@utility title-md {
+  @apply font-sans text-title-md font-medium;
+}
+
+@utility body-lg {
+  @apply font-sans text-body-lg;
+}
+
+@utility body-md {
+  @apply font-sans text-body-md;
+}
+
+@utility body-sm {
+  @apply font-sans text-body-sm;
+}
+
+@utility label-lg {
+  @apply font-metadata text-label-lg font-semibold uppercase;
+  letter-spacing: 0.04em;
+}
+
+@utility label-md {
+  @apply font-metadata text-label-md font-semibold uppercase;
+  letter-spacing: 0.06em;
+}
+
+@utility price {
+  @apply font-metadata text-price font-semibold;
+}
+
+@utility card {
+  @apply rounded-xl border border-border bg-surface p-md shadow-level-1;
+}
+
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+.shimmer-effect { position: relative; overflow: hidden; }
+.shimmer-effect::after {
+  content: ''; position: absolute; inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 50%), transparent);
+  animation: shimmer 1.2s infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-effect::after { animation: none; }
 }
