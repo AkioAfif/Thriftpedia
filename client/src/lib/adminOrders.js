@@ -102,7 +102,7 @@ export const orderItem = (order) => {
   const live = order?.product ?? {};
   return {
     name: snap.name ?? live.name ?? 'Unknown item',
-    brand: snap.brand ?? '',
+    brand: snap.brand ?? live.brand ?? '',
     photo: snap.photo ?? live.photos?.[0] ?? '',
     size: snap.size ?? live.size ?? null,
     condition: snap.condition ?? live.condition ?? null,

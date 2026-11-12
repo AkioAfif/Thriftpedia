@@ -9,7 +9,7 @@ const ROLES = require('../constants/roles');
 const { PRODUCT_STATUS } = require('../constants/product');
 const { ORDER_STATUS, ORDER_TRANSITIONS } = require('../constants/order');
 
-const PRODUCT_FIELDS = 'name photos size condition price status';
+const PRODUCT_FIELDS = 'name brand photos size condition price status';
 const BUYER_FIELDS = 'name email'; // never expose password/passwordHash
 const HISTORY_ACTOR_FIELDS = 'name role';
 const DUPLICATE_KEY = 11000;

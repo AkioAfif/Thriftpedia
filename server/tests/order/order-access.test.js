@@ -125,6 +125,19 @@ test('statusHistory actor is visible to admins only', async () => {
   assert.doesNotMatch(JSON.stringify(asBuyer), new RegExp(admin.id));
 });
 
+test('legacy order without productSnapshot still exposes product brand', async () => {
+  const { admin, orderA1 } = await seed();
+  const Order = require('../../src/models/Order');
+  await Order.updateOne({ _id: orderA1._id }, { $unset: { productSnapshot: 1 } });
+
+  const detail = (await get(admin.token, `/api/orders/${orderA1._id}`)).body.data;
+  const list = (await get(admin.token, '/api/orders')).body.data.items.find((o) => o._id === orderA1._id);
+
+  assert.equal(detail.productSnapshot, undefined);
+  assert.equal(detail.product.brand, 'Test Brand');
+  assert.equal(list.product.brand, 'Test Brand');
+});
+
 test('order snapshot survives buyer deletion', async () => {
   const { admin, a, orderA1 } = await seed();
   const User = require('../../src/models/User');
