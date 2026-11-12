@@ -3,9 +3,6 @@ const BACKEND_URL = API_URL.replace(/\/api\/?$/, '');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  turbopack: {
-    root: 'D:/PAW PROJECT/client',
-  },
   async rewrites() {
     return [
       { source: '/api/:path*', destination: `${API_URL}/:path*` },
