@@ -1,3 +1,5 @@
+const AppError = require('../utils/AppError');
+
 function errorHandler(err, req, res, next) {
   if (err.type === 'entity.parse.failed') return res.status(400).json({ message: 'Malformed JSON body' });
 
@@ -18,8 +20,11 @@ function errorHandler(err, req, res, next) {
   }
 
   if (status >= 500) console.error(err);
+  // Unexpected 5xx errors stay generic; an AppError's message was written for the client
+  // (e.g. "Photo upload is not configured", "Uploading photos to storage failed").
+  const exposeMessage = status < 500 || err instanceof AppError;
   res.status(status).json({
-    message: status >= 500 ? 'Internal server error' : message,
+    message: exposeMessage ? message : 'Internal server error',
     ...(details && status < 500 ? { details } : {}),
   });
 }

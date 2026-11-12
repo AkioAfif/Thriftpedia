@@ -7,6 +7,7 @@ import { Badge, ConditionBadge } from '@/components/ui/Badge';
 import { WishlistButton } from './WishlistButton';
 import { LockIcon, ArrowForwardIcon } from '@/components/ui/Icons';
 import { formatPrice } from '@/lib/utils';
+import { canOptimizeImage } from '@/lib/imageHosts';
 
 export function ProductCard({ product }) {
   const [imageError, setImageError] = useState(false);
@@ -34,6 +35,7 @@ export function ProductCard({ product }) {
                   ? 'opacity-75 grayscale'
                   : 'group-hover:scale-105'
               }`}
+              unoptimized={!canOptimizeImage(photoUrl)}
               onError={() => setImageError(true)}
             />
           ) : (

@@ -10,7 +10,10 @@ const nextConfig = {
     ];
   },
   images: {
+    // Keep in sync with src/lib/imageHosts.js (decides when next/image may optimise a URL).
     remotePatterns: [
+      // Product photos (uploaded to Cloudinary by the API).
+      { protocol: 'https', hostname: 'res.cloudinary.com', pathname: '/**' },
       {
         protocol: 'https',
         hostname: 'placehold.co',

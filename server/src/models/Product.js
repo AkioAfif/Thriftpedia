@@ -17,6 +17,20 @@ const productSchema = new Schema(
         message: 'photos must be a non-empty array of non-empty strings',
       },
     },
+    // Derived by the service from `photos` on every write: the Cloudinary secure_url and
+    // public_id (null for photos that are not ours, e.g. legacy /uploads or placeholders).
+    photoAssets: {
+      type: [
+        new Schema(
+          {
+            url: { type: String, required: true },
+            publicId: { type: String, default: null },
+          },
+          { _id: false }
+        ),
+      ],
+      default: [],
+    },
     brand: { type: String, trim: true, default: '' },
     description: { type: String, trim: true, default: '', maxlength: 1000 },
     category: { type: Schema.Types.ObjectId, ref: 'Category', default: null },

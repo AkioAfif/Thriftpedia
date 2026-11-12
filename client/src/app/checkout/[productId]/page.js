@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorOutlineIcon } from '@/components/ui/Icons';
 import { getProduct, createOrder } from '@/lib/services/orderService';
 import { formatPrice } from '@/lib/utils';
+import { canOptimizeImage } from '@/lib/imageHosts';
 
 const btnBase =
   'inline-flex w-full min-h-[44px] items-center justify-center rounded-md px-5 text-body-md font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
@@ -158,17 +159,22 @@ export default function CheckoutPage() {
 
 function ProductRow({ product, sold }) {
   const photo = product.photos?.[0];
+  const [photoFailed, setPhotoFailed] = useState(false);
   return (
     <div className="mt-lg flex items-center gap-md border-y border-border py-md">
-      <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-surface-muted">
-        {photo && (
+      <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-muted">
+        {photo && !photoFailed ? (
           <Image
             src={photo}
             alt={product.name}
             fill
             sizes="64px"
+            unoptimized={!canOptimizeImage(photo)}
+            onError={() => setPhotoFailed(true)}
             className={`object-cover ${sold ? 'opacity-75 grayscale' : ''}`}
           />
+        ) : (
+          <span className="text-[10px] text-text-muted">No image</span>
         )}
       </div>
       <div className="min-w-0 flex-1">
