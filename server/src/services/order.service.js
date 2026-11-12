@@ -130,8 +130,12 @@ async function getOrderById(user, orderId) {
   await Order.populate(order, [
     { path: 'product', select: PRODUCT_FIELDS },
     { path: 'buyer', select: BUYER_FIELDS },
-    { path: 'statusHistory.by', select: HISTORY_ACTOR_FIELDS },
+    // Who changed the status is staff-internal: only admins see the actor.
+    ...(isAdmin ? [{ path: 'statusHistory.by', select: HISTORY_ACTOR_FIELDS }] : []),
   ]);
+  if (!isAdmin) {
+    order.statusHistory = (order.statusHistory ?? []).map(({ by, ...entry }) => entry);
+  }
 
   // Only admins can change status, so buyers always get an empty list.
   order.allowedTransitions = isAdmin ? [...(ORDER_TRANSITIONS[order.status] ?? [])] : [];

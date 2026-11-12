@@ -113,6 +113,18 @@ test('detail returns snapshots, history and allowedTransitions (admin only)', as
   assert.deepEqual(asBuyer.allowedTransitions, [], 'buyers cannot change status');
 });
 
+test('statusHistory actor is visible to admins only', async () => {
+  const { admin, a, orderA2 } = await seed(); // orderA2 was completed by the admin
+
+  const asAdmin = (await get(admin.token, `/api/orders/${orderA2._id}`)).body.data;
+  const asBuyer = (await get(a.token, `/api/orders/${orderA2._id}`)).body.data;
+
+  assert.equal(asAdmin.statusHistory.at(-1).by.name, (await require('../../src/models/User').findById(admin.id)).name);
+  assert.deepEqual(asBuyer.statusHistory.map((h) => h.status), asAdmin.statusHistory.map((h) => h.status));
+  assert.ok(asBuyer.statusHistory.every((h) => !('by' in h)), 'no actor for buyers');
+  assert.doesNotMatch(JSON.stringify(asBuyer), new RegExp(admin.id));
+});
+
 test('order snapshot survives buyer deletion', async () => {
   const { admin, a, orderA1 } = await seed();
   const User = require('../../src/models/User');
