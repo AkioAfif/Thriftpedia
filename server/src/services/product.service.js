@@ -60,8 +60,9 @@ async function getProducts() {
 }
 
 async function listProducts(query) {
-  const { q, category, tag, size, condition, minPrice, maxPrice, hideSold, sort, page, limit } =
-    query;
+    const {
+    q, category, tag, size, condition, minPrice, maxPrice, hideSold, status, sort, page, limit,
+  } = query;
 
   const filter = {};
 
@@ -89,7 +90,8 @@ async function listProducts(query) {
     if (maxPrice !== null) filter.price.$lte = maxPrice;
   }
 
-  if (hideSold) filter.status = PRODUCT_STATUS.AVAILABLE;
+  if (status) filter.status = status;
+  else if (hideSold) filter.status = PRODUCT_STATUS.AVAILABLE;
 
   const [items, total] = await Promise.all([
     Product.find(filter)

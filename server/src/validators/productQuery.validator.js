@@ -1,12 +1,14 @@
 const AppError = require('../utils/AppError');
+const { PRODUCT_STATUS } = require('../constants/product');
 const { PRODUCT_CONDITION_VALUES } = require('../constants/productCondition');
 const { PRODUCT_SIZE_VALUES } = require('../constants/productSize');
 
 const ALLOWED_KEYS = [
-  'q', 'category', 'tag', 'size', 'condition',
+  'q', 'category', 'tag', 'size', 'condition', 'status',
   'minPrice', 'maxPrice', 'hideSold', 'sort', 'page', 'limit',
 ];
 const SORT_VALUES = ['newest', 'oldest', 'price_asc', 'price_desc'];
+const STATUS_VALUES = Object.values(PRODUCT_STATUS);
 
 // "M,L" atau ?size=M&size=L -> ['M', 'L']
 function toList(value) {
@@ -49,6 +51,7 @@ function validateProductQuery(req, res, next) {
       tag: '',
       size: [],
       condition: [],
+      status: '',
       minPrice: null,
       maxPrice: null,
       hideSold: false,
@@ -77,6 +80,14 @@ function validateProductQuery(req, res, next) {
       if (bad) throw new AppError(400, `Invalid condition: ${bad}`);
     }
 
+    if (raw.status !== undefined) {
+      const status = String(raw.status).trim().toUpperCase();
+      if (!STATUS_VALUES.includes(status)) {
+        throw new AppError(400, `status must be one of: ${STATUS_VALUES.join(', ')}`);
+      }
+      parsed.status = status;
+    }
+
     if (raw.minPrice !== undefined) parsed.minPrice = toPrice(raw.minPrice, 'minPrice');
     if (raw.maxPrice !== undefined) parsed.maxPrice = toPrice(raw.maxPrice, 'maxPrice');
     if (
@@ -92,6 +103,10 @@ function validateProductQuery(req, res, next) {
         throw new AppError(400, 'hideSold must be true or false');
       }
       parsed.hideSold = raw.hideSold === 'true';
+    }
+
+    if (parsed.hideSold && parsed.status === PRODUCT_STATUS.SOLD) {
+      throw new AppError(400, 'hideSold cannot be combined with status SOLD');
     }
 
     if (raw.sort !== undefined) {
