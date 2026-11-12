@@ -220,11 +220,4 @@ export default function ProductManagementPage() {
     </div>
   );
 }
-          busy={deleting}
-          onConfirm={handleConfirmDelete}
-          onCancel={() => setDeleteTarget(null)}
-        />
-      )}
-    </div>
-  );
-}
+      
