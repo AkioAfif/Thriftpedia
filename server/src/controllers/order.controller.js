@@ -9,8 +9,8 @@ async function create(req, res) {
 }
 
 async function list(req, res) {
-  const orders = await orderService.listOrders(req.user, { status: req.query.status });
-  res.status(200).json({ message: 'Orders retrieved', data: orders });
+  const result = await orderService.listOrders(req.user, req.orderQuery); // parsed by validateListQuery
+  res.status(200).json({ message: 'Orders retrieved', data: result });
 }
 
 async function getById(req, res) {
@@ -19,7 +19,13 @@ async function getById(req, res) {
 }
 
 async function updateStatus(req, res) {
-  const order = await orderService.updateOrderStatus(req.params.orderId, req.body.status);
+  const { status, trackingNumber, courier, note } = req.body; // shape checked by validateUpdateStatus
+  const order = await orderService.updateOrderStatus(req.user, req.params.orderId, {
+    status,
+    trackingNumber,
+    courier,
+    note,
+  });
   res.status(200).json({ message: 'Order status updated', data: order });
 }
 

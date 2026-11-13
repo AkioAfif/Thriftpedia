@@ -39,6 +39,31 @@ async function placeOrder(app, buyer, productId) {
   return res.body.data;
 }
 
+// Legal path from PENDING to each target status.
+const PATH_FROM_PENDING = {
+  PENDING: [],
+  PROCESSING: ['PROCESSING'],
+  SHIPPED: ['PROCESSING', 'SHIPPED'],
+  COMPLETED: ['PROCESSING', 'SHIPPED', 'COMPLETED'],
+  CANCELLED: ['CANCELLED'],
+};
+
+const statusBody = (status) =>
+  status === 'SHIPPED' ? { status, trackingNumber: 'JNE0001', courier: 'JNE' } : { status };
+
+// Walks a PENDING order to `target` through PATCH /api/orders/:id/status.
+async function advanceOrder(app, admin, orderId, target) {
+  let res;
+  for (const status of PATH_FROM_PENDING[target]) {
+    res = await request(app)
+      .patch(`/api/orders/${orderId}/status`)
+      .set('Authorization', `Bearer ${admin.token}`)
+      .send(statusBody(status));
+    if (res.status !== 200) throw new Error(`advanceOrder to ${status} failed with ${res.status}: ${res.body?.message}`);
+  }
+  return res?.body.data;
+}
+
 const newId = () => new mongoose.Types.ObjectId().toString();
 
-module.exports = { createUser, createProduct, placeOrder, newId };
+module.exports = { createUser, createProduct, placeOrder, advanceOrder, statusBody, newId };

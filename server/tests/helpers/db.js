@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
+const { MongoMemoryReplSet } = require('mongodb-memory-server');
 
-let mongod;
+let replSet;
 
+// Single-node replica set: multi-document transactions are not supported on a standalone mongod.
 async function connect() {
-  mongod = await MongoMemoryServer.create();
-  await mongoose.connect(mongod.getUri());
+  replSet = await MongoMemoryReplSet.create({ replSet: { count: 1, storageEngine: 'wiredTiger' } });
+  await mongoose.connect(replSet.getUri());
+  // Build every schema index (incl. the partial unique one) before tests rely on it.
+  await Promise.all(Object.values(mongoose.models).map((model) => model.init()));
 }
 
 async function clear() {
@@ -15,7 +18,7 @@ async function clear() {
 
 async function disconnect() {
   await mongoose.disconnect();
-  await mongod?.stop();
+  await replSet?.stop();
 }
 
 module.exports = { connect, clear, disconnect };
