@@ -1,4 +1,4 @@
-import { statusMeta } from '@/lib/adminOrders';
+import { statusMeta } from '@/lib/orderView';
 
 export default function OrderStatusBadge({ status, className = '' }) {
   const meta = statusMeta(status);
