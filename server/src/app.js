@@ -1,5 +1,6 @@
 const path = require('path');
 const express = require('express');
+const cors = require('cors');
 const orderRoutes = require('./routes/order.routes');
 const authRoutes = require('./routes/auth.routes');
 const productRoutes = require('./routes/product.routes');
@@ -10,6 +11,10 @@ const reviewRoutes = require('./routes/review.routes');
 const { errorHandler } = require('./middleware/error.middleware');
 
 const app = express();
+
+app.use(cors({
+  origin: 'http://localhost:3000',
+}));
 
 app.use(express.json());
 

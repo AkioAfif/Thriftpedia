@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${plusJakarta.variable} ${spaceGrotesk.variable} h-full`}
     >
-      <body className="bg-[#FAF7F2] font-body text-[#2B2118] antialiased min-h-screen flex flex-col">
+      <body className="bg-canvas font-sans text-text antialiased min-h-screen flex flex-col">
         <AuthProvider>
           <Toaster position="bottom-right" />
           <HideOnAdmin>
