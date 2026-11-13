@@ -11,7 +11,7 @@ export class ApiError extends Error {
 const API_BASE_URL =
   typeof window !== 'undefined'
     ? '/api'
-    : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    : process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export async function apiClient(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;

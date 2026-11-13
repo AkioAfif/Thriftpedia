@@ -37,6 +37,8 @@ export function MobileMenu({ isOpen, onClose, isLoggedIn = false, user = null, o
 
       {isLoggedIn ? (
         <>
+          <Link href="/wishlist" onClick={onClose} className={`${linkBase} buyer-control min-h-11`}>Your wishlist</Link>
+          <Link href="/orders" onClick={onClose} className={`${linkBase} buyer-control min-h-11`}>Your orders</Link>
           <Link
             href="#"
             onClick={onClose}

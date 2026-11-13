@@ -15,6 +15,10 @@ const variants = {
     'text-text-secondary hover:bg-surface-muted hover:text-text',
   sold:
     'bg-surface-muted text-text-muted cursor-not-allowed',
+  buyerPrimary:
+    'bg-primary text-on-primary hover:bg-primary-hover',
+  buyerSecondary:
+    'border border-border bg-canvas text-text hover:bg-surface hover:text-primary',
 };
 
 const sizes = {

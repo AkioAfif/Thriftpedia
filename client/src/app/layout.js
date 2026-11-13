@@ -1,6 +1,6 @@
 import { Plus_Jakarta_Sans, Space_Grotesk } from 'next/font/google';
-import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/context/AuthContext';
+import { BuyerProvider } from '@/context/BuyerContext';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import HideOnAdmin from '@/components/layout/HideOnAdmin';
@@ -31,7 +31,7 @@ export default function RootLayout({ children }) {
     >
       <body className="bg-canvas font-sans text-text antialiased min-h-screen flex flex-col">
         <AuthProvider>
-          <Toaster position="bottom-right" />
+          <BuyerProvider>
           <HideOnAdmin>
             <Navbar />
           </HideOnAdmin>
@@ -39,6 +39,7 @@ export default function RootLayout({ children }) {
           <HideOnAdmin>
             <Footer />
           </HideOnAdmin>
+          </BuyerProvider>
         </AuthProvider>
       </body>
     </html>

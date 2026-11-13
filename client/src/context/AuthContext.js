@@ -54,6 +54,7 @@ export function AuthProvider({ children }) {
 
   const login = useCallback((newToken, newUser) => {
     localStorage.setItem(TOKEN_KEY, newToken);
+    localStorage.setItem('thriftpedia_token', newToken);
     localStorage.setItem(USER_KEY, JSON.stringify(newUser ?? null));
     // Admin pages read their own key (adminAuth), so an admin logged in here can open them too.
     if (String(newUser?.role ?? '').toUpperCase() === 'ADMIN') setToken(newToken);
@@ -62,6 +63,7 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem('thriftpedia_token');
     localStorage.removeItem(USER_KEY);
     clearToken(); // also end the admin session stored by adminAuth
     notify();
