@@ -16,13 +16,13 @@ export default function CatalogError({ error, reset }) {
     <main className="w-full flex-1 flex items-center justify-center px-4 py-16">
       <div
         id="error-state-view"
-        className="bg-white rounded-2xl border border-[#E6DDD2] p-10 sm:p-14 flex flex-col items-center justify-center text-center gap-3 shadow-card max-w-md w-full"
+        className="bg-white rounded-2xl border border-[#E6DDD2] p-10 sm:p-14 flex flex-col items-center justify-center text-center gap-3 shadow-card max-w-[28rem] w-full"
       >
         <div className="w-14 h-14 rounded-full bg-[#FFDAD6] flex items-center justify-center text-[#BA1A1A] mb-1">
           <ErrorOutlineIcon className="w-7 h-7 text-[#BA1A1A]" />
         </div>
         <h2 className="font-bold text-lg text-[#2B2118]">Failed to load products</h2>
-        <p className="text-sm text-[#5C4D40] max-w-md">{errorMessage}</p>
+        <p className="text-sm text-[#5C4D40] max-w-[28rem]">{errorMessage}</p>
         <button
           type="button"
           onClick={() => reset()}

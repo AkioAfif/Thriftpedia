@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { TrashIcon } from '../icons';
 import {
@@ -21,11 +22,21 @@ const focusRing =
 
 function ProductThumb({ product }) {
   const src = getPhotoSrc(product);
-  if (!src) {
+  const [failedSrc, setFailedSrc] = useState(null);
+  // Same box when there is no photo or it failed to load (e.g. an old local /uploads URL).
+  if (!src || failedSrc === src) {
     return <span aria-hidden="true" className="block h-[50px] w-10 shrink-0 rounded-md bg-[#efe9e0]" />;
   }
-  /* eslint-disable-next-line @next/next/no-img-element */
-  return <img src={src} alt="" loading="lazy" className="h-[50px] w-10 shrink-0 rounded-md bg-[#efe9e0] object-cover" />;
+  return (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src={src}
+      alt=""
+      loading="lazy"
+      onError={() => setFailedSrc(src)}
+      className="h-[50px] w-10 shrink-0 rounded-md bg-[#efe9e0] object-cover"
+    />
+  );
 }
 
 function Badge({ className, children }) {
