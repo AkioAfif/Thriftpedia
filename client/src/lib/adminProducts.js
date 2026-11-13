@@ -11,10 +11,10 @@ export const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'FREE'].map((valu
 }));
 
 export const CONDITION_OPTIONS = [
-  { value: 'NEW_WITH_TAGS', label: 'Baru dengan Tag', hint: 'Belum pernah dipakai, tag masih menempel.' },
-  { value: 'LIKE_NEW', label: 'Seperti Baru', hint: 'Dipakai sangat jarang, hampir tanpa bekas.' },
-  { value: 'GOOD_VINTAGE', label: 'Bekas Pakai', hint: 'Ada tanda pemakaian normal, tidak ada cacat besar.' },
-  { value: 'FAIR_DISTRESSED', label: 'Ada Cacat', hint: 'Ada noda, pudar, atau kerusakan terlihat. Jelaskan di deskripsi.' },
+  { value: 'NEW_WITH_TAGS', label: 'New with Tags', hint: 'Belum pernah dipakai, tag masih menempel.' },
+  { value: 'LIKE_NEW', label: 'Like New', hint: 'Dipakai sangat jarang, hampir tanpa bekas.' },
+  { value: 'GOOD_VINTAGE', label: 'Pre-loved', hint: 'Ada tanda pemakaian normal, tidak ada cacat besar.' },
+  { value: 'FAIR_DISTRESSED', label: 'Fair / Distressed', hint: 'Ada noda, pudar, atau kerusakan terlihat. Jelaskan di deskripsi.' },
 ];
 
 export const SORT_OPTIONS = [
