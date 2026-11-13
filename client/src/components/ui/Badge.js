@@ -1,5 +1,4 @@
 import { LockIcon } from './Icons';
-import { CONDITIONS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 export function Badge({ children, variant = 'default', className, ...props }) {
@@ -45,24 +44,30 @@ export function Badge({ children, variant = 'default', className, ...props }) {
   );
 }
 
+// Display text + colour per condition enum. CONDITIONS (lib/constants) stays {value, label}
+// because the catalog filters read that shape; the text always names the condition.
+const CONDITION_BADGES = {
+  NEW_WITH_TAGS: { label: 'New with Tags', bgClass: 'bg-badge-success' },
+  LIKE_NEW: { label: 'Like New', bgClass: 'bg-badge-info' },
+  GOOD_VINTAGE: { label: 'Pre-loved', bgClass: 'bg-badge-warning' },
+  FAIR_DISTRESSED: { label: 'Fair / Distressed', bgClass: 'bg-badge-danger' },
+};
+
 export function ConditionBadge({ condition, className }) {
-  const norm = (condition || '').toUpperCase();
-  const matched = CONDITIONS.find((c) => c.value === norm) || {
-    badgeLabel: condition,
-    bgClass: 'bg-[#DCEBF2]',
-    textClass: 'text-[#0F2D3D]',
-  };
+  const raw = String(condition ?? '').trim();
+  if (!raw) return null;
+  // Unknown values show as-is in a neutral pill instead of an empty one.
+  const matched = CONDITION_BADGES[raw.toUpperCase()] ?? { label: raw, bgClass: 'bg-badge-neutral' };
 
   return (
     <span
       className={cn(
-        'px-2.5 py-1 rounded-full text-xs font-bold shadow-xs select-none',
+        'px-2.5 py-1 rounded-full text-xs font-bold shadow-xs select-none text-text',
         matched.bgClass,
-        matched.textClass,
         className
       )}
     >
-      {matched.badgeLabel || ({ NEW_WITH_TAGS: 'New with Tags', LIKE_NEW: 'Like New', GOOD_VINTAGE: 'Good Vintage', FAIR_DISTRESSED: 'Fair / Distressed' })[norm] || condition}
+      {matched.label}
     </span>
   );
 }

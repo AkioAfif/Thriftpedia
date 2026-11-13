@@ -9,40 +9,45 @@ const CARDS = [
   { value: 'SOLD', label: 'Sold', key: 'sold', Icon: ClipboardIcon, iconBox: 'bg-[#e8e1d8] text-[#6b5d52]' },
 ];
 
+// stats: { status: 'loading' | 'ready' | 'error', data: { total, available, sold } | null }
+// Each card filters the list by status; pressing the active card again goes back to all.
 export default function ProductStatCards({ stats, activeStatus, onSelect }) {
   return (
-    <div role="radiogroup" aria-label="Filter by status" className="grid gap-4 md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
       {CARDS.map(({ value, label, key, Icon, iconBox }) => {
-        const selected = activeStatus === value;
+        const pressed = activeStatus === value;
+        const showSkeleton = stats.status === 'loading' && !stats.data;
+        const number = stats.data ? formatNumber(stats.data[key]) : null;
         return (
           <button
             key={label}
             type="button"
-            role="radio"
-            aria-checked={selected}
-            onClick={() => onSelect(value)}
-            className={`flex items-center gap-4 rounded-2xl border-2 p-5 text-left transition-colors ${
-              selected
-                ? 'border-[#b4532a] bg-[#f8ebe4]'
-                : 'border-[#e8e1d8] bg-white hover:border-[#d9cfc2]'
+            aria-pressed={pressed}
+            onClick={() => onSelect(pressed && value ? '' : value)}
+            className={`flex min-h-[44px] items-center gap-4 rounded-2xl border p-4 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 sm:p-5 ${
+              pressed
+                ? 'border-[#2b1d14] bg-[#f1ebe1]'
+                : 'border-[#e8e1d8] bg-white hover:border-[#CFBEAE]'
             }`}
           >
-            <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${iconBox}`}>
+            <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconBox}`}>
               <Icon />
             </span>
-            <span className="flex-1">
+            <span className="min-w-0 flex-1">
               <span className="block text-sm text-[#6b5d52]">{label}</span>
-              <span className="block text-3xl font-semibold text-[#2b1d14]">
-                {stats ? formatNumber(stats[key]) : '–'}
-              </span>
-            </span>
-            <span
-              aria-hidden="true"
-              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${
-                selected ? 'border-[#b4532a]' : 'border-[#6b5d52]'
-              }`}
-            >
-              {selected && <span className="h-3 w-3 rounded-full bg-[#b4532a]" />}
+              {showSkeleton ? (
+                <span aria-hidden="true" className="mt-1.5 block h-7 w-16 animate-pulse rounded-md bg-[#e8e1d8]" />
+              ) : (
+                <span className="block text-3xl font-semibold tabular-nums text-[#2b1d14]">
+                  {number ?? (
+                    <>
+                      <span aria-hidden="true">-</span>
+                      <span className="sr-only">unavailable</span>
+                    </>
+                  )}
+                </span>
+              )}
+              {showSkeleton && <span className="sr-only">Loading</span>}
             </span>
           </button>
         );

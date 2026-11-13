@@ -27,8 +27,8 @@ export const ALLOWED_QUERY_KEYS = [
 export const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
 export const CONDITIONS = [
-  { value: 'NEW_WITH_TAGS', label: 'Baru dengan Tag' },
-  { value: 'LIKE_NEW', label: 'Seperti Baru' },
-  { value: 'GOOD_VINTAGE', label: 'Bekas Pakai' },
-  { value: 'FAIR_DISTRESSED', label: 'Ada Cacat' },
+  { value: 'NEW_WITH_TAGS', label: 'New with Tags' },
+  { value: 'LIKE_NEW', label: 'Like New' },
+  { value: 'GOOD_VINTAGE', label: 'Pre-loved' },
+  { value: 'FAIR_DISTRESSED', label: 'Fair / Distressed' },
 ];

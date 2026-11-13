@@ -10,6 +10,7 @@ import { ProductGrid } from '@/components/catalog/ProductGrid';
 import { Pagination } from '@/components/catalog/Pagination';
 import { CatalogSkeleton } from '@/components/catalog/CatalogSkeleton';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { RememberCatalogQuery } from '@/components/catalog/RememberCatalogQuery';
 
 async function ProductResultsArea({ searchParams }) {
   const { data: products, meta } = await getProducts(searchParams);
@@ -44,6 +45,9 @@ export default async function CatalogPage({ searchParams }) {
 
   return (
     <main className="w-full flex-1">
+      <Suspense fallback={null}>
+        <RememberCatalogQuery />
+      </Suspense>
       {/* Title, Search & Category Chips */}
       <section className="w-full px-4 sm:px-8 pt-8 pb-4">
         <div className="max-w-7xl mx-auto flex flex-col gap-6 sm:gap-8">

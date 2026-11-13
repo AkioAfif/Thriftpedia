@@ -11,18 +11,20 @@ export const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'FREE'].map((valu
 }));
 
 export const CONDITION_OPTIONS = [
-  { value: 'NEW_WITH_TAGS', label: 'Baru dengan Tag', hint: 'Belum pernah dipakai, tag masih menempel.' },
-  { value: 'LIKE_NEW', label: 'Seperti Baru', hint: 'Dipakai sangat jarang, hampir tanpa bekas.' },
-  { value: 'GOOD_VINTAGE', label: 'Bekas Pakai', hint: 'Ada tanda pemakaian normal, tidak ada cacat besar.' },
-  { value: 'FAIR_DISTRESSED', label: 'Ada Cacat', hint: 'Ada noda, pudar, atau kerusakan terlihat. Jelaskan di deskripsi.' },
+  { value: 'NEW_WITH_TAGS', label: 'New with Tags', hint: 'Belum pernah dipakai, tag masih menempel.' },
+  { value: 'LIKE_NEW', label: 'Like New', hint: 'Dipakai sangat jarang, hampir tanpa bekas.' },
+  { value: 'GOOD_VINTAGE', label: 'Pre-loved', hint: 'Ada tanda pemakaian normal, tidak ada cacat besar.' },
+  { value: 'FAIR_DISTRESSED', label: 'Fair / Distressed', hint: 'Ada noda, pudar, atau kerusakan terlihat. Jelaskan di deskripsi.' },
 ];
 
 export const SORT_OPTIONS = [
-  { value: 'newest', label: 'Sort: Newest' },
-  { value: 'oldest', label: 'Sort: Oldest' },
-  { value: 'price_asc', label: 'Sort: Price low to high' },
-  { value: 'price_desc', label: 'Sort: Price high to low' },
+  { value: 'newest', label: 'Newest' },
+  { value: 'oldest', label: 'Oldest' },
+  { value: 'price_asc', label: 'Price: Low to High' },
+  { value: 'price_desc', label: 'Price: High to Low' },
 ];
+
+export const STATUS_VALUES = ['AVAILABLE', 'SOLD'];
 
 export const DEFAULT_FILTERS = {
   q: '',
@@ -35,6 +37,44 @@ export const DEFAULT_FILTERS = {
 };
 
 export const EMPTY_META = { total: 0, page: 1, limit: PAGE_SIZE, totalPages: 0 };
+
+const Q_MAX = 100; // same limit as the server's productQuery validator
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+// URL -> sanitised filters. Unknown values fall back to defaults instead of causing a 400.
+export function parseProductFilters(searchParams) {
+  const get = (key) => (searchParams.get(key) ?? '').trim();
+  const category = get('category').toLowerCase();
+  const size = get('size').toUpperCase();
+  const condition = get('condition').toUpperCase();
+  const status = get('status').toUpperCase();
+  const sort = get('sort');
+  const page = Number(get('page'));
+  return {
+    q: get('q').slice(0, Q_MAX),
+    category: SLUG_RE.test(category) ? category : '',
+    size: SIZE_OPTIONS.some((o) => o.value === size) ? size : '',
+    condition: CONDITION_OPTIONS.some((o) => o.value === condition) ? condition : '',
+    status: STATUS_VALUES.includes(status) ? status : '',
+    sort: SORT_OPTIONS.some((o) => o.value === sort) ? sort : 'newest',
+    page: Number.isInteger(page) && page >= 1 ? page : 1,
+  };
+}
+
+// Filters -> URL search string for the admin page, omitting defaults.
+export function productFiltersToSearch(filters) {
+  const params = new URLSearchParams();
+  for (const key of ['q', 'category', 'size', 'condition', 'status']) {
+    if (filters[key]) params.set(key, filters[key]);
+  }
+  if (filters.sort && filters.sort !== 'newest') params.set('sort', filters.sort);
+  if (filters.page > 1) params.set('page', String(filters.page));
+  return params.toString();
+}
+
+export const hasActiveFilters = (filters) =>
+  Boolean(filters.q || filters.category || filters.size || filters.condition || filters.status) ||
+  filters.sort !== 'newest';
 
 export const formatNumber = (n) => new Intl.NumberFormat('id-ID').format(Number(n) || 0);
 export const formatRupiah = (n) => `Rp ${(Number(n) || 0).toLocaleString('en-US')}`;

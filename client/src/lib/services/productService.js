@@ -15,3 +15,23 @@ export async function getProducts(params = {}) {
     message: res?.message || '',
   };
 }
+
+// GET /api/products/:id -> data (category populated with name + slug). 404 = gone, 400 = bad id.
+export async function getProductById(id) {
+  const res = await apiClient(`/products/${encodeURIComponent(id)}`, { cache: 'no-store' });
+  return res?.data ?? null;
+}
+
+// GET /api/products/:productId/reviews -> [{ rating, comment, buyer: { name }, createdAt }]
+export async function getProductReviews(id) {
+  const res = await apiClient(`/products/${encodeURIComponent(id)}/reviews`, { cache: 'no-store' });
+  return Array.isArray(res?.data) ? res.data : [];
+}
+
+// Available pieces from the same category, without the current one.
+export async function getRelatedProducts({ categorySlug, excludeId, max = 4 }) {
+  const qs = new URLSearchParams({ category: categorySlug, status: 'AVAILABLE', limit: String(max + 1) });
+  const res = await apiClient(`/products?${qs}`, { cache: 'no-store' });
+  const list = Array.isArray(res?.data) ? res.data : [];
+  return list.filter((p) => String(p?._id) !== String(excludeId)).slice(0, max);
+}
