@@ -20,23 +20,96 @@ function validateOrderIdParam(req, res, next) {
   next();
 }
 
-function validateListQuery(req, res, next) {
-  const { status } = req.query;
-  if (status !== undefined && !Object.values(ORDER_STATUS).includes(status)) {
-    return next(new AppError(400, `status must be one of ${Object.values(ORDER_STATUS).join(', ')}`));
+const LIST_QUERY_KEYS = ['page', 'limit', 'status', 'q', 'sort'];
+const LIST_SORTS = ['newest', 'oldest', 'total_desc', 'total_asc'];
+const MAX_LIMIT = 50;
+
+function toInt(value, name, min, max) {
+  const n = Number(value);
+  if (value === '' || !Number.isInteger(n) || n < min || n > max) {
+    throw new AppError(400, `${name} must be an integer between ${min} and ${max}`);
   }
-  next();
+  return n;
 }
+
+// Parses GET /api/orders query into req.orderQuery. Unknown or repeated keys are rejected.
+function validateListQuery(req, res, next) {
+  try {
+    const raw = req.query ?? {};
+    for (const key of Object.keys(raw)) {
+      if (!LIST_QUERY_KEYS.includes(key)) throw new AppError(400, `Unknown query parameter: ${key}`);
+      if (typeof raw[key] !== 'string') throw new AppError(400, `${key} must be a single value`);
+    }
+
+    const parsed = { page: 1, limit: 10, status: undefined, q: '', sort: 'newest' };
+
+    if (raw.page !== undefined) parsed.page = toInt(raw.page, 'page', 1, 100000);
+    if (raw.limit !== undefined) parsed.limit = toInt(raw.limit, 'limit', 1, MAX_LIMIT);
+
+    if (raw.status !== undefined) {
+      if (!Object.values(ORDER_STATUS).includes(raw.status)) {
+        throw new AppError(400, `status must be one of ${Object.values(ORDER_STATUS).join(', ')}`);
+      }
+      parsed.status = raw.status;
+    }
+
+    if (raw.q !== undefined) {
+      parsed.q = raw.q.trim();
+      if (parsed.q.length > 100) throw new AppError(400, 'q is too long (max 100 characters)');
+    }
+
+    if (raw.sort !== undefined) {
+      if (!LIST_SORTS.includes(raw.sort)) throw new AppError(400, `sort must be one of ${LIST_SORTS.join(', ')}`);
+      parsed.sort = raw.sort;
+    }
+
+    req.orderQuery = parsed;
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+const UPDATE_STATUS_FIELDS = ['status', 'trackingNumber', 'courier', 'note'];
+const SHIPPING_FIELDS = ['trackingNumber', 'courier'];
+const has = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
+const isTrimmedString = (v, max) => typeof v === 'string' && v.trim().length > 0 && v.trim().length <= max;
 
 function validateUpdateStatus(req, res, next) {
   const body = req.body ?? {};
-  const keys = Object.keys(body);
-  if (keys.length !== 1 || keys[0] !== 'status') {
-    return next(new AppError(400, 'Only the "status" field can be updated'));
+  if (typeof body !== 'object' || Array.isArray(body)) {
+    return next(new AppError(400, 'Request body must be a JSON object'));
   }
+
+  const unknown = Object.keys(body).filter((key) => !UPDATE_STATUS_FIELDS.includes(key));
+  if (unknown.length > 0) return next(new AppError(400, `Unknown field: ${unknown.join(', ')}`));
+
   if (!ADMIN_SETTABLE_STATUSES.includes(body.status)) {
     return next(new AppError(400, `status must be one of ${ADMIN_SETTABLE_STATUSES.join(', ')}`));
   }
+
+  if (body.status === ORDER_STATUS.SHIPPED) {
+    if (!isTrimmedString(body.trackingNumber, 50)) {
+      return next(new AppError(400, 'trackingNumber is required when status is SHIPPED (max 50 characters)'));
+    }
+    if (has(body, 'courier') && body.courier !== null && !isTrimmedString(body.courier, 50)) {
+      return next(new AppError(400, 'courier must be a non-empty string (max 50 characters) or null'));
+    }
+  } else {
+    const misplaced = SHIPPING_FIELDS.filter((key) => has(body, key));
+    if (misplaced.length > 0) {
+      return next(new AppError(400, `${misplaced.join(', ')} is only allowed when status is SHIPPED`));
+    }
+  }
+
+  if (has(body, 'note') && body.note !== null && !isTrimmedString(body.note, 500)) {
+    return next(new AppError(400, 'note must be a non-empty string (max 500 characters) or null'));
+  }
+
+  // Normalise once so the service stores trimmed values.
+  if (typeof body.trackingNumber === 'string') body.trackingNumber = body.trackingNumber.trim();
+  if (typeof body.courier === 'string') body.courier = body.courier.trim();
+  if (typeof body.note === 'string') body.note = body.note.trim();
   next();
 }
 
