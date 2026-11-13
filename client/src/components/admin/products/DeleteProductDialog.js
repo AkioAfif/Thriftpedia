@@ -1,13 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
-
-const formatRupiah = (n) => `Rp ${new Intl.NumberFormat('id-ID').format(Number(n) || 0)}`;
-
-function getPhoto(product) {
-  const first = Array.isArray(product?.photos) ? product.photos[0] : '';
-  return typeof first === 'string' ? first.trim() : '';
-}
+import { formatRupiah, getPhotoSrc as getPhoto } from '../../../lib/adminProducts';
 
 export default function DeleteProductDialog({ product, busy = false, onConfirm, onCancel }) {
   const uid = useId();
