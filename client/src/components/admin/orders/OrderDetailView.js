@@ -4,10 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
-import OrderStatusBadge from './OrderStatusBadge';
 import OrderStatusPanel from './OrderStatusPanel';
-import OrderTimeline from './OrderTimeline';
-import { ChevronLeftIcon } from '../icons';
 import { clearToken } from '@/lib/adminAuth';
 import {
   fetchOrder,
@@ -19,23 +16,32 @@ import {
   parseOrderQuery,
   updateOrderStatus,
 } from '@/lib/adminOrders';
-import { conditionLabel, formatRupiah, sizeLabel } from '@/lib/adminProducts';
+import { formatRupiah, sizeLabel } from '@/lib/adminProducts';
 
 const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E]';
-const sectionCls = 'rounded-[20px] border border-[#e8e1d8] bg-white p-5 sm:p-6';
+const cardCls = 'rounded-[20px] border border-[#e8e1d8] bg-white p-5 sm:p-7';
 
-function Field({ label, children }) {
+function Breadcrumb({ backHref, current }) {
   return (
-    <div className="min-w-0">
-      <dt className="text-xs font-semibold uppercase tracking-wide text-[#6E5D4F]">{label}</dt>
-      <dd className="mt-1 break-words text-sm text-[#2b1d14]">{children}</dd>
-    </div>
+    <nav aria-label="Breadcrumb">
+      <ol className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-[#6E5D4F]">
+        <li>
+          <Link href={backHref} className={`rounded hover:text-[#2b1d14] hover:underline ${focusRing}`}>
+            Order Management
+          </Link>
+        </li>
+        <li aria-hidden="true">›</li>
+        <li aria-current="page" className="min-w-0 truncate text-[#2b1d14]">
+          {current}
+        </li>
+      </ol>
+    </nav>
   );
 }
 
 function StateMessage({ title, children, action }) {
   return (
-    <div className={`${sectionCls} px-6 py-16 text-center`}>
+    <div className={`${cardCls} px-6 py-16 text-center`}>
       <p className="text-lg font-semibold text-[#2b1d14]">{title}</p>
       <p className="mx-auto mt-2 max-w-[28rem] text-sm text-[#6E5D4F]">{children}</p>
       {action}
@@ -48,11 +54,36 @@ function DetailSkeleton() {
     <div aria-busy="true">
       <span className="sr-only">Loading order</span>
       <div className="h-10 w-64 animate-pulse rounded-lg bg-[#efe9e0]" />
-      <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <div className="h-96 animate-pulse rounded-[20px] bg-[#efe9e0]" />
+      <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
         <div className="h-72 animate-pulse rounded-[20px] bg-[#efe9e0]" />
+        <div className="h-96 animate-pulse rounded-[20px] bg-[#efe9e0]" />
       </div>
     </div>
+  );
+}
+
+// Falls back to a plain tile when there is no photo or the image fails to load.
+function ItemPhoto({ src, alt }) {
+  const [failed, setFailed] = useState(false);
+  if (!src || failed) {
+    return (
+      <span
+        role="img"
+        aria-label="No photo"
+        className="flex aspect-[4/5] w-28 shrink-0 items-center justify-center rounded-xl bg-[#efe9e0] text-xs text-[#6E5D4F] sm:w-36"
+      >
+        No photo
+      </span>
+    );
+  }
+  return (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setFailed(true)}
+      className="aspect-[4/5] w-28 shrink-0 rounded-xl bg-[#efe9e0] object-cover sm:w-36"
+    />
   );
 }
 
@@ -63,7 +94,7 @@ export default function OrderDetailView() {
   const [state, setState] = useState({ status: 'loading', order: null, error: null });
   const [attempt, setAttempt] = useState(0);
 
-  // Only a sanitised list query is accepted, so "back" can never point anywhere else.
+  // Only a sanitised list query is accepted, so the breadcrumb can never point anywhere else.
   const backSearch = orderQueryToSearch(parseOrderQuery(new URLSearchParams(searchParams.get('back') ?? '')));
   const backHref = backSearch ? `/admin/orders?${backSearch}` : '/admin/orders';
 
@@ -116,21 +147,11 @@ export default function OrderDetailView() {
     }
   }
 
-  const back = (
-    <Link
-      href={backHref}
-      className={`inline-flex items-center gap-1.5 rounded-lg py-1 pr-2 text-sm font-medium text-[#6E5D4F] hover:text-[#2b1d14] ${focusRing}`}
-    >
-      <ChevronLeftIcon width={16} height={16} />
-      Back to orders
-    </Link>
-  );
-
   if (state.status === 'loading') {
     return (
       <div>
-        {back}
-        <div className="mt-4">
+        <Breadcrumb backHref={backHref} current="Order" />
+        <div className="mt-6">
           <DetailSkeleton />
         </div>
       </div>
@@ -142,13 +163,13 @@ export default function OrderDetailView() {
     const notFound = status === 404 || status === 400;
     return (
       <div>
-        {back}
-        <div className="mt-4">
+        <Breadcrumb backHref={backHref} current="Order" />
+        <div className="mt-6">
           {status === 403 ? (
             <StateMessage title="Access denied">Only admin accounts can view and manage orders.</StateMessage>
           ) : notFound ? (
             <StateMessage title="Order not found">
-              This order doesn&apos;t exist or the link is wrong. Go back to the list and pick it again.
+              This order doesn&apos;t exist or the link is wrong. Go back to Order Management and pick it again.
             </StateMessage>
           ) : (
             <StateMessage
@@ -174,87 +195,61 @@ export default function OrderDetailView() {
   const { order } = state;
   const item = orderItem(order);
   const buyer = orderBuyer(order);
-  const productStatus = order.product?.status;
+  const subline = [item.brand, item.size ? sizeLabel(item.size) : null].filter(Boolean).join(' · ');
 
   return (
     <div>
-      {back}
+      <Breadcrumb backHref={backHref} current={order.orderNumber ? `Order ${order.orderNumber}` : 'Order'} />
+      <h1 className="mt-4 break-words text-3xl font-semibold tabular-nums text-[#2b1d14] sm:text-4xl">
+        Order {orderLabel(order)}
+      </h1>
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <h1 className="text-3xl font-semibold tabular-nums sm:text-4xl">Order {orderLabel(order)}</h1>
-        <OrderStatusBadge status={order.status} />
-      </div>
-      <p className="mt-2 text-sm text-[#6E5D4F]">
-        Placed <time dateTime={order.createdAt}>{formatOrderDateTime(order.createdAt)}</time>
-      </p>
-
-      <div className="mt-6 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <div className="space-y-5">
-          <section aria-labelledby="order-item-title" className={sectionCls}>
-            <h2 id="order-item-title" className="text-lg font-semibold text-[#2b1d14]">
-              Item
-            </h2>
-            <div className="mt-4 flex gap-4">
-              {item.photo ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={item.photo} alt={item.name} className="h-32 w-24 shrink-0 rounded-xl bg-[#efe9e0] object-cover" />
-              ) : (
-                <span aria-hidden="true" className="h-32 w-24 shrink-0 rounded-xl bg-[#efe9e0]" />
-              )}
-              <div className="min-w-0 flex-1">
-                <p className="text-base font-semibold text-[#2b1d14]">{item.name}</p>
-                {item.brand && <p className="text-sm text-[#6E5D4F]">{item.brand}</p>}
-                <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
-                  <Field label="Size">{item.size ? sizeLabel(item.size) : '—'}</Field>
-                  <Field label="Condition">{item.condition ? conditionLabel(item.condition) : '—'}</Field>
-                  <Field label="Price">
-                    <span className="font-mono tabular-nums">{item.price == null ? '—' : formatRupiah(item.price)}</span>
-                  </Field>
-                </dl>
-              </div>
-            </div>
-            <div className="mt-5 flex items-center justify-between border-t border-[#efe9e0] pt-4">
-              <span className="text-sm font-semibold text-[#2b1d14]">Order total</span>
-              <span className="font-mono text-lg font-semibold tabular-nums text-[#2b1d14]">
-                {order.total == null ? '—' : formatRupiah(order.total)}
-              </span>
-            </div>
-            {productStatus && (
-              <p className="mt-3 text-xs text-[#6E5D4F]">
-                Product is currently {productStatus === 'SOLD' ? 'sold' : 'available'} in the catalog. This follows the
-                order automatically.
+      <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+        <section aria-labelledby="order-item-title" className={`${cardCls} lg:col-start-1 lg:row-start-1`}>
+          <h2 id="order-item-title" className="text-xl font-semibold text-[#2b1d14]">
+            Item
+          </h2>
+          <div className="mt-5 flex gap-4 sm:gap-6">
+            <ItemPhoto src={item.photo} alt={item.name} />
+            <div className="min-w-0 flex-1 pt-1">
+              <p className="break-words text-lg font-semibold text-[#2b1d14] sm:text-xl">{item.name}</p>
+              {subline && <p className="mt-2 break-words text-sm text-[#6E5D4F]">{subline}</p>}
+              <p className="mt-4 text-lg font-semibold tabular-nums text-[#2b1d14] sm:text-xl">
+                {item.price == null ? '—' : formatRupiah(item.price)}
               </p>
-            )}
-          </section>
+            </div>
+          </div>
+        </section>
 
-          <section aria-labelledby="order-buyer-title" className={sectionCls}>
-            <h2 id="order-buyer-title" className="text-lg font-semibold text-[#2b1d14]">
-              Buyer &amp; shipping
-            </h2>
-            <dl className="mt-4 grid gap-x-6 gap-y-4 sm:grid-cols-2">
-              <Field label="Buyer">
-                {buyer.name ?? 'Deleted account'}
-                {order.buyer === null && buyer.name && (
-                  <span className="block text-xs text-[#6E5D4F]">Account has since been deleted</span>
-                )}
-              </Field>
-              <Field label="Email">{buyer.email ?? '—'}</Field>
-              <Field label="Courier">{order.courier || '—'}</Field>
-              <Field label="Tracking number">
-                {order.trackingNumber ? (
-                  <span className="font-mono">{order.trackingNumber}</span>
-                ) : (
-                  <span className="text-[#6E5D4F]">Added when the order ships</span>
-                )}
-              </Field>
-            </dl>
-          </section>
-        </div>
-
-        <div className="space-y-5 lg:sticky lg:top-6">
+        <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
           <OrderStatusPanel key={`${order.status}-${order.updatedAt}`} order={order} onSubmit={changeStatus} />
-          <OrderTimeline history={order.statusHistory} />
         </div>
+
+        <section aria-labelledby="order-buyer-title" className={`${cardCls} lg:col-start-1 lg:row-start-2`}>
+          <h2 id="order-buyer-title" className="text-xl font-semibold text-[#2b1d14]">
+            Buyer
+          </h2>
+          <p className="mt-5 break-words font-semibold text-[#2b1d14]">{buyer.name ?? 'Deleted account'}</p>
+          {order.buyer === null && buyer.name && (
+            <p className="mt-0.5 text-xs text-[#6E5D4F]">Account has since been deleted</p>
+          )}
+          <p className="mt-2 break-all text-sm text-[#6E5D4F]">{buyer.email ?? 'No email on record'}</p>
+        </section>
+
+        <section
+          aria-label="Order total"
+          className={`${cardCls} flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:col-span-2`}
+        >
+          <div>
+            <p className="text-sm text-[#6E5D4F]">Order total</p>
+            <p className="mt-1 text-2xl font-semibold tabular-nums text-[#2b1d14]">
+              {order.total == null ? '—' : formatRupiah(order.total)}
+            </p>
+          </div>
+          <p className="text-sm tabular-nums text-[#6E5D4F]">
+            Placed <time dateTime={order.createdAt}>{formatOrderDateTime(order.createdAt)}</time>
+          </p>
+        </section>
       </div>
     </div>
   );

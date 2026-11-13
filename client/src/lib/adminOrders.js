@@ -20,9 +20,9 @@ export const statusMeta = (status) =>
 // What the admin does to move an order INTO a status. Which buttons appear is decided by
 // the server's `allowedTransitions`; this only names them.
 export const TRANSITION_ACTIONS = {
-  PROCESSING: { label: 'Start processing', done: 'Order is now processing' },
-  SHIPPED: { label: 'Mark as shipped', done: 'Order marked as shipped' },
-  COMPLETED: { label: 'Mark as completed', done: 'Order completed' },
+  PROCESSING: { label: 'Mark as Processing', done: 'Order is now processing' },
+  SHIPPED: { label: 'Mark as Shipped', done: 'Order marked as shipped' },
+  COMPLETED: { label: 'Mark as Completed', done: 'Order completed' },
   CANCELLED: { label: 'Cancel order', done: 'Order cancelled, product is back on sale', destructive: true },
 };
 
@@ -112,8 +112,10 @@ export const orderItem = (order) => {
 
 export const orderLabel = (order) => (order?.orderNumber ? `#${order.orderNumber}` : 'Unnumbered order');
 
-const dateFormat = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-const timeFormat = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' });
+// The shop runs on Jakarta time, so every admin sees the same clock regardless of their browser.
+const TIME_ZONE = 'Asia/Jakarta';
+const dateFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: TIME_ZONE });
+const timeFormat = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: TIME_ZONE });
 
 export function formatOrderDate(value) {
   const d = value ? new Date(value) : null;
@@ -122,5 +124,14 @@ export function formatOrderDate(value) {
 
 export function formatOrderDateTime(value) {
   const d = value ? new Date(value) : null;
-  return d && !Number.isNaN(d.getTime()) ? `${dateFormat.format(d)}, ${timeFormat.format(d)}` : '—';
+  return d && !Number.isNaN(d.getTime()) ? `${dateFormat.format(d)}, ${timeFormat.format(d)} WIB` : '—';
+}
+
+// The forward path shown by the stepper. CANCELLED is not a step: it ends the path early.
+export const ORDER_STEPS = ['PENDING', 'PROCESSING', 'SHIPPED', 'COMPLETED'];
+
+// Display-only text for a history entry. The checkout entry has no note in the data.
+export function historyNote(entry, index) {
+  if (entry?.note) return entry.note;
+  return index === 0 && entry?.status === 'PENDING' ? 'Order placed' : null;
 }
