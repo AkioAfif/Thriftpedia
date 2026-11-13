@@ -23,7 +23,7 @@ const ORDER_SORTS = Object.freeze({
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-async function createOrder({ buyerId, productId }) {
+async function createOrder({ buyerId, productId, shippingAddress }) {
   const buyer = await User.findById(buyerId).select(BUYER_FIELDS).lean();
   if (!buyer) throw new AppError(401, 'Account no longer exists');
 
@@ -67,6 +67,7 @@ async function createOrder({ buyerId, productId }) {
             total: claimed.price, // single item, single stock
             status: ORDER_STATUS.PENDING,
             statusHistory: [{ status: ORDER_STATUS.PENDING, by: buyerId }],
+            shippingAddress,
           },
         ],
         { session }
