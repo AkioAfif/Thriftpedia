@@ -108,6 +108,7 @@
   --text-price--line-height: 24px;
 }
 
+
 @layer base {
   html {
     background-color: var(--canvas);
@@ -116,7 +117,6 @@
   body {
     @apply bg-canvas font-sans text-text antialiased;
   }
-}
 
   h1,
   h2,
@@ -124,26 +124,10 @@
     @apply font-sans font-semibold tracking-tight;
   }
 
-.shimmer-effect::after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  transform: translateX(-100%);
-  background-image: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0,
-    rgba(255, 255, 255, 0.5) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  animation: shimmer 1.6s infinite;
-  content: '';
-}
-
   ::selection {
     @apply bg-primary-tint text-text;
   }
+}
 
 @utility display-lg {
   @apply font-sans text-display-lg font-bold;
@@ -206,14 +190,34 @@
   @apply rounded-xl border border-border bg-surface p-md shadow-level-1;
 }
 
-@keyframes shimmer { 100% { transform: translateX(100%); } }
-.shimmer-effect { position: relative; overflow: hidden; }
-.shimmer-effect::after {
-  content: ''; position: absolute; inset: 0;
-  transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 50%), transparent);
-  animation: shimmer 1.2s infinite;
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }
+
+.shimmer-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-effect::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 50%),
+    transparent
+  );
+  animation: shimmer 1.6s infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .shimmer-effect::after { animation: none; }
+  .shimmer-effect::after {
+    animation: none;
+  }
 }
