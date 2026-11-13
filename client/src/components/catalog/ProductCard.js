@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Badge, ConditionBadge } from '@/components/ui/Badge';
 import { WishlistButton } from './WishlistButton';
-import { LockIcon, ArrowForwardIcon } from '@/components/ui/Icons';
+import { ArrowForwardIcon } from '@/components/ui/Icons';
 import { formatPrice } from '@/lib/utils';
 import { canOptimizeImage } from '@/lib/imageHosts';
 
@@ -19,7 +19,7 @@ export function ProductCard({ product }) {
       data-layer="ProductCard"
       data-product-id={product._id}
       data-status={product.status?.toLowerCase()}
-      className="group flex flex-col justify-between h-full bg-white border border-[#E6DDD2] hover:border-[#B5532E]/40 rounded-2xl p-4 shadow-card hover:shadow-md transition-all duration-300"
+      className="group relative flex flex-col justify-between h-full bg-white border border-[#E6DDD2] hover:border-[#B5532E]/40 rounded-2xl p-4 shadow-card hover:shadow-md transition-all duration-300"
     >
       <div className="flex flex-col gap-3">
         {/* Photo Container */}
@@ -111,25 +111,19 @@ export function ProductCard({ product }) {
       </div>
       {/* Action Button */}
       <div className="pt-3 mt-3 border-t border-[#E6DDD2]/60">
-        {isSold ? (
-          <button
-            type="button"
-            disabled
-            aria-disabled="true"
-            className="w-full min-h-[38px] px-3 py-1.5 rounded-xl bg-[#EFEBE4] text-[#8C7E72] font-semibold text-xs flex items-center justify-center gap-1.5 cursor-not-allowed select-none"
-          >
-            <LockIcon className="w-3.5 h-3.5" />
-            <span>Sold Out</span>
-          </button>
-        ) : (
-          <Link
-            href={`/catalog/${product._id}`}
-            className="w-full min-h-[38px] px-3 py-1.5 rounded-xl bg-[#FAF7F2] hover:bg-[#B5532E] text-[#2B2118] hover:text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none"
-          >
-            <span>View Details</span>
-            <ArrowForwardIcon className="w-4 h-4" />
-          </Link>
-        )}
+        {/* The only link in the card; its ::after stretches over the photo and name so they are clickable too. */}
+        <Link
+          href={`/catalog/${product._id}`}
+          aria-label={`View details, ${product.name}${isSold ? ', sold' : ''}`}
+          className={`w-full min-h-[44px] px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 focus-visible:outline-none after:absolute after:inset-0 after:rounded-2xl after:content-[''] ${
+            isSold
+              ? 'border border-[#E6DDD2] bg-white text-[#5C4D40] hover:border-[#B5532E] hover:text-[#B5532E]'
+              : 'bg-[#FAF7F2] hover:bg-[#B5532E] text-[#2B2118] hover:text-white'
+          }`}
+        >
+          <span>View Details</span>
+          <ArrowForwardIcon className="w-4 h-4" />
+        </Link>
       </div>
     </div>
   );
