@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 import { getProductReviews } from '@/lib/services/buyerService';
@@ -9,7 +10,8 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { ReviewForm } from './ReviewForm';
 
-export function ProductReviews({ product, order = null }) {
+// reviewHref: optional link to where the buyer's own review lives; omit it when the review is already shown here.
+export function ProductReviews({ product, order = null, reviewHref }) {
   const { token, user } = useAuth();
   const buyer = Boolean(token) && String(user?.role || '').toUpperCase() === 'BUYER';
   const [open, setOpen] = useState(false);
@@ -38,7 +40,7 @@ export function ProductReviews({ product, order = null }) {
     })}
     {reviews.isSuccess && !reviews.data.length && <div className="space-y-sm"><h3 className="title-md">No reviews yet</h3><p className="body-md text-text-secondary">This one-of-one piece is waiting for its first review.</p></div>}
     {canWrite && <Button variant="buyerPrimary" size="lg" className="min-h-12" onClick={() => setOpen(true)}>Write a review</Button>}
-    {own && order && <a href="#product-review" className="buyer-secondary w-fit">View review</a>}
+    {own && reviewHref && <Link href={reviewHref} className="buyer-secondary w-fit">View review</Link>}
     {order && !completed && <p className="body-md text-text-secondary">{order.status === 'CANCELLED' ? 'Cancelled orders aren’t eligible for a review.' : 'You can write a review after this order is completed.'}</p>}
     {orders.isError && buyer && !order && <div role="alert" className="body-sm text-error">! Couldn’t check review eligibility. <button className="buyer-control min-h-11 underline" onClick={() => orders.refetch()}>Try again</button></div>}
     {open && buyer && !own && <ReviewForm key={`${product._id}:${token}`} product={product} onClose={() => setOpen(false)} />}
