@@ -9,10 +9,29 @@ import { LockIcon, ArrowForwardIcon } from '@/components/ui/Icons';
 import { formatPrice } from '@/lib/utils';
 import { canOptimizeImage } from '@/lib/imageHosts';
 
-export function ProductCard({ product }) {
+export function ProductCard({ product, wishlist = false }) {
   const [imageError, setImageError] = useState(false);
   const isSold = product.status === 'SOLD';
   const photoUrl = product.photos?.[0];
+
+  if (wishlist) return (
+    <article data-product-id={product._id} className="flex min-w-0 flex-col gap-md rounded-xl border border-border bg-surface p-md shadow-level-1">
+      <div className="relative h-[300px] overflow-hidden rounded-lg bg-surface-muted">
+        {photoUrl && !imageError ? <Image src={photoUrl} alt={product.name} fill sizes="(max-width: 767px) calc(100vw - 66px), (max-width: 1024px) 45vw, 30vw" className="object-cover" unoptimized={!canOptimizeImage(photoUrl)} onError={() => setImageError(true)} />
+          : <span className="absolute inset-0 flex items-center justify-center body-sm text-text-secondary">Photo unavailable</span>}
+      </div>
+      <div className="flex min-h-11 items-start gap-sm">
+        <ConditionBadge condition={product.condition} className="label-md bg-surface-muted text-text shadow-none" />
+        {isSold && <span className="label-md rounded-full bg-badge-neutral px-2.5 py-1">SOLD</span>}
+        <div className="flex-1" />
+        <WishlistButton productId={product._id} productName={product.name} product={product} inline />
+      </div>
+      <h2 className="text-title-md font-semibold break-words">{product.name}</h2>
+      <p className="label-md text-text-secondary">Size {product.size}</p>
+      <p className="price">{formatPrice(product.price)}</p>
+      <Link href={`/catalog/${product._id}`} className="buyer-secondary mt-auto text-center">View details</Link>
+    </article>
+  );
 
   return (
     <div
@@ -62,6 +81,7 @@ export function ProductCard({ product }) {
           <WishlistButton
             productId={product._id}
             productName={product.name}
+            product={product}
             isSold={isSold}
           />
         </div>

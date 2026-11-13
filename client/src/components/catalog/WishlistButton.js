@@ -1,84 +1,22 @@
 'use client';
 
-import { useState } from 'react';
-import toast from 'react-hot-toast';
+import Image from 'next/image';
 import { HeartIcon } from '@/components/ui/Icons';
-import { apiClient } from '@/lib/api';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/context/AuthContext';
+import { useWishlist } from '@/context/BuyerContext';
 
-const toastStyle = {
-  borderRadius: '12px',
-  background: '#FAF7F2',
-  color: '#2B2118',
-  border: '1px solid #E6DDD2',
-};
-
-export function WishlistButton({
-  productId,
-  productName,
-  initialInWishlist = false,
-  isSold = false,
-}) {
-  const [inWishlist, setInWishlist] = useState(initialInWishlist);
-  const [animating, setAnimating] = useState(false);
-  const { token } = useAuth();
-
-  const handleToggle = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!token) {
-      toast('Please log in to save items', { icon: '🔒', style: toastStyle });
-      return;
-    }
-
-    const nextState = !inWishlist;
-    setInWishlist(nextState);
-    setAnimating(true);
-    setTimeout(() => setAnimating(false), 200);
-
-    try {
-      if (nextState) {
-        await apiClient('/wishlist', {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ productId }),
-        });
-        toast.success(`Saved ${productName || 'item'} to wishlist`, { style: toastStyle });
-      } else {
-        await apiClient(`/wishlist/${productId}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        toast(`Removed ${productName || 'item'} from wishlist`, {
-          icon: '🗑️',
-          style: toastStyle,
-        });
-      }
-    } catch (err) {
-      setInWishlist(!nextState); // rollback
-      toast.error(err.message || 'Failed to update wishlist', { style: toastStyle });
-    }
-  };
-
-  return (
-    <button
-      type="button"
-      aria-label={`Add ${productName || 'product'} to wishlist`}
-      aria-pressed={inWishlist}
-      onClick={handleToggle}
-      className={cn(
-        'absolute top-3 right-3 z-10 w-9 h-9 rounded-full backdrop-blur-xs shadow-sm flex items-center justify-center transition-all focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none',
-        isSold ? 'bg-white/70 text-[#5C4D40] opacity-75' : 'bg-white/90 text-[#2B2118]',
-        inWishlist ? 'text-[#B5532E]' : 'hover:text-[#B5532E]',
-        animating && 'scale-125'
-      )}
-    >
-      <HeartIcon
-        className={cn('w-[18px] h-[18px]', inWishlist && 'fill-[#B5532E]')}
-        filled={inWishlist}
-      />
-    </button>
-  );
+export function WishlistButton({ productId, productName, product, inline = false, labelled = false }) {
+  const { savedIds, isPending, toggle, query, buyer } = useWishlist();
+  const saved = savedIds.has(productId);
+  const pending = isPending(productId);
+  const waiting = buyer && query.isPending;
+  const name = productName || product?.name || 'this product';
+  return <button type="button" disabled={pending || waiting} aria-pressed={saved} aria-busy={pending}
+    aria-label={`${saved ? 'Remove' : 'Save'} ${name} ${saved ? 'from' : 'to'} wishlist`}
+    onClick={(event) => { event.preventDefault(); event.stopPropagation(); void toggle(product || { _id: productId, name }); }}
+    className={cn('buyer-control flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-sm rounded-full border border-border bg-surface text-primary disabled:cursor-wait disabled:opacity-50', !inline && 'absolute right-3 top-3 z-10', labelled && 'w-full rounded-md px-md py-sm text-text')}>
+    {pending || waiting ? <span role="status" aria-label={saved ? 'Removing' : 'Saving'} className="buyer-spinner" />
+      : saved ? <Image src="/icons/wishlist-filled.svg" width={20} height={20} alt="" /> : <HeartIcon className="size-5" />}
+    {labelled && <span className="body-md font-semibold">{pending ? saved ? 'Removing…' : 'Saving…' : saved ? 'Remove from Wishlist' : 'Add to Wishlist'}</span>}
+  </button>;
 }

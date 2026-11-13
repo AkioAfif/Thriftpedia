@@ -62,7 +62,7 @@ export function ConditionBadge({ condition, className }) {
         className
       )}
     >
-      {matched.badgeLabel}
+      {matched.badgeLabel || ({ NEW_WITH_TAGS: 'New with Tags', LIKE_NEW: 'Like New', GOOD_VINTAGE: 'Good Vintage', FAIR_DISTRESSED: 'Fair / Distressed' })[norm] || condition}
     </span>
   );
 }

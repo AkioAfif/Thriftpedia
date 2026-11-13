@@ -53,12 +53,14 @@ export function AuthProvider({ children }) {
 
   const login = useCallback((newToken, newUser) => {
     localStorage.setItem(TOKEN_KEY, newToken);
+    localStorage.setItem('thriftpedia_token', newToken);
     localStorage.setItem(USER_KEY, JSON.stringify(newUser ?? null));
     notify();
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem('thriftpedia_token');
     localStorage.removeItem(USER_KEY);
     notify();
   }, []);

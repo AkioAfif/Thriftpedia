@@ -1,8 +1,7 @@
 const Review = require('../models/Review');
-const Order = require('../models/Order');
 const AppError = require('../utils/AppError');
-const { ORDER_STATUS } = require('../constants/order');
 const { ensureProductExists } = require('./product-reference.service');
+const { hasCompletedPurchase } = require('./order.service');
 
 async function listProductReviews(productId) {
   await ensureProductExists(productId);
@@ -15,11 +14,7 @@ async function listProductReviews(productId) {
 async function createReview({ buyerId, productId, rating, comment }) {
   await ensureProductExists(productId);
 
-  const eligibleOrder = await Order.exists({
-    buyer: buyerId,
-    product: productId,
-    status: ORDER_STATUS.COMPLETED,
-  });
+  const eligibleOrder = await hasCompletedPurchase(buyerId, productId);
 
   if (!eligibleOrder) {
     throw new AppError(403, 'You can review only a product from a completed order');
