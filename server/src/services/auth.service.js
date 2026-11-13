@@ -54,4 +54,13 @@ const loginUser = async ({ email, password }) => {
   };
 };
 
-module.exports = { registerUser, loginUser };
+const getMe = async (userId) => {
+  const user = await User.findById(userId).lean();
+  if (!user) {
+    throw new AppError(404, 'User not found');
+  }
+
+  return { id: user._id, name: user.name, email: user.email, role: user.role };
+};
+
+module.exports = { registerUser, loginUser, getMe };

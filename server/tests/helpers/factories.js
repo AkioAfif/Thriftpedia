@@ -21,9 +21,10 @@ async function createUser(role = ROLES.BUYER) {
 async function createProduct(overrides = {}) {
   return Product.create({
     name: `Jaket ${++seq}`,
+    brand: 'Test Brand',
     photos: ['https://example.com/photo.jpg'],
     size: 'L',
-    condition: 'Bekas baik',
+    condition: 'GOOD_VINTAGE',
     price: 150000,
     ...overrides,
   });

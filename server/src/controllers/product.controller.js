@@ -1,4 +1,6 @@
 const productService = require('../services/product.service');
+const AppError = require('../utils/AppError');
+const photoStorage = require('../services/photoStorage.service');
 
 async function create(req, res) {
   const product = await productService.createProduct(req.body);
@@ -9,10 +11,11 @@ async function create(req, res) {
 }
 
 async function getAll(req, res) {
-  const products = await productService.getProducts();
+  const { items, meta } = await productService.listProducts(req.productQuery);
   res.status(200).json({
     message: 'Products retrieved',
-    data: products,
+    data: items,
+    meta,
   });
 }
 
@@ -39,10 +42,24 @@ async function remove(req, res) {
   });
 }
 
+async function uploadPhotos(req, res) {
+  if (!req.files || req.files.length === 0) {
+    throw new AppError(400, 'No photos uploaded (field name: photos)');
+  }
+  // Called through the module object so tests can mock it.
+  const photos = await photoStorage.uploadProductPhotos(req.files.map((f) => f.buffer));
+  res.status(201).json({
+    message: 'Photos uploaded',
+    // `urls` keeps the existing client contract; `photos` adds the Cloudinary public_id.
+    data: { urls: photos.map((p) => p.url), photos },
+  });
+}
+
 module.exports = {
   create,
   getAll,
   getById,
   update,
   remove,
+  uploadPhotos,
 };
