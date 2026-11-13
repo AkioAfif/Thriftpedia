@@ -1,5 +1,6 @@
 'use client';
 
+import { clearToken, setToken } from '@/lib/adminAuth';
 import { createContext, useCallback, useContext, useMemo, useSyncExternalStore } from 'react';
 
 const TOKEN_KEY = 'token';
@@ -54,12 +55,15 @@ export function AuthProvider({ children }) {
   const login = useCallback((newToken, newUser) => {
     localStorage.setItem(TOKEN_KEY, newToken);
     localStorage.setItem(USER_KEY, JSON.stringify(newUser ?? null));
+    // Admin pages read their own key (adminAuth), so an admin logged in here can open them too.
+    if (String(newUser?.role ?? '').toUpperCase() === 'ADMIN') setToken(newToken);
     notify();
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+    clearToken(); // also end the admin session stored by adminAuth
     notify();
   }, []);
 

@@ -20,6 +20,8 @@ export default function AuthDialog({
   onSubmit,
   onResetPassword,
   resetPreview = false,
+  onSuccess,
+  hideForgotPassword = false,
 }) {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [authView, setAuthView] = useState('auth');
@@ -123,6 +125,24 @@ export default function AuthDialog({
 
 
 
+async function logInWith(values) {
+  const response = await loginUser({
+    email: values.email,
+    password: values.password,
+  });
+
+  const { user, token } = response.data;
+
+  if (!user || !token) {
+    throw new Error('Invalid login response from server.');
+  }
+
+  login(token, user);
+  // Dipanggil hanya setelah login sukses (bukan saat dialog ditutup/batal)
+  onSuccess?.(user);
+  onClose?.();
+}
+
 async function handleAuthSubmit({ mode, values }) {
   if (authLoading) return;
 
@@ -137,6 +157,16 @@ async function handleAuthSubmit({ mode, values }) {
         password: values.password,
       });
 
+      // Dengan onSuccess: langsung login memakai kredensial yang sama
+      if (onSuccess) {
+        try {
+          await logInWith(values);
+          return;
+        } catch {
+          // auto-login gagal: lanjut ke tab Login seperti biasa
+        }
+      }
+
       // Setelah berhasil register, pindah ke tab Login
       setActiveTab('login');
       setAuthError('');
@@ -144,19 +174,7 @@ async function handleAuthSubmit({ mode, values }) {
     }
 
     if (mode === 'login') {
-      const response = await loginUser({
-        email: values.email,
-        password: values.password,
-      });
-
-      const { user, token } = response.data;
-
-      if (!user || !token) {
-        throw new Error('Invalid login response from server.');
-      }
-
-      login(token, user);
-      onClose?.();
+      await logInWith(values);
     }
   } catch (error) {
     setAuthError(
@@ -269,6 +287,7 @@ async function handleAuthSubmit({ mode, values }) {
                 key={activeTab}
                 mode={activeTab}
                 formId="auth-dialog-form"
+                hideForgotPassword={hideForgotPassword}
                 onForgotPassword={() => {
                   setResetError('');
                   setAuthView('forgot');

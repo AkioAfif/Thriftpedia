@@ -35,6 +35,7 @@ export default function AuthForm({
   formId = 'auth-form',
   onValidSubmit,
   onForgotPassword,
+  hideForgotPassword = false,
 }) {
   const isRegister = mode === 'register';
 
@@ -121,7 +122,7 @@ export default function AuthForm({
           error={errors.confirmPassword?.message}
           {...register('confirmPassword')}
         />
-      ) : (
+      ) : hideForgotPassword ? null : (
         /* Forgot password - hanya untuk Log in */
         <button
           type="button"
