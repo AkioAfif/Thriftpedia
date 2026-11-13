@@ -1,5 +1,18 @@
 const { Schema, model } = require('mongoose');
-const { ORDER_STATUS, ACTIVE_ORDER_STATUSES } = require('../constants/order');
+const { ORDER_STATUS, ACTIVE_ORDER_STATUSES, PAYMENT_STATUS } = require('../constants/order');
+
+const requiredText = (maxlength) => ({ type: String, trim: true, required: true, maxlength });
+
+const shippingAddressSchema = new Schema(
+  {
+    recipientName: requiredText(100),
+    phone: requiredText(20),
+    address: requiredText(500),
+    city: requiredText(100),
+    postalCode: requiredText(10),
+  },
+  { _id: false }
+);
 
 // Copies taken at checkout so the order keeps its own record even if the buyer or the
 // product changes (or the buyer account is deleted) later.
@@ -53,6 +66,16 @@ const orderSchema = new Schema(
     trackingNumber: { type: String, trim: true, maxlength: 50, default: null },
     courier: { type: String, trim: true, maxlength: 50, default: null },
     statusHistory: { type: [statusHistorySchema], default: [] },
+    // Optional at checkout (older clients send only productId), required before paying.
+    shippingAddress: { type: shippingAddressSchema, default: undefined },
+    paymentStatus: {
+      type: String,
+      enum: Object.values(PAYMENT_STATUS),
+      default: PAYMENT_STATUS.UNPAID,
+      required: true,
+    },
+    paymentToken: { type: String, default: null },       // Midtrans Snap token
+    paymentRedirectUrl: { type: String, default: null }, // Midtrans Snap hosted page
   },
   { timestamps: true }
 );
