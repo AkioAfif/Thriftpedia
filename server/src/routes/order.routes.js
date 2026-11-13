@@ -22,6 +22,7 @@ router.use(authenticate); // every order endpoint requires a valid JWT
 router.post('/', authorize(ROLES.BUYER), v.validateCreateOrder, controller.create);
 router.get('/', authorize(ROLES.BUYER, ROLES.ADMIN), v.validateListQuery, controller.list);
 router.get('/:orderId', authorize(ROLES.BUYER, ROLES.ADMIN), v.validateOrderIdParam, controller.getById);
+router.patch('/:orderId/cancel', authorize(ROLES.BUYER), v.validateOrderIdParam, controller.cancel);
 router.patch('/:orderId/status', ...updateStatusChain);
 router.patch('/:orderId', markDeprecated, ...updateStatusChain); // deprecated alias
 
