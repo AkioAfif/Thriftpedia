@@ -9,7 +9,7 @@ import { ErrorOutlineIcon, SearchOffIcon } from '@/components/ui/Icons';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { ProductGallery } from '@/components/product/ProductGallery';
 import { PurchasePanel } from '@/components/product/PurchasePanel';
-import { LoginPromptDialog } from '@/components/product/LoginPromptDialog';
+import AuthDialog from '@/components/auth/AuthDialog';
 import { ProductReviews } from '@/components/product/ProductReviews';
 import { RelatedProducts } from '@/components/product/RelatedProducts';
 import { getProductById, getProductReviews, getRelatedProducts } from '@/lib/services/productService';
@@ -137,7 +137,6 @@ function ProductDetail() {
 
   const role = String(user?.role ?? '').toUpperCase();
   const isAdmin = role === 'ADMIN';
-  // A logged-in user whose stored role is missing is treated as a buyer; the API still enforces BUYER.
   const isBuyer = isLoggedIn && !isAdmin;
 
   const [tick, setTick] = useState(0);
@@ -149,6 +148,8 @@ function ProductDetail() {
   const [justSold, setJustSold] = useState(false);
   const [checking, setChecking] = useState(false);
   const [loginAction, setLoginAction] = useState(null);
+  const [loginDone, setLoginDone] = useState(0);
+  const pendingAfterLogin = useRef(null);
 
   const [reviewTick, setReviewTick] = useState(0);
   const [reviews, setReviews] = useState({ key: null, items: [], error: '' });
@@ -160,7 +161,6 @@ function ProductDetail() {
   const [wish, setWish] = useState({ key: null, saved: false });
   const [wishBusy, setWishBusy] = useState(false);
 
-  // Product
   useEffect(() => {
     let active = true;
     getProductById(id)
@@ -182,7 +182,6 @@ function ProductDetail() {
     if (product?.name) document.title = `${product.name} — Thriftpedia`;
   }, [product?.name]);
 
-  // Reviews
   useEffect(() => {
     let active = true;
     getProductReviews(id)
@@ -193,7 +192,6 @@ function ProductDetail() {
     };
   }, [id, reviewKey]);
 
-  // Recommendations
   const categorySlug = product?.category?.slug ?? '';
   const relatedKey = `${id}|${categorySlug}`;
   useEffect(() => {
@@ -207,7 +205,6 @@ function ProductDetail() {
     };
   }, [id, categorySlug, relatedKey]);
 
-  // Wishlist status (buyers only)
   useEffect(() => {
     if (!token || !isBuyer) return undefined;
     let active = true;
@@ -235,14 +232,13 @@ function ProductDetail() {
     setJustSold(true);
   }, []);
 
-  // Re-check stock right before checkout; the order API still re-checks atomically.
   const goToCheckout = useCallback(async () => {
     setChecking(true);
     try {
       const fresh = await getProductById(id);
       if (fresh?.status === 'AVAILABLE') {
         router.push(`/checkout/${id}`);
-        return; // keep "Checking availability…" until the route changes
+        return;
       }
       markSold(fresh);
     } catch (err) {
@@ -307,7 +303,14 @@ function ProductDetail() {
     goToCheckout();
   }
 
-  // After login the buyer comes back with ?action=buy|wishlist: finish what they started once.
+    function handleAuthSuccess(authUser) {
+    const pending = loginAction;
+    setLoginAction(null);
+    if (String(authUser?.role ?? '').toUpperCase() === 'ADMIN') return;
+    pendingAfterLogin.current = pending;
+    setLoginDone((n) => n + 1);
+  }
+
   const action = searchParams.get('action');
   const resumed = useRef(false);
   const productReady = !loading && result.status === 'ready';
@@ -316,12 +319,18 @@ function ProductDetail() {
     resumed.current = true;
     router.replace(pathname, { scroll: false });
     if (!isBuyer || result.product?.status !== 'AVAILABLE') return;
-    // Run as a follow-up task, not inside the effect body, so state updates start a fresh render.
     if (action === 'buy') queueMicrotask(goToCheckout);
     else if (!saved) queueMicrotask(saveToWishlist);
   }, [action, ready, productReady, wishReady, isBuyer, saved, result.product, router, pathname, goToCheckout, saveToWishlist]);
 
-  const returnTo = loginAction ? `${pathname}?action=${loginAction}` : pathname;
+    useEffect(() => {
+    const pending = pendingAfterLogin.current;
+    if (!pending || !isBuyer || !token || !productReady || !wishReady) return;
+    pendingAfterLogin.current = null;
+    if (result.product?.status !== 'AVAILABLE') return;
+    if (pending === 'buy') queueMicrotask(goToCheckout);
+    else if (pending === 'wishlist' && !saved) queueMicrotask(saveToWishlist);
+  }, [loginDone, isBuyer, token, productReady, wishReady, saved, result.product, goToCheckout, saveToWishlist]);
 
   return (
     <main className="w-full flex-1 pb-16 pt-6 md:pt-8">
@@ -398,14 +407,19 @@ function ProductDetail() {
         )}
       </div>
 
-      {loginAction && (
-        <LoginPromptDialog action={loginAction} returnTo={returnTo} onClose={() => setLoginAction(null)} />
-      )}
+      <AuthDialog
+        key={loginAction ?? 'closed'}
+        open={Boolean(loginAction)}
+        onClose={() => setLoginAction(null)}
+        context={loginAction === 'buy' ? 'checkout' : 'wishlist'}
+        initialTab="login"
+        hideForgotPassword
+        onSuccess={handleAuthSuccess}
+      />
     </main>
   );
 }
 
-// useSearchParams needs a Suspense boundary.
 export default function ProductDetailPage() {
   const { id } = useParams();
   return (
@@ -418,7 +432,6 @@ export default function ProductDetailPage() {
         </main>
       }
     >
-      {/* Keyed so opening another piece (e.g. from recommendations) starts from a clean state. */}
       <ProductDetail key={id} />
     </Suspense>
   );
