@@ -63,6 +63,7 @@ export function ProductCard({ product }) {
             productId={product._id}
             productName={product.name}
             isSold={isSold}
+            disabled={isSold}
           />
         </div>
 

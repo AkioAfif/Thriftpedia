@@ -19,6 +19,7 @@ export function WishlistButton({
   productName,
   initialInWishlist = false,
   isSold = false,
+  disabled = false,
 }) {
   const [inWishlist, setInWishlist] = useState(initialInWishlist);
   const [animating, setAnimating] = useState(false);
@@ -27,6 +28,8 @@ export function WishlistButton({
   const handleToggle = async (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (disabled) return;
 
     if (!token) {
       toast('Please log in to save items', { icon: '🔒', style: toastStyle });
@@ -65,13 +68,23 @@ export function WishlistButton({
   return (
     <button
       type="button"
-      aria-label={`Add ${productName || 'product'} to wishlist`}
+      aria-label={
+        disabled
+          ? `${productName || 'This product'} is sold. Sold items can't be saved to wishlist`
+          : `Add ${productName || 'product'} to wishlist`
+      }
       aria-pressed={inWishlist}
+      disabled={disabled || undefined}
+      aria-disabled={disabled || undefined}
       onClick={handleToggle}
       className={cn(
         'absolute top-3 right-3 z-10 w-9 h-9 rounded-full backdrop-blur-xs shadow-sm flex items-center justify-center transition-all focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none',
         isSold ? 'bg-white/70 text-[#5C4D40] opacity-75' : 'bg-white/90 text-[#2B2118]',
-        inWishlist ? 'text-[#B5532E]' : 'hover:text-[#B5532E]',
+        disabled
+          ? 'opacity-50 cursor-not-allowed'
+          : inWishlist
+            ? 'text-[#B5532E]'
+            : 'hover:text-[#B5532E]',
         animating && 'scale-125'
       )}
     >
