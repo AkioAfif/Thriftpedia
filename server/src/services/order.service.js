@@ -171,17 +171,46 @@ async function updateOrderStatus(actor, orderId, { status: nextStatus, trackingN
     }
 
     // Cancelling (from any active status) releases the single stock, in the same transaction.
-    if (nextStatus === ORDER_STATUS.CANCELLED) {
-      await Product.updateOne(
-        { _id: updated.product, status: PRODUCT_STATUS.SOLD },
-        { $set: { status: PRODUCT_STATUS.AVAILABLE } },
-        { session }
-      );
-    }
+    if (nextStatus === ORDER_STATUS.CANCELLED) await releaseProduct(updated.product, session);
   });
 
   // Same shape as GET /api/orders/:orderId, read after the commit.
   return getOrderById(actor, orderId);
+}
+
+// Puts a cancelled order's single-stock product back on sale. Call inside the cancel's transaction.
+function releaseProduct(productId, session) {
+  return Product.updateOne(
+    { _id: productId, status: PRODUCT_STATUS.SOLD },
+    { $set: { status: PRODUCT_STATUS.AVAILABLE } },
+    { session }
+  );
+}
+
+// Buyer cancels their own order. Only allowed while it is still PENDING (unpaid, not processed).
+async function cancelOrderByBuyer(user, orderId) {
+  await runInTransaction(async (session) => {
+    const order = await Order.findById(orderId).session(session);
+    if (!order) throw new AppError(404, 'Order not found');
+    if (String(order.buyer) !== String(user.id)) throw new AppError(403, 'You are not allowed to cancel this order');
+    if (order.status !== ORDER_STATUS.PENDING) throw new AppError(409, 'Only PENDING orders can be cancelled');
+
+    // Conditional: loses cleanly to a concurrent admin update or Midtrans settlement.
+    // paymentStatus stays UNPAID so a late payment is still recorded by the webhook (refund case).
+    const updated = await Order.findOneAndUpdate(
+      { _id: orderId, buyer: order.buyer, status: ORDER_STATUS.PENDING },
+      {
+        $set: { status: ORDER_STATUS.CANCELLED },
+        $push: { statusHistory: { status: ORDER_STATUS.CANCELLED, at: new Date(), by: user.id, note: 'Cancelled by buyer' } },
+      },
+      { returnDocument: 'after', session }
+    );
+    if (!updated) throw new AppError(409, 'Only PENDING orders can be cancelled');
+
+    await releaseProduct(updated.product, session);
+  });
+
+  return getOrderById(user, orderId);
 }
 
 // Review module: eligibility (PRD §19). Only COMPLETED orders count.
@@ -200,6 +229,8 @@ module.exports = {
   listOrders,
   getOrderById,
   updateOrderStatus,
+  cancelOrderByBuyer,
+  releaseProduct,
   hasCompletedPurchase,
   productHasOrders,
 };

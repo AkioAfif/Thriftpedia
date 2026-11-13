@@ -1,9 +1,8 @@
 const crypto = require('crypto');
 const Order = require('../models/Order');
-const Product = require('../models/Product');
 const AppError = require('../utils/AppError');
 const { runInTransaction } = require('../utils/transaction');
-const { PRODUCT_STATUS } = require('../constants/product');
+const { releaseProduct } = require('./order.service');
 const { ORDER_STATUS, PAYMENT_STATUS } = require('../constants/order');
 
 // Orders created before payments existed have no paymentStatus field at all.
@@ -163,15 +162,26 @@ async function handleNotification(body) {
       },
       { session }
     );
-    if (cancelled.modifiedCount === 1) {
-      // Release the single stock, same as an admin cancel in order.service.updateOrderStatus.
-      await Product.updateOne(
-        { _id: order.product, status: PRODUCT_STATUS.SOLD },
-        { $set: { status: PRODUCT_STATUS.AVAILABLE } },
-        { session }
-      );
-    }
+    if (cancelled.modifiedCount === 1) await releaseProduct(order.product, session);
   });
 }
 
-module.exports = { createSnapToken, handleNotification };
+// Best effort: closes the Midtrans transaction of an order we cancelled, so it can no longer be
+// paid. Never throws. Midtrans answers 404 when the buyer never picked a method in Snap.
+async function cancelMidtransTransaction(orderId) {
+  const key = process.env.MIDTRANS_SERVER_KEY;
+  if (!key) return;
+  const base =
+    process.env.MIDTRANS_IS_PRODUCTION === 'true' ? 'https://api.midtrans.com' : 'https://api.sandbox.midtrans.com';
+  try {
+    const res = await fetch(`${base}/v2/${orderId}/cancel`, {
+      method: 'POST',
+      headers: { Accept: 'application/json', Authorization: `Basic ${Buffer.from(`${key}:`).toString('base64')}` },
+    });
+    if (!res.ok && res.status !== 404) console.warn(`Midtrans cancel for order ${orderId} failed with ${res.status}`);
+  } catch (err) {
+    console.warn(`Midtrans cancel for order ${orderId} failed: ${err.message}`);
+  }
+}
+
+module.exports = { createSnapToken, handleNotification, cancelMidtransTransaction };
