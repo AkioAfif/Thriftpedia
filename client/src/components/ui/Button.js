@@ -17,6 +17,8 @@ export const Button = forwardRef(function Button(
     'inline-flex items-center justify-center font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] disabled:opacity-40 disabled:cursor-not-allowed select-none';
 
   const variants = {
+    buyerPrimary: 'bg-primary text-on-primary hover:bg-primary-hover',
+    buyerSecondary: 'border border-border bg-canvas text-text hover:bg-surface hover:text-primary',
     primary:
       'bg-[#B5532E] hover:bg-[#9C4425] text-white shadow-xs',
     secondary:

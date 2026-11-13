@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '../../lib/adminApi';
 import { extractToken, setToken } from '../../lib/adminAuth';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -14,6 +16,7 @@ export default function LoginPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (submitting) return;
     setError('');
     setSubmitting(true);
     try {
@@ -24,7 +27,11 @@ export default function LoginPage() {
       const token = extractToken(body);
       if (!token) throw new Error('Token tidak ditemukan pada respons login.');
       setToken(token);
-      router.replace('/admin/dashboard');
+      const user = body?.data?.user;
+      login(token, user);
+      const returnTo = new URLSearchParams(window.location.search).get('returnTo');
+      const safeReturn = returnTo?.startsWith('/') && !returnTo.startsWith('//') && !returnTo.includes('\\');
+      router.replace(safeReturn ? returnTo : String(user?.role).toUpperCase() === 'ADMIN' ? '/admin/dashboard' : '/catalog');
     } catch (err) {
       setError(err.message);
       setSubmitting(false);

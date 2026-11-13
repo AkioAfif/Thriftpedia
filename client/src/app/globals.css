@@ -217,3 +217,15 @@
 @media (prefers-reduced-motion: reduce) {
   .shimmer-effect::after { animation: none; }
 }
+/* Wishlist and reviews: Curated Archive v3 interaction primitives. */
+@layer components {
+  .buyer-control { @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2; }
+  .buyer-input { @apply w-full rounded-md border border-border bg-surface px-md py-3 text-body-md text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:opacity-50; }
+  .buyer-primary { @apply flex min-h-12 items-center justify-center rounded-md bg-primary px-md py-3 text-body-md font-semibold text-on-primary hover:bg-primary-hover disabled:cursor-wait disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2; }
+  .buyer-secondary { @apply flex min-h-12 items-center justify-center rounded-md border border-border bg-canvas px-md py-3 text-body-md font-semibold text-text hover:bg-surface hover:text-primary disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2; }
+  .buyer-page { @apply mx-auto w-full max-w-[1440px] flex-1 space-y-lg px-margin-mobile py-lg md:px-margin-tablet lg:px-margin-desktop lg:py-xl; }
+  .buyer-spinner { @apply inline-block size-5 animate-spin rounded-full border-2 border-current border-t-transparent; }
+}
+[data-buyer-dialog]::backdrop { background: rgb(43 33 24 / 35%); }
+.buyer-toast { background: var(--surface) !important; color: var(--text) !important; border: 1px solid var(--border); border-radius: var(--radius-md) !important; font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { .buyer-spinner { animation: none; } }
