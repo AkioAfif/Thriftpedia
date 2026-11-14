@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 const linkBase = 'text-base py-2 border-b border-[#E6DDD2]/50';
 
-export function MobileMenu({ isOpen, onClose, isLoggedIn = false, user = null, onLogout }) {
+export function MobileMenu({ isOpen, onClose, isLoggedIn = false, user = null, onLogout, menuRef }) {
   if (!isOpen) return null;
 
   const name = user?.name || 'Account';
@@ -17,6 +17,7 @@ export function MobileMenu({ isOpen, onClose, isLoggedIn = false, user = null, o
 
   return (
     <div
+      ref={menuRef}
       id="mobile-nav-menu"
       className="md:hidden fixed inset-x-0 top-[65px] bg-[#FAF7F2] border-b border-[#E6DDD2] px-5 py-5 shadow-lg flex flex-col gap-3 transition-all z-40"
     >
