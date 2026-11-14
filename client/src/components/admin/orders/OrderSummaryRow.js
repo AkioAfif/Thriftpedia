@@ -13,7 +13,7 @@ const STATUS_TONE = {
 };
 
 const box = 'min-w-0 rounded-2xl p-5';
-const label = 'text-xs font-semibold uppercase tracking-[0.06em] text-[#6F6358]';
+const label = 'text-[13px] font-medium text-[#6F6358]';
 
 function initials(name) {
   const parts = String(name ?? '').trim().split(/\s+/).filter(Boolean);
@@ -26,8 +26,7 @@ export default function OrderSummaryRow({ order, buyer }) {
     <section aria-label="Order summary" className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
       <div className={`${box} border-2 ${STATUS_TONE[order.status] ?? STATUS_TONE.CANCELLED}`}>
         <p className={label}>Current status</p>
-        <p className="mt-2 flex items-center gap-2.5 text-[22px] font-semibold text-[#2B2118]">
-          <span aria-hidden="true" className={`size-3 rounded-full ${meta.dot}`} />
+        <p className="mt-2 text-[22px] font-semibold text-[#2B2118]">
           {meta.label}
         </p>
       </div>

@@ -25,9 +25,9 @@ export default function TrackingBox({ trackingNumber, courier }) {
 
   return (
     <dl className="rounded-2xl bg-[#DCEBF2] p-4">
-      <dt className="text-xs font-semibold uppercase tracking-[0.06em] text-[#1F4B66]">Tracking number</dt>
+      <dt className="text-[13px] font-medium text-[#6F6358]">Tracking number</dt>
       <dd className="mt-1 flex items-center justify-between gap-2">
-        <span className="min-w-0 break-all font-mono text-base font-semibold text-[#2B2118]">{trackingNumber}</span>
+        <span className="min-w-0 break-all text-base font-semibold tabular-nums text-[#2B2118]">{trackingNumber}</span>
         <button
           type="button"
           onClick={copy}
@@ -40,7 +40,7 @@ export default function TrackingBox({ trackingNumber, courier }) {
       </dd>
       {courier && (
         <>
-          <dt className="mt-3 text-xs font-semibold uppercase tracking-[0.06em] text-[#1F4B66]">Courier</dt>
+          <dt className="mt-3 text-[13px] font-medium text-[#6F6358]">Courier</dt>
           <dd className="mt-1 break-words text-sm font-medium text-[#2B2118]">{courier}</dd>
         </>
       )}

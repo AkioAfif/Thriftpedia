@@ -22,7 +22,7 @@ function Thumb({ src }) {
 function StatusBadge({ status }) {
   const meta = statusMeta(status);
   return (
-    <span className={cn('inline-block whitespace-nowrap rounded-full px-2.5 py-0.5 font-metadata text-[13px] font-semibold', meta.badge)}>
+    <span className={cn('inline-block whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold', meta.badge)}>
       {meta.label}
     </span>
   );
@@ -43,11 +43,11 @@ function OrderList({ orders }) {
                 <Thumb src={item.photo} />
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center justify-between gap-2">
-                    <span className="font-metadata text-sm font-semibold text-text">{orderLabel(order)}</span>
+                    <span className="text-sm font-semibold tabular-nums text-text">{orderLabel(order)}</span>
                     <StatusBadge status={order.status} />
                   </span>
                   <span className="mt-1 block truncate text-sm text-text">{item.name}</span>
-                  <span className="mt-1 flex justify-between gap-2 font-metadata text-[13px] text-[#6F6358]">
+                  <span className="mt-1 flex justify-between gap-2 text-[13px] tabular-nums text-[#6F6358]">
                     <span className="font-semibold text-text">{total(order)}</span>
                     <span>{formatOrderDateTime(order.createdAt)}</span>
                   </span>
@@ -59,11 +59,11 @@ function OrderList({ orders }) {
       </ul>
 
       <table className="hidden w-full text-left text-sm md:table">
-        <thead className="border-b border-[#EAE4DA] font-metadata text-[13px] uppercase tracking-wide text-[#6F6358]">
+        <thead className="border-b border-[#EAE4DA] text-sm text-[#4A3F35]">
           <tr>
             <th scope="col" className="px-5 py-3 font-semibold">Order</th>
             <th scope="col" className="px-3 py-3 font-semibold">Item</th>
-            <th scope="col" className="px-3 py-3 text-right font-semibold">Total</th>
+            <th scope="col" className="min-w-[110px] px-3 py-3 font-semibold">Total</th>
             <th scope="col" className="px-3 py-3 font-semibold">Status</th>
             <th scope="col" className="px-5 py-3 font-semibold">Date</th>
           </tr>
@@ -76,7 +76,7 @@ function OrderList({ orders }) {
                 <td className="px-5 py-3">
                   <Link
                     href={`/admin/orders/${order._id}`}
-                    className={cn('font-metadata font-semibold text-text after:absolute after:inset-0 after:content-[""]', focusRing)}
+                    className={cn('font-semibold tabular-nums text-text after:absolute after:inset-0 after:content-[""]', focusRing)}
                   >
                     {orderLabel(order)}
                   </Link>
@@ -87,11 +87,11 @@ function OrderList({ orders }) {
                     <span className="line-clamp-2 text-text">{item.name}</span>
                   </span>
                 </td>
-                <td className="whitespace-nowrap px-3 py-3 text-right font-metadata font-semibold text-text">{total(order)}</td>
+                <td className="min-w-[110px] whitespace-nowrap px-3 py-3 text-left font-semibold tabular-nums text-text">{total(order)}</td>
                 <td className="px-3 py-3">
                   <StatusBadge status={order.status} />
                 </td>
-                <td className="whitespace-nowrap px-5 py-3 font-metadata text-[13px] text-[#6F6358]">
+                <td className="whitespace-nowrap px-5 py-3 text-[13px] tabular-nums text-[#6F6358]">
                   {formatOrderDateTime(order.createdAt)}
                 </td>
               </tr>
@@ -120,12 +120,11 @@ function ListSkeleton() {
 // Completed / Cancelled as one quiet line, not as cards.
 function ClosedSummary({ counts }) {
   return (
-    <p className="flex flex-wrap gap-x-6 gap-y-1 border-t border-[#EAE4DA] px-5 py-3 font-metadata text-sm text-[#6F6358]">
+    <p className="flex flex-wrap gap-x-5 gap-y-1 border-t border-[#EAE4DA] px-5 py-3 text-[13px] text-[#6F6358]">
       {['COMPLETED', 'CANCELLED'].map((status) => (
         <span key={status} className="inline-flex items-center gap-2">
-          <span aria-hidden="true" className={cn('size-2 rounded-full', statusMeta(status).dot)} />
           {statusMeta(status).label}
-          <span className="font-semibold text-text">{formatCount(counts[status])}</span>
+          <span className="font-semibold tabular-nums text-text">{formatCount(counts[status])}</span>
         </span>
       ))}
     </p>

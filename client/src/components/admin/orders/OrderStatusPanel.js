@@ -149,7 +149,7 @@ export default function OrderStatusPanel({ order, onSubmit }) {
                       if (fieldError) setFieldError('');
                     }}
                     placeholder="e.g. JNE0012345678"
-                    className={`mt-1.5 h-11 font-mono ${inputBase} ${fieldError ? 'border-[#ba1a1a]' : 'border-[#CFBEAE]'}`}
+                    className={`mt-1.5 h-11 tabular-nums ${inputBase} ${fieldError ? 'border-[#ba1a1a]' : 'border-[#CFBEAE]'}`}
                   />
                   {fieldError && (
                     <p id={`${ids}-tracking-error`} className="mt-1.5 text-sm text-[#ba1a1a]">

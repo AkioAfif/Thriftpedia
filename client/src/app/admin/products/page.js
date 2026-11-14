@@ -4,6 +4,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'rea
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
+import ActiveFilterChips from '../../../components/admin/products/ActiveFilterChips';
 import DeleteProductDialog from '../../../components/admin/products/DeleteProductDialog';
 import ProductFilters from '../../../components/admin/products/ProductFilters';
 import ProductPagination from '../../../components/admin/products/ProductPagination';
@@ -149,6 +150,12 @@ function ProductManagement() {
     navigate({ ...DEFAULT_FILTERS });
   }
 
+  // Clears one filter from its chip; the search box is cleared with it, like Reset does.
+  function removeFilter(key) {
+    if (key === 'q') setSearch({ value: '', from: filters.q });
+    updateFilters({ [key]: key === 'sort' ? 'newest' : '' });
+  }
+
   function changePage(nextPage) {
     updateFilters({ page: nextPage });
     resultsRef.current?.focus({ preventScroll: true });
@@ -185,12 +192,12 @@ function ProductManagement() {
     <div className="min-w-0">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-3xl font-semibold text-[#2b1d14] sm:text-4xl">Product Management</h1>
-          <p className="mt-2 text-sm text-[#6E5D4F]">Status updates automatically when buyers order.</p>
+          <h1 className="text-[32px] font-semibold leading-tight text-[#2B2118] sm:text-[40px]">Product Management</h1>
+          <p className="mt-2 text-[15px] text-[#6F6358]">Status updates automatically when buyers order.</p>
         </div>
         <Link
           href="/admin/products/new"
-          className="inline-flex min-h-[44px] w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-[#a3452a] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#8f3b23] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 sm:w-auto"
+          className="inline-flex min-h-[44px] w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-[#B5532E] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#9C4425] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 sm:w-auto"
         >
           <PlusIcon />
           Add Product
@@ -214,6 +221,20 @@ function ProductManagement() {
         />
       </div>
 
+      {(filtered || showMeta) && (
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-[#6F6358]" aria-live="polite">
+            {showMeta ? (
+              <>
+                Showing {formatNumber(from)}–{formatNumber(to)} of{' '}
+                <span className="font-semibold text-[#2B2118]">{formatNumber(total)}</span> products
+              </>
+            ) : null}
+          </p>
+          <ActiveFilterChips filters={filters} categories={categories} onRemove={removeFilter} />
+        </div>
+      )}
+
       {/* Paging moves focus here so keyboard and screen reader users land at the top of the list. */}
       <div ref={resultsRef} tabIndex={-1} aria-label="Products list" className="mt-4 scroll-mt-6 focus:outline-none">
         <ProductTable
@@ -229,10 +250,7 @@ function ProductManagement() {
       </div>
 
       {showMeta && (
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-[#6E5D4F]" aria-live="polite">
-            Showing {formatNumber(from)}–{formatNumber(to)} of {formatNumber(total)} products
-          </p>
+        <div className="mt-5 flex justify-center sm:justify-end">
           <ProductPagination page={page} totalPages={totalPages} onChange={changePage} />
         </div>
       )}

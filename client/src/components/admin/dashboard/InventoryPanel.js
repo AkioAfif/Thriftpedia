@@ -16,14 +16,13 @@ function ProportionBar({ available, sold }) {
   );
 }
 
-function Figure({ label, value, dot, tone = 'text-text' }) {
+function Figure({ label, value, tone = 'text-text' }) {
   return (
     <div>
-      <dt className="flex items-center gap-2 text-sm text-[#6F6358]">
-        {dot && <span aria-hidden="true" className={cn('size-2.5 rounded-full', dot)} />}
+      <dt className="text-[13px] text-[#6F6358]">
         {label}
       </dt>
-      <dd className={cn('mt-1 font-metadata text-2xl font-semibold', tone)}>{formatCount(value)}</dd>
+      <dd className={cn('mt-1 text-2xl font-semibold tabular-nums', tone)}>{formatCount(value)}</dd>
     </div>
   );
 }
@@ -35,8 +34,8 @@ function InventoryBody({ products }) {
   return (
     <>
       <dl className="mt-5 grid grid-cols-3 gap-4">
-        <Figure label="Available" value={available} dot="bg-[#5F7A5E]" tone="text-[#5F7A5E]" />
-        <Figure label="Sold" value={sold} dot="bg-[#B5532E]" tone="text-[#B5532E]" />
+        <Figure label="Available" value={available} tone="text-[#5F7A5E]" />
+        <Figure label="Sold" value={sold} tone="text-[#B5532E]" />
         <Figure label="Total" value={total} />
       </dl>
       <div className="mt-4">

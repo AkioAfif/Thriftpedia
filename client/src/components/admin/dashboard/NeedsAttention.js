@@ -42,7 +42,7 @@ function AttentionItem({ status, task, action, count }) {
           focusRing
         )}
       >
-        <span className={cn('w-fit rounded-full px-2.5 py-0.5 font-metadata text-[13px] font-semibold', tint.badge)}>
+        <span className={cn('w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold', tint.badge)}>
           {meta.label}
         </span>
         {idle ? (
@@ -52,7 +52,7 @@ function AttentionItem({ status, task, action, count }) {
           </span>
         ) : (
           <span className="flex items-baseline gap-2">
-            <span className="font-metadata text-[36px] font-semibold leading-none text-[#2B2118]">{formatCount(count)}</span>
+            <span className="text-[36px] font-semibold leading-none tabular-nums text-[#2B2118]">{formatCount(count)}</span>
             <span className="text-sm text-[#2B2118]">{task.toLowerCase()}</span>
           </span>
         )}
