@@ -32,3 +32,24 @@ export async function getCurrentUser(token) {
     },
   });
 }
+
+ // Mengirim permintaan reset password ke backend
+export async function requestPasswordReset(email) {
+  return apiClient('/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({
+      email,
+    }),
+  });
+}
+
+// Mengirim password baru menggunakan token dari email
+export async function resetPassword({ token, password }) {
+  return apiClient('/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify({
+      token,
+      password,
+    }),
+  });
+}
