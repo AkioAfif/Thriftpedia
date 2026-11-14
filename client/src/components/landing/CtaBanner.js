@@ -23,7 +23,7 @@ export function CtaBanner({ products = [] }) {
   return (
     <section aria-labelledby="cta-title" className="relative overflow-hidden bg-surface-muted pb-24 pt-12 md:pb-24 md:pt-16">
       <div className="mx-auto w-full max-w-[1280px] px-6 sm:px-8">
-        <Reveal className="relative flex flex-col items-start gap-10 overflow-hidden rounded-[32px] bg-[#B5532E] px-6 py-12 text-white sm:px-10 md:h-[280px] md:flex-row md:items-center md:justify-between md:px-14 md:py-0">
+        <Reveal className="relative flex flex-col items-start gap-10 overflow-hidden rounded-[32px] bg-primary px-6 py-12 text-white sm:px-10 md:h-[280px] md:flex-row md:items-center md:justify-between md:px-14 md:py-0">
           <BannerDecor />
 
           <div className="relative z-10 flex flex-col items-start">
@@ -33,7 +33,7 @@ export function CtaBanner({ products = [] }) {
             <p className="mt-3 max-w-[460px] text-lg leading-relaxed text-canvas">Give a one-of-a-kind piece its next chapter.</p>
             <Link
               href="/catalog"
-              className="mt-6 inline-flex min-h-12 items-center rounded-full bg-white px-7 text-[15px] font-semibold text-[#B5532E] shadow-level-1 transition-transform duration-200 hover:bg-canvas motion-safe:hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#B5532E]"
+              className="mt-6 inline-flex min-h-12 items-center rounded-full bg-white px-7 text-[15px] font-semibold text-primary shadow-level-1 transition-transform duration-200 hover:bg-canvas motion-safe:hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
             >
               Browse catalog
             </Link>

@@ -10,8 +10,8 @@ function ProportionBar({ available, sold }) {
   const availablePct = total === 0 ? 0 : (available / total) * 100;
   return (
     <div aria-hidden="true" className="flex h-3 w-full overflow-hidden rounded-full bg-surface-muted">
-      <div className="h-full bg-[#5F7A5E]" style={{ width: `${availablePct}%` }} />
-      <div className="h-full bg-[#B5532E]" style={{ width: `${total === 0 ? 0 : 100 - availablePct}%` }} />
+      <div className="h-full bg-secondary" style={{ width: `${availablePct}%` }} />
+      <div className="h-full bg-primary" style={{ width: `${total === 0 ? 0 : 100 - availablePct}%` }} />
     </div>
   );
 }
@@ -19,7 +19,7 @@ function ProportionBar({ available, sold }) {
 function Figure({ label, value, tone = 'text-text' }) {
   return (
     <div>
-      <dt className="text-[13px] text-[#6F6358]">
+      <dt className="text-[13px] text-text-secondary">
         {label}
       </dt>
       <dd className={cn('mt-1 text-2xl font-semibold tabular-nums', tone)}>{formatCount(value)}</dd>
@@ -34,8 +34,8 @@ function InventoryBody({ products }) {
   return (
     <>
       <dl className="mt-5 grid grid-cols-3 gap-4">
-        <Figure label="Available" value={available} tone="text-[#5F7A5E]" />
-        <Figure label="Sold" value={sold} tone="text-[#B5532E]" />
+        <Figure label="Available" value={available} tone="text-secondary" />
+        <Figure label="Sold" value={sold} tone="text-primary" />
         <Figure label="Total" value={total} />
       </dl>
       <div className="mt-4">

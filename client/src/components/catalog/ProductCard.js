@@ -38,11 +38,11 @@ export function ProductCard({ product, wishlist = false }) {
       data-layer="ProductCard"
       data-product-id={product._id}
       data-status={product.status?.toLowerCase()}
-      className="group relative flex flex-col justify-between h-full bg-white border border-[#E6DDD2] hover:border-[#B5532E]/40 rounded-2xl p-4 shadow-card hover:shadow-md transition-all duration-300"
+      className="group relative flex flex-col justify-between h-full bg-white border border-[#E6DDD2] hover:border-primary/40 rounded-2xl p-4 shadow-card hover:shadow-md transition-all duration-300"
     >
       <div className="flex flex-col gap-3">
         {/* Photo Container */}
-        <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-[#FAF7F2]">
+        <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-canvas">
           {photoUrl && !imageError ? (
             <Image
               src={photoUrl}
@@ -65,7 +65,7 @@ export function ProductCard({ product, wishlist = false }) {
 
           {/* Sold Overlay */}
           {isSold && (
-            <div className="absolute inset-0 bg-[#2B2118]/20 pointer-events-none" />
+            <div className="absolute inset-0 bg-text/20 pointer-events-none" />
           )}
 
           {/* Top-left badge: Sold or Condition badge */}
@@ -93,7 +93,7 @@ export function ProductCard({ product, wishlist = false }) {
             className={`font-semibold text-[15px] sm:text-base truncate transition-colors ${
               isSold
                 ? 'text-[#5C4D40]'
-                : 'text-[#2B2118] group-hover:text-[#B5532E]'
+                : 'text-text group-hover:text-primary'
             }`}
           >
             {product.name}
@@ -121,7 +121,7 @@ export function ProductCard({ product, wishlist = false }) {
               className={`text-base sm:text-lg font-bold font-mono leading-none ${
                 isSold
                   ? 'text-[#6E5D4F] line-through'
-                  : 'text-[#2B2118]'
+                  : 'text-text'
               }`}
             >
               {formatPrice(product.price)}
@@ -136,10 +136,10 @@ export function ProductCard({ product, wishlist = false }) {
         <Link
           href={`/catalog/${product._id}`}
           aria-label={`View details, ${product.name}${isSold ? ', sold' : ''}`}
-          className={`w-full min-h-[44px] px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 focus-visible:outline-none after:absolute after:inset-0 after:rounded-2xl after:content-[''] ${
+          className={`w-full min-h-[44px] px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none after:absolute after:inset-0 after:rounded-2xl after:content-[''] ${
             isSold
-              ? 'border border-[#E6DDD2] bg-white text-[#5C4D40] hover:border-[#B5532E] hover:text-[#B5532E]'
-              : 'bg-[#FAF7F2] hover:bg-[#B5532E] text-[#2B2118] hover:text-white'
+              ? 'border border-[#E6DDD2] bg-white text-[#5C4D40] hover:border-primary hover:text-primary'
+              : 'bg-canvas hover:bg-primary text-text hover:text-white'
           }`}
         >
           <span>View Details</span>

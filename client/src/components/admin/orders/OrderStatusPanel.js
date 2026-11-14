@@ -5,9 +5,9 @@ import { OrderStepper } from './OrderTimeline';
 import TrackingBox from './TrackingBox';
 import { COURIER_MAX, NOTE_MAX, TRACKING_MAX, TRANSITION_ACTIONS, statusMeta } from '@/lib/adminOrders';
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2';
-const inputBase = `w-full rounded-xl border bg-white px-4 text-sm text-[#2B2118] placeholder:text-[#8C7E72] ${focusRing}`;
-const primaryBtn = `min-h-[48px] w-full rounded-xl bg-[#B5532E] px-5 text-[15px] font-semibold text-white transition-colors duration-150 hover:bg-[#9C4425] ${focusRing}`;
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
+const inputBase = `w-full rounded-xl border bg-white px-4 text-sm text-text placeholder:text-[#8C7E72] ${focusRing}`;
+const primaryBtn = `min-h-[48px] w-full rounded-xl bg-primary px-5 text-[15px] font-semibold text-white transition-colors duration-150 hover:bg-primary-hover ${focusRing}`;
 
 const TERMINAL_COPY = {
   COMPLETED: 'This order is completed. Its status can no longer change.',
@@ -20,7 +20,7 @@ function actionFor(status) {
 
 function DoneIcon() {
   return (
-    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5F7A5E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0">
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--secondary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0">
       <path d="m5 12.5 4.5 4.5L19 7.5" />
     </svg>
   );
@@ -69,8 +69,8 @@ export default function OrderStatusPanel({ order, onSubmit }) {
 
   return (
     <section aria-labelledby={`${ids}-title`} className="overflow-hidden rounded-[20px] border border-[#D9CFC1] bg-white">
-      <div className="border-b border-[#EAE4DA] bg-[#F5F0E8] px-5 py-3.5 sm:px-6">
-        <h2 id={`${ids}-title`} className="text-[18px] font-semibold text-[#2B2118]">
+      <div className="border-b border-border bg-surface-muted px-5 py-3.5 sm:px-6">
+        <h2 id={`${ids}-title`} className="text-[18px] font-semibold text-text">
           Order progress
         </h2>
       </div>
@@ -85,11 +85,11 @@ export default function OrderStatusPanel({ order, onSubmit }) {
         )}
       </div>
 
-      <div className="border-t border-[#EAE4DA] p-5 sm:p-6">
-        <h3 className="text-[18px] font-semibold text-[#2B2118]">Next step</h3>
+      <div className="border-t border-border p-5 sm:p-6">
+        <h3 className="text-[18px] font-semibold text-text">Next step</h3>
 
         {transitions.length === 0 && (
-          <p className="mt-3 flex items-start gap-2.5 rounded-xl bg-[#F5F0E8] px-4 py-3 text-sm text-[#2B2118]">
+          <p className="mt-3 flex items-start gap-2.5 rounded-xl bg-surface-muted px-4 py-3 text-sm text-text">
             {order.status === 'COMPLETED' && <DoneIcon />}
             {TERMINAL_COPY[order.status] ?? 'There is no next step for this order.'}
           </p>
@@ -106,20 +106,20 @@ export default function OrderStatusPanel({ order, onSubmit }) {
               <button
                 type="button"
                 onClick={() => choose('CANCELLED')}
-                className={`min-h-[44px] rounded-lg px-3 text-sm font-semibold text-[#ba1a1a] underline-offset-4 hover:underline ${focusRing}`}
+                className={`min-h-[44px] rounded-lg px-3 text-sm font-semibold text-error underline-offset-4 hover:underline ${focusRing}`}
               >
                 {actionFor('CANCELLED').label}
               </button>
             )}
-            <p className="text-center text-[13px] text-[#6F6358]">The product&apos;s sold status is handled by the system.</p>
+            <p className="text-center text-[13px] text-text-secondary">The product&apos;s sold status is handled by the system.</p>
           </div>
         )}
 
         {target && (
           <form onSubmit={submit} noValidate className="mt-4 space-y-4">
-            <p className="text-sm font-semibold text-[#2B2118]">
+            <p className="text-sm font-semibold text-text">
               {action.label}
-              <span className="font-normal text-[#6F6358]">
+              <span className="font-normal text-text-secondary">
                 {' '}· {statusMeta(order.status).label} → {statusMeta(target).label}
               </span>
             </p>
@@ -133,7 +133,7 @@ export default function OrderStatusPanel({ order, onSubmit }) {
             {shipping && (
               <>
                 <div>
-                  <label htmlFor={`${ids}-tracking`} className="text-sm font-medium text-[#2B2118]">
+                  <label htmlFor={`${ids}-tracking`} className="text-sm font-medium text-text">
                     Tracking number <span className="text-[#8F3B23]">(required)</span>
                   </label>
                   <input
@@ -149,17 +149,17 @@ export default function OrderStatusPanel({ order, onSubmit }) {
                       if (fieldError) setFieldError('');
                     }}
                     placeholder="e.g. JNE0012345678"
-                    className={`mt-1.5 h-11 tabular-nums ${inputBase} ${fieldError ? 'border-[#ba1a1a]' : 'border-[#CFBEAE]'}`}
+                    className={`mt-1.5 h-11 tabular-nums ${inputBase} ${fieldError ? 'border-error' : 'border-[#CFBEAE]'}`}
                   />
                   {fieldError && (
-                    <p id={`${ids}-tracking-error`} className="mt-1.5 text-sm text-[#ba1a1a]">
+                    <p id={`${ids}-tracking-error`} className="mt-1.5 text-sm text-error">
                       {fieldError}
                     </p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor={`${ids}-courier`} className="text-sm font-medium text-[#2B2118]">
-                    Courier <span className="font-normal text-[#6F6358]">(optional)</span>
+                  <label htmlFor={`${ids}-courier`} className="text-sm font-medium text-text">
+                    Courier <span className="font-normal text-text-secondary">(optional)</span>
                   </label>
                   <input
                     id={`${ids}-courier`}
@@ -175,8 +175,8 @@ export default function OrderStatusPanel({ order, onSubmit }) {
             )}
 
             <div>
-              <label htmlFor={`${ids}-note`} className="text-sm font-medium text-[#2B2118]">
-                Note <span className="font-normal text-[#6F6358]">(optional, kept in history)</span>
+              <label htmlFor={`${ids}-note`} className="text-sm font-medium text-text">
+                Note <span className="font-normal text-text-secondary">(optional, kept in history)</span>
               </label>
               <textarea
                 id={`${ids}-note`}
@@ -193,7 +193,7 @@ export default function OrderStatusPanel({ order, onSubmit }) {
                 type="button"
                 onClick={() => setTarget(null)}
                 disabled={busy}
-                className={`min-h-[44px] rounded-xl border border-[#e8e1d8] bg-white px-5 text-sm font-medium text-[#2B2118] hover:bg-[#faf7f2] disabled:opacity-60 ${focusRing}`}
+                className={`min-h-[44px] rounded-xl border border-[#e8e1d8] bg-white px-5 text-sm font-medium text-text hover:bg-canvas disabled:opacity-60 ${focusRing}`}
               >
                 Back
               </button>
@@ -201,7 +201,7 @@ export default function OrderStatusPanel({ order, onSubmit }) {
                 type="submit"
                 disabled={busy}
                 className={`min-h-[44px] rounded-xl px-5 text-sm font-semibold text-white transition-colors disabled:cursor-wait disabled:opacity-70 ${focusRing} ${
-                  action.destructive ? 'bg-[#ba1a1a] hover:bg-[#93000a]' : 'bg-[#B5532E] hover:bg-[#9C4425]'
+                  action.destructive ? 'bg-error hover:bg-[#93000a]' : 'bg-primary hover:bg-primary-hover'
                 }`}
               >
                 {busy ? 'Saving…' : action.destructive ? 'Yes, cancel order' : action.label}

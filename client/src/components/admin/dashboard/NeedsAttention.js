@@ -16,12 +16,12 @@ const STEPS = [
 const TINTS = {
   PENDING: { card: 'bg-[#FBF1D4] border-[#EBD596]', badge: 'bg-[#6B4C0C] text-white' },
   PROCESSING: { card: 'bg-[#FBE6DC] border-[#EBC3AE]', badge: 'bg-[#8F3B23] text-white' },
-  SHIPPED: { card: 'bg-[#DCEBF2] border-[#B7D3E0]', badge: 'bg-[#1F4B66] text-white' },
+  SHIPPED: { card: 'bg-badge-info border-[#B7D3E0]', badge: 'bg-[#1F4B66] text-white' },
 };
 
 function CheckIcon() {
   return (
-    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5F7A5E" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--secondary)" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
       <path d="m5 12.5 4.5 4.5L19 7.5" />
     </svg>
   );
@@ -46,17 +46,17 @@ function AttentionItem({ status, task, action, count }) {
           {meta.label}
         </span>
         {idle ? (
-          <span className="flex items-center gap-2 text-base font-medium text-[#6F6358]">
+          <span className="flex items-center gap-2 text-base font-medium text-text-secondary">
             <CheckIcon />
             All caught up
           </span>
         ) : (
           <span className="flex items-baseline gap-2">
-            <span className="text-[36px] font-semibold leading-none tabular-nums text-[#2B2118]">{formatCount(count)}</span>
-            <span className="text-sm text-[#2B2118]">{task.toLowerCase()}</span>
+            <span className="text-[36px] font-semibold leading-none tabular-nums text-text">{formatCount(count)}</span>
+            <span className="text-sm text-text">{task.toLowerCase()}</span>
           </span>
         )}
-        <span className={cn('mt-auto text-sm font-semibold', idle ? 'text-[#6F6358]' : 'text-primary')}>
+        <span className={cn('mt-auto text-sm font-semibold', idle ? 'text-text-secondary' : 'text-primary')}>
           {idle ? (
             `No ${meta.label.toLowerCase()} orders`
           ) : (

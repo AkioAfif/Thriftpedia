@@ -16,15 +16,15 @@ import {
 const MAX_DESCRIPTION = 1000;
 
 const focusRing =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E]';
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary';
 
 const card = 'rounded-2xl border border-[#e6ddd2] bg-white p-5 sm:p-6';
 
 const inputBase =
-  'h-11 w-full rounded-xl border bg-white px-3 text-sm text-[#2B2118] placeholder:text-[#8C7E72] disabled:cursor-not-allowed disabled:bg-[#F1EBE1] disabled:text-[#6E5D4F]';
+  'h-11 w-full rounded-xl border bg-white px-3 text-sm text-text placeholder:text-[#8C7E72] disabled:cursor-not-allowed disabled:bg-[#F1EBE1] disabled:text-[#6E5D4F]';
 
 const inputClass = (error) =>
-  `${inputBase} ${error ? 'border-[#BA1A1A]' : 'border-[#CFBEAE]'} ${focusRing}`;
+  `${inputBase} ${error ? 'border-error' : 'border-[#CFBEAE]'} ${focusRing}`;
 
 function initialValues(product) {
   return {
@@ -98,14 +98,14 @@ function UploadIcon() {
 function Field({ id, label, required, error, hint, children }) {
   return (
     <div>
-      <label htmlFor={id} className="text-sm font-semibold text-[#2B2118]">
+      <label htmlFor={id} className="text-sm font-semibold text-text">
         {label}
-        {required && <span className="text-[#BA1A1A]"> *</span>}
+        {required && <span className="text-error"> *</span>}
       </label>
       <div className="mt-1.5">{children}</div>
       {hint && !error && <p className="mt-1.5 text-xs text-[#6E5D4F]">{hint}</p>}
       {error && (
-        <p id={`${id}-error`} role="alert" className="mt-1.5 text-xs font-medium text-[#BA1A1A]">
+        <p id={`${id}-error`} role="alert" className="mt-1.5 text-xs font-medium text-error">
           {error}
         </p>
       )}
@@ -117,11 +117,11 @@ export function FormPageLayout({ title, children }) {
   return (
     <div className="mx-auto max-w-6xl">
       <nav aria-label="Breadcrumb" className="text-sm text-[#6E5D4F]">
-        <Link href="/admin/products" className={`rounded hover:text-[#2B2118] ${focusRing}`}>
+        <Link href="/admin/products" className={`rounded hover:text-text ${focusRing}`}>
           Product Management
         </Link>
         <span aria-hidden="true"> › </span>
-        <span aria-current="page" className="text-[#2B2118]">{title}</span>
+        <span aria-current="page" className="text-text">{title}</span>
       </nav>
       <h1 className="mb-6 mt-2 text-3xl font-semibold sm:text-4xl">{title}</h1>
       {children}
@@ -155,7 +155,7 @@ export function FormError({ message, onRetry }) {
         )}
         <Link
           href="/admin/products"
-          className={`flex min-h-[40px] items-center rounded-xl border border-[#CFBEAE] bg-white px-5 text-sm font-semibold text-[#2B2118] ${focusRing}`}
+          className={`flex min-h-[40px] items-center rounded-xl border border-[#CFBEAE] bg-white px-5 text-sm font-semibold text-text ${focusRing}`}
         >
           Back to products
         </Link>
@@ -271,7 +271,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
   return (
     <form onSubmit={handleSubmit} noValidate>
       {sold && (
-        <div role="status" className="mb-6 rounded-2xl border border-[#CFBEAE] bg-[#F1EBE1] p-4 text-sm text-[#2B2118]">
+        <div role="status" className="mb-6 rounded-2xl border border-[#CFBEAE] bg-[#F1EBE1] p-4 text-sm text-text">
           <strong className="font-semibold">This item is sold.</strong> Sold products can&apos;t be edited.
         </div>
       )}
@@ -300,7 +300,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                   disabled={busy || photos.length >= MAX_PHOTOS}
                   className="peer sr-only"
                 />
-                <span className="flex flex-col items-center gap-1 rounded-xl border-2 border-dashed border-[#CFBEAE] bg-[#FAF7F2] px-4 py-6 text-center text-[#4A3F35] peer-focus-visible:ring-2 peer-focus-visible:ring-[#B5532E] peer-disabled:cursor-not-allowed peer-disabled:opacity-60">
+                <span className="flex flex-col items-center gap-1 rounded-xl border-2 border-dashed border-[#CFBEAE] bg-canvas px-4 py-6 text-center text-[#4A3F35] peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-disabled:cursor-not-allowed peer-disabled:opacity-60">
                   <UploadIcon />
                   <span className="text-sm font-semibold">
                     {uploading ? 'Uploading...' : 'Drag photos here or browse'}
@@ -311,7 +311,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
             )}
 
             {(photoError || errors.photos) && (
-              <p role="alert" className="mt-2 text-xs font-medium text-[#BA1A1A]">
+              <p role="alert" className="mt-2 text-xs font-medium text-error">
                 {photoError || errors.photos}
               </p>
             )}
@@ -322,7 +322,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                   <li key={src} className="relative">
                     <PhotoPreview src={src} alt={`Product photo ${index + 1}`} />
                     {index === 0 ? (
-                      <span className="absolute bottom-2 left-2 rounded-full bg-[#2B2118] px-2.5 py-1 text-xs font-semibold text-white">
+                      <span className="absolute bottom-2 left-2 rounded-full bg-text px-2.5 py-1 text-xs font-semibold text-white">
                         Cover
                       </span>
                     ) : (
@@ -330,7 +330,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                         <button
                           type="button"
                           onClick={() => makeCover(index)}
-                          className={`absolute bottom-2 left-2 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-[#2B2118] ${focusRing}`}
+                          className={`absolute bottom-2 left-2 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-text ${focusRing}`}
                         >
                           Make cover
                         </button>
@@ -341,7 +341,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                         type="button"
                         onClick={() => removePhoto(index)}
                         aria-label={`Remove photo ${index + 1}`}
-                        className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[#2B2118] shadow-sm ${focusRing}`}
+                        className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-text shadow-sm ${focusRing}`}
                       >
                         <CloseIcon width={14} height={14} />
                       </button>
@@ -365,7 +365,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                 maxLength={MAX_DESCRIPTION}
                 rows={5}
                 disabled={locked}
-                className={`w-full rounded-xl border border-[#CFBEAE] bg-white px-3 py-2.5 text-sm text-[#2B2118] disabled:bg-[#F1EBE1] ${focusRing}`}
+                className={`w-full rounded-xl border border-[#CFBEAE] bg-white px-3 py-2.5 text-sm text-text disabled:bg-[#F1EBE1] ${focusRing}`}
               />
             </Field>
             <p className="mt-1 text-right text-xs text-[#6E5D4F]">
@@ -424,8 +424,8 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
               </Field>
 
               <fieldset disabled={locked}>
-                <legend className="text-sm font-semibold text-[#2B2118]">
-                  Size <span className="text-[#BA1A1A]">*</span>
+                <legend className="text-sm font-semibold text-text">
+                  Size <span className="text-error">*</span>
                 </legend>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {SIZE_OPTIONS.map((s) => (
@@ -438,20 +438,20 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                         onChange={() => setField('size', s.value)}
                         className="peer sr-only"
                       />
-                      <span className="flex min-h-[40px] min-w-[48px] items-center justify-center rounded-xl border border-[#CFBEAE] bg-white px-4 text-sm font-semibold text-[#4A3F35] peer-checked:border-[#B5532E] peer-checked:bg-[#B5532E] peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-[#B5532E] peer-focus-visible:ring-offset-2 peer-disabled:opacity-60">
+                      <span className="flex min-h-[40px] min-w-[48px] items-center justify-center rounded-xl border border-[#CFBEAE] bg-white px-4 text-sm font-semibold text-[#4A3F35] peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2 peer-disabled:opacity-60">
                         {s.label}
                       </span>
                     </label>
                   ))}
                 </div>
                 {errors.size && (
-                  <p role="alert" className="mt-1.5 text-xs font-medium text-[#BA1A1A]">{errors.size}</p>
+                  <p role="alert" className="mt-1.5 text-xs font-medium text-error">{errors.size}</p>
                 )}
               </fieldset>
 
               <fieldset disabled={locked}>
-                <legend className="text-sm font-semibold text-[#2B2118]">
-                  Condition <span className="text-[#BA1A1A]">*</span>
+                <legend className="text-sm font-semibold text-text">
+                  Condition <span className="text-error">*</span>
                 </legend>
                 <div className="mt-2 grid gap-3 sm:grid-cols-2">
                   {CONDITION_OPTIONS.map((c) => (
@@ -464,19 +464,19 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                         onChange={() => setField('condition', c.value)}
                         className="peer sr-only"
                       />
-                      <span className="block rounded-xl border border-[#CFBEAE] bg-white p-3 pr-10 peer-checked:border-[#B5532E] peer-checked:bg-[#FBEDE6] peer-focus-visible:ring-2 peer-focus-visible:ring-[#B5532E] peer-disabled:opacity-60">
-                        <span className="block text-sm font-semibold text-[#2B2118]">{c.label}</span>
+                      <span className="block rounded-xl border border-[#CFBEAE] bg-white p-3 pr-10 peer-checked:border-primary peer-checked:bg-[#FBEDE6] peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-disabled:opacity-60">
+                        <span className="block text-sm font-semibold text-text">{c.label}</span>
                         <span className="mt-0.5 block text-xs text-[#6E5D4F]">{c.hint}</span>
                       </span>
                       <span
                         aria-hidden="true"
-                        className="pointer-events-none absolute right-3 top-3 h-4 w-4 rounded-full border-2 border-[#CFBEAE] bg-white peer-checked:border-[#B5532E] peer-checked:bg-[#B5532E] peer-checked:shadow-[inset_0_0_0_2px_white]"
+                        className="pointer-events-none absolute right-3 top-3 h-4 w-4 rounded-full border-2 border-[#CFBEAE] bg-white peer-checked:border-primary peer-checked:bg-primary peer-checked:shadow-[inset_0_0_0_2px_white]"
                       />
                     </label>
                   ))}
                 </div>
                 {errors.condition && (
-                  <p role="alert" className="mt-1.5 text-xs font-medium text-[#BA1A1A]">{errors.condition}</p>
+                  <p role="alert" className="mt-1.5 text-xs font-medium text-error">{errors.condition}</p>
                 )}
               </fieldset>
             </div>
@@ -524,14 +524,14 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
         </p>
       )}
 
-      <div className="sticky bottom-0 z-10 mt-8 flex flex-wrap items-center justify-end gap-3 border-t border-[#e6ddd2] bg-[#FAF7F2]/95 py-4 backdrop-blur">
+      <div className="sticky bottom-0 z-10 mt-8 flex flex-wrap items-center justify-end gap-3 border-t border-[#e6ddd2] bg-canvas/95 py-4 backdrop-blur">
         {dirty && !sold && (
           <span className="mr-auto text-sm text-[#6E5D4F]">You have unsaved changes.</span>
         )}
         <Link
           href="/admin/products"
           onClick={handleCancelClick}
-          className={`flex min-h-[44px] items-center rounded-xl border border-[#CFBEAE] bg-white px-5 text-sm font-semibold text-[#2B2118] hover:bg-[#F1EBE1] ${focusRing}`}
+          className={`flex min-h-[44px] items-center rounded-xl border border-[#CFBEAE] bg-white px-5 text-sm font-semibold text-text hover:bg-[#F1EBE1] ${focusRing}`}
         >
           {sold ? 'Back to products' : 'Cancel'}
         </Link>

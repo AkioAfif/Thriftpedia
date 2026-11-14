@@ -81,7 +81,7 @@ export function ProductGallery({ photos = [], name, sold = false }) {
 
         <div className="absolute left-3 top-3 z-10 sm:left-4 sm:top-4">
           {sold ? (
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#2B2118] px-4 py-2 text-sm font-bold text-white shadow-level-2">
+            <span className="inline-flex items-center gap-2 rounded-full bg-text px-4 py-2 text-sm font-bold text-white shadow-level-2">
               <LockIcon className="h-4 w-4" />
               Sold
             </span>

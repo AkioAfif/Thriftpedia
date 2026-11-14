@@ -6,7 +6,7 @@ export function Badge({ children, variant = 'default', className, ...props }) {
     return (
       <span
         className={cn(
-          'px-2.5 py-1 rounded-full text-xs font-bold shadow-xs bg-[#2B2118] text-white flex items-center gap-1 select-none',
+          'px-2.5 py-1 rounded-full text-xs font-bold shadow-xs bg-text text-white flex items-center gap-1 select-none',
           className
         )}
         {...props}
@@ -21,7 +21,7 @@ export function Badge({ children, variant = 'default', className, ...props }) {
     return (
       <span
         className={cn(
-          'h-5 min-w-[20px] px-1.5 rounded-full bg-[#FBEDE6] text-[#B5532E] text-[11px] font-mono font-bold flex items-center justify-center select-none',
+          'h-5 min-w-[20px] px-1.5 rounded-full bg-[#FBEDE6] text-primary text-[11px] font-mono font-bold flex items-center justify-center select-none',
           className
         )}
         {...props}

@@ -6,7 +6,7 @@ export const ORDER_STATUS_ORDER = ['PENDING', 'PROCESSING', 'SHIPPED', 'COMPLETE
 // Fixed status colours, used by every badge, tab dot and history entry on the order pages.
 export const ORDER_STATUS_META = {
   PENDING: { label: 'Pending', badge: 'bg-[#f7e9c4] text-[#6B4C0C]', dot: 'bg-[#B07D12]' },
-  PROCESSING: { label: 'Processing', badge: 'bg-[#f8ebe4] text-[#8F3B23]', dot: 'bg-[#B5532E]' },
+  PROCESSING: { label: 'Processing', badge: 'bg-[#f8ebe4] text-[#8F3B23]', dot: 'bg-primary' },
   SHIPPED: { label: 'Shipped', badge: 'bg-[#dce9f2] text-[#1F4B66]', dot: 'bg-[#2E6A8F]' },
   COMPLETED: { label: 'Completed', badge: 'bg-[#dff0e0] text-[#1F5A2B]', dot: 'bg-[#2F7A3E]' },
   CANCELLED: { label: 'Cancelled', badge: 'bg-[#E8E1D8] text-[#5C4D40]', dot: 'bg-[#8A7A6B]' },

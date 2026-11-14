@@ -5,12 +5,12 @@ export const focusRing =
 
 export const panel = 'rounded-2xl border border-[#D9CFC1] bg-surface';
 
-// Top strip of the white cards: #F5F0E8 with a #EAE4DA divider.
-export const panelHeader = 'border-b border-[#EAE4DA] bg-[#F5F0E8] px-5 py-3';
+// Top strip of the white cards: surface-muted with a border divider.
+export const panelHeader = 'border-b border-border bg-surface-muted px-5 py-3';
 
-// Secondary = white with a terracotta outline (#B5532E on white: 6.9:1).
+// Secondary = white with a primary outline (6.9:1).
 export const secondaryButton = cn(
-  'inline-flex min-h-11 items-center justify-center rounded-[10px] border-[1.5px] border-[#B5532E] bg-surface px-5 text-sm font-semibold text-[#B5532E] hover:bg-primary-tint',
+  'inline-flex min-h-11 items-center justify-center rounded-[10px] border-[1.5px] border-primary bg-surface px-5 text-sm font-semibold text-primary hover:bg-primary-tint',
   focusRing
 );
 

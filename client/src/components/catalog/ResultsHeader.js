@@ -34,7 +34,7 @@ export function ResultsHeader({ meta }) {
             <h2
               id="product-count-label"
               data-layer="Toolbar/Total"
-              className="text-sm sm:text-base font-bold text-[#2B2118] tracking-tight"
+              className="text-sm sm:text-base font-bold text-text tracking-tight"
             >
               {showingText}
             </h2>
@@ -45,9 +45,9 @@ export function ResultsHeader({ meta }) {
             <button
               type="button"
               onClick={() => setMobileFilterOpen(true)}
-              className="md:hidden inline-flex items-center gap-1.5 min-h-[40px] px-3.5 py-1.5 rounded-full bg-white border border-[#E6DDD2] text-xs font-semibold text-[#2B2118] hover:bg-[#F1EBE1] shadow-xs transition-colors focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none"
+              className="md:hidden inline-flex items-center gap-1.5 min-h-[40px] px-3.5 py-1.5 rounded-full bg-white border border-[#E6DDD2] text-xs font-semibold text-text hover:bg-[#F1EBE1] shadow-xs transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
             >
-              <TuneIcon className="w-4 h-4 text-[#B5532E]" />
+              <TuneIcon className="w-4 h-4 text-primary" />
               <span>Filters {activeGroupCount > 0 ? `(${activeGroupCount})` : ''}</span>
             </button>
 

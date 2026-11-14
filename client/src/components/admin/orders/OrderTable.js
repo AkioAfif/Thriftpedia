@@ -5,7 +5,7 @@ import OrderStatusBadge from './OrderStatusBadge';
 import { formatOrderDate, orderBuyer, orderItem, orderLabel } from '@/lib/adminOrders';
 import { formatRupiah, sizeLabel } from '@/lib/adminProducts';
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E]';
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary';
 const primaryButton = `mt-5 inline-flex min-h-[40px] items-center rounded-xl bg-[#a3452a] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#8f3b23] ${focusRing}`;
 
 function Shell({ id, labelledBy, busy, children }) {
@@ -130,7 +130,7 @@ export default function OrderTable({
               <Link
                 href={detailHref(order)}
                 aria-label={`View order ${label}`}
-                className={`flex gap-3 p-4 hover:bg-[#FAF7F2] focus-visible:bg-[#FAF7F2] ${focusRing} focus-visible:ring-inset`}
+                className={`flex gap-3 p-4 hover:bg-canvas focus-visible:bg-canvas ${focusRing} focus-visible:ring-inset`}
               >
                 <ItemThumb src={item.photo} />
                 <div className="min-w-0 flex-1">
@@ -172,7 +172,7 @@ export default function OrderTable({
             const item = orderItem(order);
             const label = orderLabel(order);
             return (
-              <tr key={order._id} className="border-t border-[#efe9e0] hover:bg-[#FAF7F2]">
+              <tr key={order._id} className="border-t border-[#efe9e0] hover:bg-canvas">
                 <td className="whitespace-nowrap px-4 py-4 font-semibold tabular-nums text-[#2b1d14]">{label}</td>
                 <td className="whitespace-nowrap px-4 py-4 tabular-nums text-[#6E5D4F]">
                   <time dateTime={order.createdAt}>{formatOrderDate(order.createdAt)}</time>
@@ -208,7 +208,7 @@ export default function OrderTable({
                   <Link
                     href={detailHref(order)}
                     aria-label={`View order ${label}`}
-                    className={`inline-flex min-h-[40px] items-center rounded-xl border border-[#CFBEAE] bg-white px-5 text-sm font-semibold text-[#2b1d14] hover:bg-[#faf7f2] ${focusRing}`}
+                    className={`inline-flex min-h-[40px] items-center rounded-xl border border-[#CFBEAE] bg-white px-5 text-sm font-semibold text-[#2b1d14] hover:bg-canvas ${focusRing}`}
                   >
                     View
                   </Link>

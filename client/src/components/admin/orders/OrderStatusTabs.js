@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { ORDER_STATUS_ORDER, statusMeta } from '@/lib/adminOrders';
 import { formatNumber } from '@/lib/adminProducts';
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E]';
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary';
 
 // Counts come straight from the list response (`counts`): they follow the search but
 // ignore the active status, so every tab keeps showing its own total.
@@ -65,7 +65,7 @@ export default function OrderStatusTabs({ counts, active, onSelect, panelId }) {
               className={`relative flex min-h-[44px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm transition-colors duration-150 ${focusRing} ${
                 selected
                   ? 'bg-[#f1ebe1] font-semibold text-[#2b1d14]'
-                  : 'font-medium text-[#4A3F35] hover:bg-[#faf7f2]'
+                  : 'font-medium text-[#4A3F35] hover:bg-canvas'
               }`}
             >
               

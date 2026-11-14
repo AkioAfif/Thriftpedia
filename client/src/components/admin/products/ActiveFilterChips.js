@@ -1,7 +1,7 @@
 import { CloseIcon } from '../icons';
 import { CONDITION_OPTIONS, SIZE_OPTIONS, SORT_OPTIONS } from '@/lib/adminProducts';
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-1';
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1';
 
 const labelFor = (options, value) => options.find((o) => o.value === value)?.label ?? value;
 
@@ -25,7 +25,7 @@ export default function ActiveFilterChips({ filters, categories = [], onRemove }
     <ul aria-label="Active filters" className="flex flex-wrap gap-2">
       {chips.map((chip) => (
         <li key={chip.key}>
-          <span className="inline-flex min-h-11 max-w-full items-center gap-1 rounded-full border border-[#EBC3AE] bg-[#FBE6DC] pl-3 text-[13px] font-semibold text-[#B5532E]">
+          <span className="inline-flex min-h-11 max-w-full items-center gap-1 rounded-full border border-[#EBC3AE] bg-[#FBE6DC] pl-3 text-[13px] font-semibold text-primary">
             <span className="truncate">{chip.text}</span>
             <button
               type="button"

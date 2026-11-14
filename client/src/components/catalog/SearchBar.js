@@ -38,7 +38,7 @@ export function SearchBar() {
     <form
       id="catalog-search-form"
       onSubmit={handleSubmit}
-      className="w-full md:w-[440px] shrink-0 relative flex items-center bg-white border border-[#E6DDD2] rounded-full px-3.5 py-1.5 shadow-sm focus-within:border-[#B5532E] focus-within:ring-1 focus-within:ring-[#B5532E] transition-all"
+      className="w-full md:w-[440px] shrink-0 relative flex items-center bg-white border border-[#E6DDD2] rounded-full px-3.5 py-1.5 shadow-sm focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all"
     >
       <span className="text-[#6E5D4F] text-[20px] ml-1 mr-2 shrink-0 select-none">
         <SearchIcon className="w-5 h-5 text-[#6E5D4F]" />
@@ -51,7 +51,7 @@ export function SearchBar() {
         maxLength={100}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search jackets, denim, hats..."
-        className="w-full bg-transparent border-0 ring-0 focus:ring-0 focus:outline-none text-[#2B2118] text-sm placeholder:text-[#8C7E72] py-1 px-0"
+        className="w-full bg-transparent border-0 ring-0 focus:ring-0 focus:outline-none text-text text-sm placeholder:text-[#8C7E72] py-1 px-0"
       />
       {searchTerm && (
         <button
@@ -59,14 +59,14 @@ export function SearchBar() {
           id="search-clear-btn"
           aria-label="Clear search"
           onClick={handleClear}
-          className="min-w-[32px] min-h-[32px] rounded-full text-[#6E5D4F] hover:text-[#2B2118] flex items-center justify-center shrink-0 mr-1 focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none"
+          className="min-w-[32px] min-h-[32px] rounded-full text-[#6E5D4F] hover:text-text flex items-center justify-center shrink-0 mr-1 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
         >
           <CloseIcon className="w-4 h-4" />
         </button>
       )}
       <button
         type="submit"
-        className="min-h-[36px] px-4 py-1.5 rounded-full bg-[#B5532E] hover:bg-[#9C4425] text-white text-xs font-semibold shrink-0 transition-colors ml-1 shadow-xs focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none"
+        className="min-h-[36px] px-4 py-1.5 rounded-full bg-primary hover:bg-primary-hover text-white text-xs font-semibold shrink-0 transition-colors ml-1 shadow-xs focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
       >
         Search
       </button>

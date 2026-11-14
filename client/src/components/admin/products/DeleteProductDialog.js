@@ -75,7 +75,7 @@ export default function DeleteProductDialog({ product, busy = false, onConfirm, 
           Delete this product?
         </h2>
 
-        <div className="mt-6 flex items-center gap-4 rounded-xl bg-[#faf7f2] p-4">
+        <div className="mt-6 flex items-center gap-4 rounded-xl bg-canvas p-4">
           {showPhoto ? (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
@@ -103,7 +103,7 @@ export default function DeleteProductDialog({ product, busy = false, onConfirm, 
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="basis-1/3 rounded-[10px] border border-[#e8e1d8] bg-white px-5 py-3.5 text-sm font-medium text-[#2b1d14] hover:bg-[#faf7f2] focus:outline-none focus:ring-2 focus:ring-[#b4532a] focus:ring-offset-2 disabled:opacity-60"
+            className="basis-1/3 rounded-[10px] border border-[#e8e1d8] bg-white px-5 py-3.5 text-sm font-medium text-[#2b1d14] hover:bg-canvas focus:outline-none focus:ring-2 focus:ring-[#b4532a] focus:ring-offset-2 disabled:opacity-60"
           >
             Cancel
           </button>

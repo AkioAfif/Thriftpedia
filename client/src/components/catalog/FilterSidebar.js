@@ -30,7 +30,7 @@ export function FilterSidebar() {
       {/* Header */}
       <div className="flex items-center justify-between pb-4 border-b border-[#E6DDD2]">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold text-[#2B2118] font-sans">
+          <span className="text-xl font-bold text-text font-sans">
             Filters
           </span>
           {activeGroupCount > 0 && <Badge variant="count">{activeGroupCount}</Badge>}

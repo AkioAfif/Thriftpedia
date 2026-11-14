@@ -17,10 +17,10 @@ export function CategoryTabs({ categories = [] }) {
           type="button"
           onClick={() => setCategory('all')}
           className={cn(
-            'px-4 py-2 min-h-[40px] rounded-xl font-medium whitespace-nowrap transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none',
+            'px-4 py-2 min-h-[40px] rounded-xl font-medium whitespace-nowrap transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none',
             currentCategory === 'all'
-              ? 'bg-[#2B2118] text-white'
-              : 'bg-[#F1EBE1] text-[#4A3F35] hover:bg-[#EAE4DA]'
+              ? 'bg-text text-white'
+              : 'bg-[#F1EBE1] text-[#4A3F35] hover:bg-border'
           )}
         >
           All
@@ -34,10 +34,10 @@ export function CategoryTabs({ categories = [] }) {
               type="button"
               onClick={() => setCategory(cat.slug)}
               className={cn(
-                'px-4 py-2 min-h-[40px] rounded-xl font-medium whitespace-nowrap transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none',
+                'px-4 py-2 min-h-[40px] rounded-xl font-medium whitespace-nowrap transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none',
                 isActive
-                  ? 'bg-[#2B2118] text-white'
-                  : 'bg-[#F1EBE1] text-[#4A3F35] hover:bg-[#EAE4DA]'
+                  ? 'bg-text text-white'
+                  : 'bg-[#F1EBE1] text-[#4A3F35] hover:bg-border'
               )}
             >
               {cat.name}
@@ -46,7 +46,7 @@ export function CategoryTabs({ categories = [] }) {
         })}
       </div>
       {/* Right gradient fade overlay */}
-      <div className="pointer-events-none absolute right-0 top-0 bottom-4 w-10 bg-gradient-to-l from-[#FAF7F2] to-transparent" />
+      <div className="pointer-events-none absolute right-0 top-0 bottom-4 w-10 bg-gradient-to-l from-canvas to-transparent" />
     </div>
   );
 }

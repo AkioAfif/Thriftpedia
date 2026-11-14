@@ -3,7 +3,7 @@
 import { ORDER_SORT_OPTIONS } from '@/lib/adminOrders';
 import { ChevronDownIcon, CloseIcon, SearchIcon } from '../icons';
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E]';
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary';
 
 export default function OrderToolbar({ searchInput, onSearchInputChange, onSearchSubmit, onSearchClear, sort, onSortChange }) {
   return (
@@ -31,7 +31,7 @@ export default function OrderToolbar({ searchInput, onSearchInputChange, onSearc
             value={searchInput}
             onChange={(e) => onSearchInputChange(e.target.value)}
             placeholder="Search by order ID or buyer"
-            className={`h-12 w-full rounded-xl border border-[#e6ddd2] bg-white pl-11 pr-[8.5rem] text-sm text-[#2B2118] placeholder:text-[#8C7E72] [&::-webkit-search-cancel-button]:hidden ${focusRing}`}
+            className={`h-12 w-full rounded-xl border border-[#e6ddd2] bg-white pl-11 pr-[8.5rem] text-sm text-text placeholder:text-[#8C7E72] [&::-webkit-search-cancel-button]:hidden ${focusRing}`}
           />
           <div className="absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center gap-1">
             {searchInput && (
@@ -62,7 +62,7 @@ export default function OrderToolbar({ searchInput, onSearchInputChange, onSearc
           id="order-sort"
           value={sort}
           onChange={(e) => onSortChange(e.target.value)}
-          className={`h-12 w-full cursor-pointer appearance-none rounded-xl border border-[#e6ddd2] bg-white pl-4 pr-10 text-sm text-[#4A3F35] transition-colors hover:border-[#B5532E] ${focusRing}`}
+          className={`h-12 w-full cursor-pointer appearance-none rounded-xl border border-[#e6ddd2] bg-white pl-4 pr-10 text-sm text-[#4A3F35] transition-colors hover:border-primary ${focusRing}`}
         >
           {ORDER_SORT_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>

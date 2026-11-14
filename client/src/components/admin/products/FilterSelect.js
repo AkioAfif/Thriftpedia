@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { ChevronDownIcon } from '../icons';
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-1';
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1';
 
 function CheckIcon() {
   return (
@@ -115,11 +115,11 @@ export default function FilterSelect({ id, label, value, onChange, emptyLabel, o
         onClick={() => (open ? close() : openList())}
         onKeyDown={onTriggerKeyDown}
         className={`flex h-11 w-full items-center justify-between gap-2 rounded-xl border pl-4 pr-3 text-left text-sm transition-colors ${focusRing} ${
-          open ? 'border-[#B5532E] ring-1 ring-[#B5532E]' : isActive ? 'border-[#EBC3AE]' : 'border-[#D9CFC1] hover:border-[#B5532E]'
-        } ${isActive ? 'bg-[#FBE6DC] font-semibold text-[#B5532E]' : 'bg-white text-[#2B2118]'}`}
+          open ? 'border-primary ring-1 ring-primary' : isActive ? 'border-[#EBC3AE]' : 'border-[#D9CFC1] hover:border-primary'
+        } ${isActive ? 'bg-[#FBE6DC] font-semibold text-primary' : 'bg-white text-text'}`}
       >
         <span className="min-w-0 truncate">{triggerText}</span>
-        <span aria-hidden="true" className={`shrink-0 transition-transform duration-150 ${open ? 'rotate-180' : ''} ${isActive ? 'text-[#B5532E]' : 'text-[#6F6358]'}`}>
+        <span aria-hidden="true" className={`shrink-0 transition-transform duration-150 ${open ? 'rotate-180' : ''} ${isActive ? 'text-primary' : 'text-text-secondary'}`}>
           <ChevronDownIcon width={16} height={16} />
         </span>
       </button>
@@ -149,8 +149,8 @@ export default function FilterSelect({ id, label, value, onChange, emptyLabel, o
                 onPointerEnter={() => setActiveIndex(i)}
                 onClick={() => choose(i)}
                 className={`flex h-10 cursor-pointer items-center justify-between gap-3 rounded-[10px] px-3 text-sm ${
-                  selected ? 'bg-[#FBE6DC] font-semibold text-[#B5532E]' : `text-[#2B2118] ${active ? 'bg-[#F5F0E8]' : ''}`
-                } ${active && selected ? 'ring-1 ring-inset ring-[#B5532E]' : ''}`}
+                  selected ? 'bg-[#FBE6DC] font-semibold text-primary' : `text-text ${active ? 'bg-surface-muted' : ''}`
+                } ${active && selected ? 'ring-1 ring-inset ring-primary' : ''}`}
               >
                 <span className="truncate">{opt.label}</span>
                 {selected && <CheckIcon />}

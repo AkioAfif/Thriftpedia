@@ -11,14 +11,14 @@ export function SortDropdown() {
       <label htmlFor="sort-select" className="hidden sm:inline font-medium">
         Sort:
       </label>
-      <div className="relative bg-white border border-[#E6DDD2] rounded-xl px-3 py-1.5 shadow-xs focus-within:ring-2 focus-within:ring-[#B5532E] focus-within:border-[#B5532E] transition-all">
+      <div className="relative bg-white border border-[#E6DDD2] rounded-xl px-3 py-1.5 shadow-xs focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all">
         <select
           id="sort-select"
           name="sort"
           data-layer="Toolbar/Sort"
           value={sort}
           onChange={(e) => setSort(e.target.value)}
-          className="bg-transparent text-xs font-semibold text-[#2B2118] pr-6 py-0.5 border-0 focus:ring-0 focus:outline-none cursor-pointer"
+          className="bg-transparent text-xs font-semibold text-text pr-6 py-0.5 border-0 focus:ring-0 focus:outline-none cursor-pointer"
         >
           {SORT_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
