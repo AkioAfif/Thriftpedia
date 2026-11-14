@@ -4,7 +4,12 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
+import DetailCard from './DetailCard';
+import OrderItemCard from './OrderItemCard';
+import OrderStatusBadge from './OrderStatusBadge';
 import OrderStatusPanel from './OrderStatusPanel';
+import OrderSummaryRow from './OrderSummaryRow';
+import OrderTimeline from './OrderTimeline';
 import { useAuth } from '@/context/AuthContext';
 import {
   fetchOrder,
@@ -16,22 +21,22 @@ import {
   parseOrderQuery,
   updateOrderStatus,
 } from '@/lib/adminOrders';
-import { formatRupiah, sizeLabel } from '@/lib/adminProducts';
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E]';
-const cardCls = 'rounded-[20px] border border-[#e8e1d8] bg-white p-5 sm:p-7';
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2';
+const cardCls = 'rounded-[20px] border border-[#D9CFC1] bg-white p-5 sm:p-7';
+const pulse = 'animate-pulse rounded-[20px] bg-[#efe9e0]';
 
 function Breadcrumb({ backHref, current }) {
   return (
     <nav aria-label="Breadcrumb">
-      <ol className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-[#6E5D4F]">
+      <ol className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-[#6F6358]">
         <li>
-          <Link href={backHref} className={`rounded hover:text-[#2b1d14] hover:underline ${focusRing}`}>
+          <Link href={backHref} className={`rounded hover:text-[#2B2118] hover:underline ${focusRing}`}>
             Order Management
           </Link>
         </li>
         <li aria-hidden="true">›</li>
-        <li aria-current="page" className="min-w-0 truncate text-[#2b1d14]">
+        <li aria-current="page" className="min-w-0 truncate text-[#2B2118]">
           {current}
         </li>
       </ol>
@@ -42,8 +47,8 @@ function Breadcrumb({ backHref, current }) {
 function StateMessage({ title, children, action }) {
   return (
     <div className={`${cardCls} px-6 py-16 text-center`}>
-      <p className="text-lg font-semibold text-[#2b1d14]">{title}</p>
-      <p className="mx-auto mt-2 max-w-[28rem] text-sm text-[#6E5D4F]">{children}</p>
+      <p className="text-lg font-semibold text-[#2B2118]">{title}</p>
+      <p className="mx-auto mt-2 max-w-[28rem] text-sm text-[#6F6358]">{children}</p>
       {action}
     </div>
   );
@@ -53,37 +58,19 @@ function DetailSkeleton() {
   return (
     <div aria-busy="true">
       <span className="sr-only">Loading order</span>
-      <div className="h-10 w-64 animate-pulse rounded-lg bg-[#efe9e0]" />
-      <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
-        <div className="h-72 animate-pulse rounded-[20px] bg-[#efe9e0]" />
-        <div className="h-96 animate-pulse rounded-[20px] bg-[#efe9e0]" />
+      <div className="h-10 w-72 animate-pulse rounded-lg bg-[#efe9e0]" />
+      <div className="mt-2 h-5 w-56 animate-pulse rounded-md bg-[#efe9e0]" />
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className={`h-28 ${pulse}`} />
+        ))}
+      </div>
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div className={`h-96 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1 ${pulse}`} />
+        <div className={`h-60 lg:col-span-7 lg:col-start-1 lg:row-start-1 ${pulse}`} />
+        <div className={`h-72 lg:col-span-7 lg:col-start-1 lg:row-start-2 ${pulse}`} />
       </div>
     </div>
-  );
-}
-
-// Falls back to a plain tile when there is no photo or the image fails to load.
-function ItemPhoto({ src, alt }) {
-  const [failed, setFailed] = useState(false);
-  if (!src || failed) {
-    return (
-      <span
-        role="img"
-        aria-label="No photo"
-        className="flex aspect-[4/5] w-28 shrink-0 items-center justify-center rounded-xl bg-[#efe9e0] text-xs text-[#6E5D4F] sm:w-36"
-      >
-        No photo
-      </span>
-    );
-  }
-  return (
-    /* eslint-disable-next-line @next/next/no-img-element */
-    <img
-      src={src}
-      alt={alt}
-      onError={() => setFailed(true)}
-      className="aspect-[4/5] w-28 shrink-0 rounded-xl bg-[#efe9e0] object-cover sm:w-36"
-    />
   );
 }
 
@@ -180,7 +167,7 @@ export default function OrderDetailView() {
                 <button
                   type="button"
                   onClick={reload}
-                  className={`mt-5 min-h-[40px] rounded-xl bg-[#a3452a] px-5 text-sm font-semibold text-white hover:bg-[#8f3b23] ${focusRing}`}
+                  className={`mt-5 min-h-11 rounded-xl bg-[#B5532E] px-5 text-sm font-semibold text-white hover:bg-[#9C4425] ${focusRing}`}
                 >
                   Try again
                 </button>
@@ -197,61 +184,56 @@ export default function OrderDetailView() {
   const { order } = state;
   const item = orderItem(order);
   const buyer = orderBuyer(order);
-  const subline = [item.brand, item.size ? sizeLabel(item.size) : null].filter(Boolean).join(' · ');
+  const label = orderLabel(order);
 
   return (
-    <div>
-      <Breadcrumb backHref={backHref} current={order.orderNumber ? `Order ${order.orderNumber}` : 'Order'} />
-      <h1 className="mt-4 break-words text-3xl font-semibold tabular-nums text-[#2b1d14] sm:text-4xl">
-        Order {orderLabel(order)}
-      </h1>
+    <div className="mx-auto w-full max-w-[1200px]">
+      <Breadcrumb backHref={backHref} current={order.orderNumber ? `Order ${label}` : 'Order'} />
 
-      <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
-        <section aria-labelledby="order-item-title" className={`${cardCls} lg:col-start-1 lg:row-start-1`}>
-          <h2 id="order-item-title" className="text-xl font-semibold text-[#2b1d14]">
-            Item
-          </h2>
-          <div className="mt-5 flex gap-4 sm:gap-6">
-            <ItemPhoto src={item.photo} alt={item.name} />
-            <div className="min-w-0 flex-1 pt-1">
-              <p className="break-words text-lg font-semibold text-[#2b1d14] sm:text-xl">{item.name}</p>
-              {subline && <p className="mt-2 break-words text-sm text-[#6E5D4F]">{subline}</p>}
-              <p className="mt-4 text-lg font-semibold tabular-nums text-[#2b1d14] sm:text-xl">
-                {item.price == null ? '—' : formatRupiah(item.price)}
-              </p>
-            </div>
+      <header className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="break-words text-[32px] font-semibold leading-tight tabular-nums text-[#2B2118]">Order {label}</h1>
+            <OrderStatusBadge status={order.status} size="lg" />
           </div>
-        </section>
-
-        <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
-          <OrderStatusPanel key={`${order.status}-${order.updatedAt}`} order={order} onSubmit={changeStatus} />
-        </div>
-
-        <section aria-labelledby="order-buyer-title" className={`${cardCls} lg:col-start-1 lg:row-start-2`}>
-          <h2 id="order-buyer-title" className="text-xl font-semibold text-[#2b1d14]">
-            Buyer
-          </h2>
-          <p className="mt-5 break-words font-semibold text-[#2b1d14]">{buyer.name ?? 'Deleted account'}</p>
-          {order.buyer === null && buyer.name && (
-            <p className="mt-0.5 text-xs text-[#6E5D4F]">Account has since been deleted</p>
-          )}
-          <p className="mt-2 break-all text-sm text-[#6E5D4F]">{buyer.email ?? 'No email on record'}</p>
-        </section>
-
-        <section
-          aria-label="Order total"
-          className={`${cardCls} flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:col-span-2`}
-        >
-          <div>
-            <p className="text-sm text-[#6E5D4F]">Order total</p>
-            <p className="mt-1 text-2xl font-semibold tabular-nums text-[#2b1d14]">
-              {order.total == null ? '—' : formatRupiah(order.total)}
-            </p>
-          </div>
-          <p className="text-sm tabular-nums text-[#6E5D4F]">
+          <p className="mt-1.5 text-sm tabular-nums text-[#6F6358]">
             Placed <time dateTime={order.createdAt}>{formatOrderDateTime(order.createdAt)}</time>
           </p>
-        </section>
+        </div>
+        <Link
+          href={backHref}
+          className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl border-[1.5px] border-[#B5532E] bg-white px-5 text-sm font-semibold text-[#B5532E] hover:bg-[#FBE6DC] ${focusRing}`}
+        >
+          <span aria-hidden="true">←</span> Back to orders
+        </Link>
+      </header>
+
+      <div className="mt-6">
+        <OrderSummaryRow order={order} buyer={buyer} />
+      </div>
+
+      {/* DOM order = mobile order: progress, item, history. From lg the progress column moves right. */}
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div className="lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1">
+          <div className="space-y-4 lg:sticky lg:top-6">
+            {order.status === 'CANCELLED' && (
+              <p className="rounded-2xl border border-[#EBC3AE] bg-[#F7DDD6] px-5 py-4 text-sm font-medium text-[#8A2E1B]">
+                This order was cancelled. The steps below show how far it got.
+              </p>
+            )}
+            <OrderStatusPanel key={`${order.status}-${order.updatedAt}`} order={order} onSubmit={changeStatus} />
+          </div>
+        </div>
+
+        <div className="min-w-0 lg:col-span-7 lg:col-start-1 lg:row-start-1">
+          <OrderItemCard item={item} />
+        </div>
+
+        <div className="min-w-0 lg:col-span-7 lg:col-start-1 lg:row-start-2">
+          <DetailCard titleId="order-history-title" title="Status history">
+            <OrderTimeline history={order.statusHistory} />
+          </DetailCard>
+        </div>
       </div>
     </div>
   );

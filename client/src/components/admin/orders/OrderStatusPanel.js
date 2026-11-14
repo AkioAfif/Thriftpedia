@@ -1,13 +1,13 @@
 'use client';
 
 import { useId, useState } from 'react';
-import OrderStatusBadge from './OrderStatusBadge';
-import OrderTimeline, { OrderStepper } from './OrderTimeline';
+import { OrderStepper } from './OrderTimeline';
+import TrackingBox from './TrackingBox';
 import { COURIER_MAX, NOTE_MAX, TRACKING_MAX, TRANSITION_ACTIONS, statusMeta } from '@/lib/adminOrders';
 
 const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2';
 const inputBase = `w-full rounded-xl border bg-white px-4 text-sm text-[#2B2118] placeholder:text-[#8C7E72] ${focusRing}`;
-const primaryBtn = `min-h-[44px] w-full rounded-xl bg-[#a3452a] px-5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-[#8f3b23] ${focusRing}`;
+const primaryBtn = `min-h-[48px] w-full rounded-xl bg-[#B5532E] px-5 text-[15px] font-semibold text-white transition-colors duration-150 hover:bg-[#9C4425] ${focusRing}`;
 
 const TERMINAL_COPY = {
   COMPLETED: 'This order is completed. Its status can no longer change.',
@@ -18,7 +18,15 @@ function actionFor(status) {
   return TRANSITION_ACTIONS[status] ?? { label: `Mark as ${statusMeta(status).label}`, done: 'Status updated' };
 }
 
-// Stepper, history and actions in one panel. Buttons come only from `allowedTransitions`.
+function DoneIcon() {
+  return (
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5F7A5E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0">
+      <path d="m5 12.5 4.5 4.5L19 7.5" />
+    </svg>
+  );
+}
+
+// Stepper, tracking and the next-step actions in one card; history lives on the page. Buttons come only from `allowedTransitions`.
 export default function OrderStatusPanel({ order, onSubmit }) {
   const ids = useId();
   const [target, setTarget] = useState(null);
@@ -60,46 +68,35 @@ export default function OrderStatusPanel({ order, onSubmit }) {
   }
 
   return (
-    <section
-      aria-labelledby={`${ids}-title`}
-      className="flex h-full flex-col rounded-[20px] border border-[#e8e1d8] bg-white p-5 sm:p-7"
-    >
-      <div className="flex items-center justify-between gap-3">
-        <h2 id={`${ids}-title`} className="text-xl font-semibold text-[#2b1d14]">
-          Order status
+    <section aria-labelledby={`${ids}-title`} className="overflow-hidden rounded-[20px] border border-[#D9CFC1] bg-white">
+      <div className="border-b border-[#EAE4DA] bg-[#F5F0E8] px-5 py-3.5 sm:px-6">
+        <h2 id={`${ids}-title`} className="text-[18px] font-semibold text-[#2B2118]">
+          Order progress
         </h2>
-        <OrderStatusBadge status={order.status} />
       </div>
 
-      <div className="mt-6">
+      <div className="p-5 sm:p-6">
         <OrderStepper status={order.status} history={order.statusHistory} />
+
+        {order.trackingNumber && (
+          <div className="mt-6">
+            <TrackingBox trackingNumber={order.trackingNumber} courier={order.courier} />
+          </div>
+        )}
       </div>
 
-      {order.trackingNumber && (
-        <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-1 rounded-xl bg-[#faf7f2] px-4 py-3 text-sm">
-          <dt className="text-[#6E5D4F]">Tracking number</dt>
-          <dd className="break-all text-right font-mono text-[#2b1d14]">{order.trackingNumber}</dd>
-          {order.courier && (
-            <>
-              <dt className="text-[#6E5D4F]">Courier</dt>
-              <dd className="break-words text-right text-[#2b1d14]">{order.courier}</dd>
-            </>
-          )}
-        </dl>
-      )}
+      <div className="border-t border-[#EAE4DA] p-5 sm:p-6">
+        <h3 className="text-[18px] font-semibold text-[#2B2118]">Next step</h3>
 
-      <div className="mt-6 border-t border-[#e8e1d8] pt-5">
-        <h3 className="text-sm font-semibold text-[#2b1d14]">Status history</h3>
-        <OrderTimeline history={order.statusHistory} />
-      </div>
-
-      <div className="mt-auto pt-8">
         {transitions.length === 0 && (
-          <p className="text-sm text-[#6E5D4F]">{TERMINAL_COPY[order.status] ?? 'There is no next step for this order.'}</p>
+          <p className="mt-3 flex items-start gap-2.5 rounded-xl bg-[#F5F0E8] px-4 py-3 text-sm text-[#2B2118]">
+            {order.status === 'COMPLETED' && <DoneIcon />}
+            {TERMINAL_COPY[order.status] ?? 'There is no next step for this order.'}
+          </p>
         )}
 
         {transitions.length > 0 && !target && (
-          <div className="flex flex-col items-center gap-3">
+          <div className="mt-4 flex flex-col items-center gap-2">
             {forward.map((status) => (
               <button key={status} type="button" onClick={() => choose(status)} className={primaryBtn}>
                 {actionFor(status).label}
@@ -114,15 +111,15 @@ export default function OrderStatusPanel({ order, onSubmit }) {
                 {actionFor('CANCELLED').label}
               </button>
             )}
-            <p className="text-center text-xs text-[#6E5D4F]">The product&apos;s sold status is handled by the system.</p>
+            <p className="text-center text-[13px] text-[#6F6358]">The product&apos;s sold status is handled by the system.</p>
           </div>
         )}
 
         {target && (
-          <form onSubmit={submit} noValidate className="space-y-4">
-            <p className="text-sm font-semibold text-[#2b1d14]">
+          <form onSubmit={submit} noValidate className="mt-4 space-y-4">
+            <p className="text-sm font-semibold text-[#2B2118]">
               {action.label}
-              <span className="font-normal text-[#6E5D4F]">
+              <span className="font-normal text-[#6F6358]">
                 {' '}· {statusMeta(order.status).label} → {statusMeta(target).label}
               </span>
             </p>
@@ -136,7 +133,7 @@ export default function OrderStatusPanel({ order, onSubmit }) {
             {shipping && (
               <>
                 <div>
-                  <label htmlFor={`${ids}-tracking`} className="text-sm font-medium text-[#2b1d14]">
+                  <label htmlFor={`${ids}-tracking`} className="text-sm font-medium text-[#2B2118]">
                     Tracking number <span className="text-[#8F3B23]">(required)</span>
                   </label>
                   <input
@@ -152,7 +149,7 @@ export default function OrderStatusPanel({ order, onSubmit }) {
                       if (fieldError) setFieldError('');
                     }}
                     placeholder="e.g. JNE0012345678"
-                    className={`mt-1.5 h-11 font-mono ${inputBase} ${fieldError ? 'border-[#ba1a1a]' : 'border-[#CFBEAE]'}`}
+                    className={`mt-1.5 h-11 tabular-nums ${inputBase} ${fieldError ? 'border-[#ba1a1a]' : 'border-[#CFBEAE]'}`}
                   />
                   {fieldError && (
                     <p id={`${ids}-tracking-error`} className="mt-1.5 text-sm text-[#ba1a1a]">
@@ -161,8 +158,8 @@ export default function OrderStatusPanel({ order, onSubmit }) {
                   )}
                 </div>
                 <div>
-                  <label htmlFor={`${ids}-courier`} className="text-sm font-medium text-[#2b1d14]">
-                    Courier <span className="font-normal text-[#6E5D4F]">(optional)</span>
+                  <label htmlFor={`${ids}-courier`} className="text-sm font-medium text-[#2B2118]">
+                    Courier <span className="font-normal text-[#6F6358]">(optional)</span>
                   </label>
                   <input
                     id={`${ids}-courier`}
@@ -178,8 +175,8 @@ export default function OrderStatusPanel({ order, onSubmit }) {
             )}
 
             <div>
-              <label htmlFor={`${ids}-note`} className="text-sm font-medium text-[#2b1d14]">
-                Note <span className="font-normal text-[#6E5D4F]">(optional, kept in history)</span>
+              <label htmlFor={`${ids}-note`} className="text-sm font-medium text-[#2B2118]">
+                Note <span className="font-normal text-[#6F6358]">(optional, kept in history)</span>
               </label>
               <textarea
                 id={`${ids}-note`}
@@ -196,7 +193,7 @@ export default function OrderStatusPanel({ order, onSubmit }) {
                 type="button"
                 onClick={() => setTarget(null)}
                 disabled={busy}
-                className={`min-h-[44px] rounded-xl border border-[#e8e1d8] bg-white px-5 text-sm font-medium text-[#2b1d14] hover:bg-[#faf7f2] disabled:opacity-60 ${focusRing}`}
+                className={`min-h-[44px] rounded-xl border border-[#e8e1d8] bg-white px-5 text-sm font-medium text-[#2B2118] hover:bg-[#faf7f2] disabled:opacity-60 ${focusRing}`}
               >
                 Back
               </button>
@@ -204,7 +201,7 @@ export default function OrderStatusPanel({ order, onSubmit }) {
                 type="submit"
                 disabled={busy}
                 className={`min-h-[44px] rounded-xl px-5 text-sm font-semibold text-white transition-colors disabled:cursor-wait disabled:opacity-70 ${focusRing} ${
-                  action.destructive ? 'bg-[#ba1a1a] hover:bg-[#93000a]' : 'bg-[#a3452a] hover:bg-[#8f3b23]'
+                  action.destructive ? 'bg-[#ba1a1a] hover:bg-[#93000a]' : 'bg-[#B5532E] hover:bg-[#9C4425]'
                 }`}
               >
                 {busy ? 'Saving…' : action.destructive ? 'Yes, cancel order' : action.label}

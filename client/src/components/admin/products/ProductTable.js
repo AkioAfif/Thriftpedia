@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { BoxIcon, SearchIcon, TrashIcon } from '../icons';
+import { HangerIcon } from '@/components/ui/icons/HangerIcon';
+import { SearchIcon, TrashIcon } from '../icons';
 import { conditionLabel, formatRupiah, getPhotoSrc, sizeLabel } from '../../../lib/adminProducts';
 
 const CONDITION_STYLES = {
@@ -13,7 +14,9 @@ const CONDITION_STYLES = {
 };
 
 const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-1';
-const primaryBtn = `inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#a3452a] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#8f3b23] ${focusRing}`;
+const primaryBtn = `inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#B5532E] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#9C4425] ${focusRing}`;
+// Outline terracotta: Add Product stays the only filled button on the page.
+const outlineBtn = `inline-flex min-h-[44px] items-center justify-center rounded-xl border-[1.5px] border-[#B5532E] bg-white px-6 text-sm font-semibold text-[#B5532E] transition-colors hover:bg-[#FBE6DC] ${focusRing}`;
 const SOLD_DELETE_HINT = 'Sold products have an order and can’t be deleted.';
 
 const COLUMNS = [
@@ -21,7 +24,7 @@ const COLUMNS = [
   { label: 'Category' },
   { label: 'Size' },
   { label: 'Condition' },
-  { label: 'Price', align: 'text-right' },
+  { label: 'Price', className: 'min-w-[110px]' },
   { label: 'Status' },
   { label: 'Actions' },
 ];
@@ -77,7 +80,11 @@ function RowActions({ product, onDelete }) {
       <Link
         href={`/admin/products/${product._id}/edit`}
         aria-label={`${sold ? 'View' : 'Edit'} ${product.name}`}
-        className={`inline-flex min-h-[44px] items-center rounded-xl border border-[#CFBEAE] bg-white px-4 text-sm font-semibold text-[#2b1d14] hover:bg-[#faf7f2] md:min-h-[40px] ${focusRing}`}
+        className={`inline-flex min-h-[44px] items-center rounded-xl px-4 text-sm font-semibold transition-colors ${focusRing} ${
+          sold
+            ? 'border border-[#D9CFC1] bg-white text-[#2B2118] hover:bg-[#F5F0E8]'
+            : 'border-[1.5px] border-[#B5532E] bg-white text-[#B5532E] hover:bg-[#FBE6DC]'
+        }`}
       >
         {sold ? 'View' : 'Edit'}
       </Link>
@@ -90,8 +97,10 @@ function RowActions({ product, onDelete }) {
         aria-label={`Delete ${product.name}`}
         aria-describedby={sold ? hintId : undefined}
         title={sold ? SOLD_DELETE_HINT : undefined}
-        className={`flex h-11 w-11 items-center justify-center rounded-xl border bg-white md:h-10 md:w-10 ${focusRing} ${
-          sold ? 'cursor-not-allowed border-[#E8E1D8] text-[#A89B8E]' : 'border-[#CFBEAE] text-[#2b1d14] hover:bg-[#faf7f2]'
+        className={`flex size-11 items-center justify-center rounded-xl border bg-white transition-colors ${focusRing} ${
+          sold
+            ? 'cursor-not-allowed border-[#E8E1D8] text-[#A89B8E]'
+            : 'border-[#D9CFC1] text-[#6F6358] hover:border-[#EBC3AE] hover:bg-[#FCEDEA] hover:text-[#BA1A1A]'
         }`}
       >
         <TrashIcon width={18} height={18} />
@@ -108,9 +117,9 @@ function RowActions({ product, onDelete }) {
 function TableHead() {
   return (
     <thead>
-      <tr className="bg-[#f1ebe1] text-left text-[#4A3F35]">
+      <tr className="bg-[#EFE7DA] text-left text-[#4A3F35]">
         {COLUMNS.map((col) => (
-          <th key={col.label} scope="col" className={`px-4 py-3.5 font-semibold ${col.align ?? ''}`}>
+          <th key={col.label} scope="col" className={`px-4 py-3.5 text-sm font-semibold ${col.className ?? ''}`}>
             {col.label}
           </th>
         ))}
@@ -139,14 +148,14 @@ function LoadingRows() {
               <td className="px-4 py-4"><span className={`${bar} w-20`} /></td>
               <td className="px-4 py-4"><span className={`${bar} w-8`} /></td>
               <td className="px-4 py-4"><span className={`${bar} w-24`} /></td>
-              <td className="px-4 py-4"><span className={`${bar} ml-auto w-24`} /></td>
+              <td className="px-4 py-4"><span className={`${bar} w-24`} /></td>
               <td className="px-4 py-4"><span className={`${bar} w-20`} /></td>
               <td className="px-4 py-4"><span className={`${bar} w-24`} /></td>
             </tr>
           ))}
         </tbody>
       </table>
-      <ul className="divide-y divide-[#efe9e0] md:hidden" aria-hidden="true">
+      <ul className="divide-y divide-[#EAE4DA] md:hidden" aria-hidden="true">
         {Array.from({ length: 4 }, (_, i) => (
           <li key={i} className="flex gap-3 p-4">
             <span className="block h-20 w-16 animate-pulse rounded-lg bg-[#efe9e0]" />
@@ -165,9 +174,9 @@ function LoadingRows() {
 function StateMessage({ icon, title, children, action, live }) {
   return (
     <div role={live ? 'alert' : undefined} className="flex flex-col items-center px-6 py-16 text-center sm:py-24">
-      <span className="text-[#6E5D4F]">{icon}</span>
-      <p className="mt-5 text-xl font-semibold text-[#2b1d14] sm:text-2xl">{title}</p>
-      <p className="mt-2 max-w-[28rem] text-sm text-[#6E5D4F]">{children}</p>
+      <span className="text-[#6F6358]">{icon}</span>
+      <p className="mt-5 text-xl font-semibold text-[#2B2118] sm:text-2xl">{title}</p>
+      <p className="mt-2 max-w-[28rem] text-sm text-[#6F6358]">{children}</p>
       {action && <div className="mt-6 w-full max-w-[12rem]">{action}</div>}
     </div>
   );
@@ -192,7 +201,7 @@ export default function ProductTable({
         icon={<AlertIcon />}
         title="Couldn't load products"
         action={
-          <button type="button" onClick={onRetry} className={`${primaryBtn} w-full`}>
+          <button type="button" onClick={onRetry} className={`${outlineBtn} w-full`}>
             Retry
           </button>
         }
@@ -206,18 +215,18 @@ export default function ProductTable({
     body = filtered ? (
       <StateMessage
         icon={<SearchIcon width={36} height={36} strokeWidth={1.5} />}
-        title="No matches"
+        title="No products match these filters"
         action={
-          <button type="button" onClick={onResetFilters} className={`${primaryBtn} w-full`}>
+          <button type="button" onClick={onResetFilters} className={`${outlineBtn} w-full`}>
             Reset filters
           </button>
         }
       >
-        No products match these filters. Try a different search or reset the filters.
+        Try a different search or reset the filters.
       </StateMessage>
     ) : (
       <StateMessage
-        icon={<BoxIcon width={36} height={36} strokeWidth={1.5} />}
+        icon={<HangerIcon width={36} height={36} strokeWidth={1.5} />}
         title="No products yet"
         action={
           <Link href="/admin/products/new" className={`${primaryBtn} w-full`}>
@@ -237,26 +246,29 @@ export default function ProductTable({
             <TableHead />
             <tbody>
               {items.map((product) => (
-                <tr key={product._id} className="border-t border-[#efe9e0] hover:bg-[#FAF7F2]">
+                <tr
+                  key={product._id}
+                  className={`border-t border-[#EAE4DA] hover:bg-[#F5F0E8] ${product.status === 'SOLD' ? 'bg-[#F7F2EA]' : 'even:bg-[#FBF8F3]'}`}
+                >
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-3">
                       <ProductThumb product={product} className="h-[50px] w-10" />
                       <div className="min-w-0 max-w-[240px]">
-                        <p className="truncate font-semibold text-[#2b1d14]" title={product.name}>
+                        <p className="truncate font-semibold text-[#2B2118]" title={product.name}>
                           {product.name}
                         </p>
-                        <p className="truncate text-xs text-[#6E5D4F]">{product.brand || '—'}</p>
+                        <p className="truncate text-[13px] text-[#6F6358]">{product.brand || '—'}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3.5 text-[#2b1d14]">{product.category?.name ?? '—'}</td>
-                  <td className="px-4 py-3.5 text-[#2b1d14]">{sizeLabel(product.size)}</td>
+                  <td className="px-4 py-3.5 text-[#2B2118]">{product.category?.name ?? '—'}</td>
+                  <td className="px-4 py-3.5 text-[#2B2118]">{sizeLabel(product.size)}</td>
                   <td className="px-4 py-3.5">
                     <Badge className={CONDITION_STYLES[product.condition] ?? 'bg-[#efe9e0] text-[#4A3F35]'}>
                       {conditionLabel(product.condition)}
                     </Badge>
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3.5 text-right font-semibold tabular-nums text-[#2b1d14]">
+                  <td className="min-w-[110px] whitespace-nowrap px-4 py-3.5 text-left font-semibold tabular-nums text-[#2B2118]">
                     {formatRupiah(product.price)}
                   </td>
                   <td className="px-4 py-3.5">
@@ -271,17 +283,20 @@ export default function ProductTable({
           </table>
         </div>
 
-        <ul className="divide-y divide-[#efe9e0] md:hidden" aria-label="Products">
+        <ul className="divide-y divide-[#EAE4DA] md:hidden" aria-label="Products">
           {items.map((product) => (
-            <li key={product._id} className="flex gap-3 p-4">
+            <li
+              key={product._id}
+              className={`flex gap-3 p-4 ${product.status === 'SOLD' ? 'bg-[#F7F2EA]' : 'even:bg-[#FBF8F3]'}`}
+            >
               <ProductThumb product={product} className="h-20 w-16" />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold text-[#2b1d14]">{product.name}</p>
-                <p className="truncate text-xs text-[#6E5D4F]">
+                <p className="truncate font-semibold text-[#2B2118]">{product.name}</p>
+                <p className="truncate text-[13px] text-[#6F6358]">
                   {[product.brand, sizeLabel(product.size)].filter(Boolean).join(' · ')}
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                  <span className="font-semibold tabular-nums text-[#2b1d14]">{formatRupiah(product.price)}</span>
+                  <span className="font-semibold tabular-nums text-[#2B2118]">{formatRupiah(product.price)}</span>
                   <StatusBadge status={product.status} />
                 </div>
                 <div className="mt-3">
@@ -295,5 +310,5 @@ export default function ProductTable({
     );
   }
 
-  return <div className="overflow-hidden rounded-[20px] border border-[#e8e1d8] bg-white">{body}</div>;
+  return <div className="overflow-hidden rounded-[20px] border border-[#D9CFC1] bg-white">{body}</div>;
 }

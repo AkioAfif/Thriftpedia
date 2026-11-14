@@ -142,7 +142,7 @@ export default function OrderTable({
                   <p className="truncate text-xs text-[#6E5D4F]">
                     {buyer.name ?? 'Deleted account'} · <time dateTime={order.createdAt}>{formatOrderDate(order.createdAt)}</time>
                   </p>
-                  <p className="mt-1 font-mono text-sm font-semibold tabular-nums text-[#2b1d14]">
+                  <p className="mt-1 text-sm font-semibold tabular-nums text-[#2b1d14]">
                     {order.total == null ? '—' : formatRupiah(order.total)}
                   </p>
                 </div>
@@ -161,7 +161,7 @@ export default function OrderTable({
             <th scope="col" className="px-4 py-3.5 font-semibold">Date</th>
             <th scope="col" className="px-4 py-3.5 font-semibold">Buyer</th>
             <th scope="col" className="px-4 py-3.5 font-semibold">Item</th>
-            <th scope="col" className="px-4 py-3.5 text-right font-semibold">Total</th>
+            <th scope="col" className="min-w-[110px] px-4 py-3.5 font-semibold">Total</th>
             <th scope="col" className="px-4 py-3.5 font-semibold">Status</th>
             <th scope="col" className="px-4 py-3.5 text-right font-semibold">Action</th>
           </tr>
@@ -198,7 +198,7 @@ export default function OrderTable({
                     </div>
                   </div>
                 </td>
-                <td className="whitespace-nowrap px-4 py-4 text-right font-mono font-semibold tabular-nums text-[#2b1d14]">
+                <td className="min-w-[110px] whitespace-nowrap px-4 py-4 text-left font-semibold tabular-nums text-[#2b1d14]">
                   {order.total == null ? '—' : formatRupiah(order.total)}
                 </td>
                 <td className="px-4 py-4">
