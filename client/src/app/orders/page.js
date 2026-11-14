@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
@@ -48,7 +48,7 @@ function OrdersView() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { status, page } = readQuery(searchParams);
-  const { token, user, ready } = useAuth();
+  const { token, user, ready, logout } = useAuth();
   const { requestLogin } = useWishlist();
   const buyer = Boolean(token) && user?.role?.toUpperCase() === 'BUYER';
   const query = useQuery({
@@ -58,6 +58,12 @@ function OrdersView() {
     retry: false,
     placeholderData: keepPreviousData, // keeps tabs and list steady while the next page loads
   });
+  // Expired/invalid session: clear it once; the new (null) token disables the query, so this runs once.
+  const unauthorized = query.isError && query.error?.status === 401;
+
+  useEffect(() => {
+    if (unauthorized) logout();
+  }, [unauthorized, logout]);
 
   function go(next) {
     const params = new URLSearchParams();
@@ -68,7 +74,7 @@ function OrdersView() {
   }
 
   if (!ready) return <ListSkeleton />;
-  if (!token) {
+  if (!token || unauthorized) {
     return (
       <EmptyCard title="Log in to see your orders">
         <button type="button" className="buyer-primary w-full sm:w-[200px]" onClick={requestLogin}>Log in</button>

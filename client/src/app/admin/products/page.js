@@ -9,7 +9,7 @@ import ProductFilters from '../../../components/admin/products/ProductFilters';
 import ProductPagination from '../../../components/admin/products/ProductPagination';
 import ProductStatCards from '../../../components/admin/products/ProductStatCards';
 import ProductTable from '../../../components/admin/products/ProductTable';
-import { clearToken } from '../../../lib/adminAuth';
+import { useAuth } from '@/context/AuthContext';
 import {
   DEFAULT_FILTERS,
   EMPTY_META,
@@ -35,6 +35,8 @@ function PlusIcon() {
 
 function ProductManagement() {
   const router = useRouter();
+  // Clears token, user and thriftpedia_token together, so the Navbar is logged out too.
+  const { logout } = useAuth();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -60,11 +62,11 @@ function ProductManagement() {
   const handleAuthError = useCallback(
     (err) => {
       if (err?.status !== 401) return false;
-      clearToken();
+      logout();
       router.replace('/login');
       return true;
     },
-    [router]
+    [router, logout]
   );
 
   const navigate = useCallback(
