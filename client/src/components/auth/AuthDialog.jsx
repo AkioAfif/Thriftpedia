@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 
 import { Button } from '@/components/ui/Button';
+import { LoadingDots } from '@/components/ui/LoadingDots';
 import AuthTabs from './AuthTabs';
 import AuthForm from '../ui/AuthForm';
 import BrandContext from './BrandContext';
@@ -313,11 +314,11 @@ async function handleAuthSubmit({ mode, values }) {
                 form="auth-dialog-form"
                 variant="primary"
                 size="lg"
-                loading={authLoading}
                 disabled={authLoading}
+                aria-busy={authLoading || undefined}
                 className="h-12 w-full rounded-md shadow-none"
               >
-                {isRegister ? 'Create account' : 'Log in'}
+                {authLoading ? <LoadingDots /> : isRegister ? 'Create account' : 'Log in'}
               </Button>
             </div>
           </>
