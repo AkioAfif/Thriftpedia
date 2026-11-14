@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAdminTopBar } from './MobileBackBar';
 import { NAV_ITEMS, SidebarLogo, focusRing, formatRole, getInitials, isActivePath } from './Sidebar';
 
 const LG_QUERY = '(min-width: 1024px)';
@@ -13,6 +14,14 @@ function MenuIcon() {
   return (
     <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
       <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  );
+}
+
+function BackIcon() {
+  return (
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 12H5M11 6l-6 6 6 6" />
     </svg>
   );
 }
@@ -28,6 +37,8 @@ function CloseIcon() {
 // Below lg only: sticky top bar with a hamburger that opens a left drawer (menu + account).
 export default function AdminMobileNav({ user, onLogout }) {
   const pathname = usePathname();
+  // Set by a page through <MobileBackBar>; null shows the logo.
+  const backBar = useAdminTopBar();
   const drawerId = useId();
   const menuButtonRef = useRef(null);
   const closeButtonRef = useRef(null);
@@ -91,8 +102,17 @@ export default function AdminMobileNav({ user, onLogout }) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-[#D9CFC1] bg-[#FAF7F2] px-4 lg:hidden">
-        <SidebarLogo />
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-2 border-b border-[#D9CFC1] bg-[#FAF7F2] px-4 lg:hidden">
+        {backBar ? (
+          <div className="-ml-2 flex min-w-0 flex-1 items-center gap-1">
+            <Link href={backBar.href} aria-label={`Back to ${backBar.label}`} className={`${iconBtn} shrink-0`}>
+              <BackIcon />
+            </Link>
+            <p className="min-w-0 truncate text-base font-semibold text-[#2B2118]">{backBar.title}</p>
+          </div>
+        ) : (
+          <SidebarLogo />
+        )}
         <button
           ref={menuButtonRef}
           type="button"

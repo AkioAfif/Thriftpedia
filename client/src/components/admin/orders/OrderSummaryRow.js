@@ -12,7 +12,8 @@ const STATUS_TONE = {
   CANCELLED: 'bg-[#F5F0E8] border-[#8A7A6B]',
 };
 
-const box = 'min-w-0 rounded-2xl p-5';
+// Compact below md (two small tiles, buyer full width) so Order progress shows sooner; md+ unchanged.
+const box = 'min-w-0 rounded-2xl p-3.5 md:p-5';
 const label = 'text-[13px] font-medium text-[#6F6358]';
 
 function initials(name) {
@@ -23,22 +24,22 @@ function initials(name) {
 export default function OrderSummaryRow({ order, buyer }) {
   const meta = statusMeta(order.status);
   return (
-    <section aria-label="Order summary" className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
+    <section aria-label="Order summary" className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 md:grid-cols-3 md:gap-6">
       <div className={`${box} border-2 ${STATUS_TONE[order.status] ?? STATUS_TONE.CANCELLED}`}>
         <p className={label}>Current status</p>
-        <p className="mt-2 text-[22px] font-semibold text-[#2B2118]">
+        <p className="mt-1 text-[18px] font-semibold text-[#2B2118] md:mt-2 md:text-[22px]">
           {meta.label}
         </p>
       </div>
 
       <div className={`${box} border border-[#EBD596] bg-[#FBF1D4]`}>
         <p className={label}>Order total</p>
-        <p className="mt-2 break-words text-[28px] font-semibold leading-tight tabular-nums text-[#2B2118]">
+        <p className="mt-1 break-words text-[20px] font-semibold leading-tight tabular-nums text-[#2B2118] md:mt-2 md:text-[28px]">
           {order.total == null ? '—' : formatRupiah(order.total)}
         </p>
       </div>
 
-      <div className={`${box} flex items-start gap-3.5 border border-[#D9CFC1] bg-[#F5F0E8]`}>
+      <div className={`${box} flex items-start gap-3.5 border border-[#D9CFC1] bg-[#F5F0E8] min-[360px]:col-span-2 md:col-span-1`}>
         <span
           aria-hidden="true"
           className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#FBE6DC] text-sm font-bold text-[#B5532E]"

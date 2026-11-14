@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminMobileNav from './AdminMobileNav';
+import { AdminTopBarProvider } from './MobileBackBar';
 import Sidebar from './Sidebar';
 import { apiFetch } from '../../lib/adminApi';
 import { extractUser, getToken } from '../../lib/adminAuth';
@@ -109,11 +110,14 @@ export default function AdminShell({ children }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#faf7f2] text-[#2b1d14] lg:flex-row">
-      {/* Below lg: sticky top bar + drawer. From lg: the sidebar, unchanged. */}
-      <AdminMobileNav user={user} onLogout={logout} />
-      <Sidebar user={user} onLogout={logout} />
-      <main className="min-w-0 flex-1 p-6 lg:p-10">{children}</main>
-    </div>
+    <AdminTopBarProvider>
+      <div className="flex min-h-screen flex-col bg-[#faf7f2] text-[#2b1d14] lg:flex-row">
+        {/* Below lg: sticky top bar + drawer. From lg: the sidebar, unchanged. */}
+        <AdminMobileNav user={user} onLogout={logout} />
+        <Sidebar user={user} onLogout={logout} />
+        {/* Below lg, anything scrolled to (anchors, focus) stops 64px down, clear of the 56px top bar. */}
+        <main className="min-w-0 flex-1 p-6 lg:p-10 [&_[id]]:scroll-mt-16 lg:[&_[id]]:scroll-mt-0">{children}</main>
+      </div>
+    </AdminTopBarProvider>
   );
 }
