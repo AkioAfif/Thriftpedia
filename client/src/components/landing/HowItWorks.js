@@ -1,5 +1,4 @@
 import { Reveal } from './Reveal';
-import { WaveDivider } from './WaveDivider';
 
 const STEPS = [
   { title: 'Browse the catalog', text: 'Explore freshly added unique pieces. Filter by category, fit, or aesthetic.' },
@@ -13,12 +12,8 @@ export function HowItWorks() {
     <section
       id="how-it-works"
       aria-labelledby="how-it-works-title"
-      className="relative scroll-mt-20 overflow-hidden bg-[#C8653A] py-24 text-white"
+      className="relative scroll-mt-20 overflow-hidden bg-[#C8653A] py-20 text-white md:py-24"
     >
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 z-10 h-6 text-canvas">
-        <WaveDivider variant="bandTop" className="h-full" />
-      </div>
-
       <div className="relative z-20 mx-auto w-full max-w-[1152px] px-6 py-8">
         <Reveal className="mx-auto mb-16 max-w-[576px] text-center">
           <p className="label-md text-white">Simple process</p>
@@ -47,10 +42,6 @@ export function HowItWorks() {
             ))}
           </ol>
         </div>
-      </div>
-
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-6 text-canvas">
-        <WaveDivider variant="bandBottom" className="h-full" />
       </div>
     </section>
   );
