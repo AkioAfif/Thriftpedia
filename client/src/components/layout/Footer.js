@@ -1,23 +1,23 @@
 import Link from 'next/link';
 import { HangerLogoIcon } from '@/components/ui/Icons';
+import { FooterLinks } from './FooterLinks';
 
 const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#5A3A2A]';
 
-// Contact, Terms and Privacy only render once their route exists in app/ (/contact, /terms,
-// /privacy). None exist yet, so the list is empty; add an entry when the page ships.
-const FOOTER_LINKS = [];
+// Only list routes that exist in app/.
+const FOOTER_LINKS = [
+  { href: '/contact', label: 'Contact' },
+  { href: '/terms', label: 'Terms' },
+  { href: '/privacy', label: 'Privacy' },
+];
 
 const DEMO_VIDEO_URL = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL?.trim() || '';
 
 export function Footer() {
   return (
     <footer className="relative mt-auto w-full text-white">
-      <svg aria-hidden="true" focusable="false" viewBox="0 0 1200 48" preserveAspectRatio="none" className="pointer-events-none block h-12 w-full">
-        <path d="M0,24 C300,48 800,0 1200,24 L1200,48 L0,48 Z" fill="#5A3A2A" stroke="none" />
-      </svg>
-
       <div className="bg-[#5A3A2A] px-6 pb-10 sm:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 pb-8 pt-4 md:flex-row">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 pb-8 pt-10 md:flex-row">
           <Link href="/catalog" className={`flex items-center gap-2.5 rounded-xl p-0.5 ${focusRing}`}>
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F25A2A]">
               <HangerLogoIcon />
@@ -28,15 +28,7 @@ export function Footer() {
             </div>
           </Link>
 
-          {FOOTER_LINKS.length > 0 && (
-            <nav aria-label="Footer" className="flex flex-wrap items-center justify-center gap-x-10 gap-y-2 text-[15px] font-medium">
-              {FOOTER_LINKS.map((link) => (
-                <Link key={link.href} href={link.href} className={`inline-flex min-h-11 items-center rounded hover:text-primary-tint ${focusRing}`}>
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          )}
+          {FOOTER_LINKS.length > 0 && <FooterLinks links={FOOTER_LINKS} />}
 
           {DEMO_VIDEO_URL ? (
             <a
