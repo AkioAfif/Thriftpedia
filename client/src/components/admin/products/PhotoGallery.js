@@ -159,7 +159,8 @@ export default function PhotoGallery({ photos, onChange, readOnly = false }) {
                   </button>
                 )}
                 {index === 0 && (
-                  <span className="absolute bottom-2 left-2 rounded-full bg-[#B5532E] px-2.5 py-1 text-xs font-semibold text-white">
+                  // Below lg the bottom edge holds the arrows, so the badge sits top-left (free on photo 1).
+                  <span className="absolute left-2 top-2 rounded-full bg-[#B5532E] px-2.5 py-1 text-xs font-semibold text-white lg:bottom-2 lg:top-auto">
                     Cover
                   </span>
                 )}
@@ -174,10 +175,11 @@ export default function PhotoGallery({ photos, onChange, readOnly = false }) {
                     <CloseIcon width={14} height={14} />
                   </button>
                 )}
-              </div>
 
-              {!readOnly && (
-                <div className="mt-2 flex items-center justify-between gap-1">
+                {/* Below lg: arrows float on the photo's bottom edge (a disabled one is hidden).
+                    From lg: a row under the photo, as before. */}
+                {!readOnly && (
+                <div className="absolute inset-x-1.5 bottom-1.5 flex items-center justify-between lg:static lg:mt-2 lg:gap-1 max-lg:[&>button:disabled]:invisible">
                   <button
                     id={btnId(photo.id, 'left')}
                     type="button"
@@ -201,7 +203,8 @@ export default function PhotoGallery({ photos, onChange, readOnly = false }) {
                     <ChevronRightIcon width={16} height={16} />
                   </button>
                 </div>
-              )}
+                )}
+              </div>
             </li>
           );
         })}

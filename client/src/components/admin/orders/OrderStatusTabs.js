@@ -4,7 +4,17 @@ import { useEffect, useRef } from 'react';
 import { ORDER_STATUS_ORDER, statusMeta } from '@/lib/adminOrders';
 import { formatNumber } from '@/lib/adminProducts';
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E]';
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#B5532E]';
+
+// Active tab: solid tint + 3px bottom border in the status's saturated colour (statusMeta dot).
+const TAB_TONE = {
+  '': { active: 'bg-[#F5F0E8] border-[#4A3F35]', pill: 'bg-[#E5DCCD] text-[#4A3F35]' },
+  PENDING: { active: 'bg-[#FBF1D4] border-[#B07D12]' },
+  PROCESSING: { active: 'bg-[#FBE6DC] border-[#B5532E]' },
+  SHIPPED: { active: 'bg-[#DCEBF2] border-[#2E6A8F]' },
+  COMPLETED: { active: 'bg-[#E4EEE2] border-[#2F7A3E]' },
+  CANCELLED: { active: 'bg-[#EDE6DC] border-[#8A7A6B]' },
+};
 
 // Counts come straight from the list response (`counts`): they follow the search but
 // ignore the active status, so every tab keeps showing its own total.
@@ -27,7 +37,7 @@ export default function OrderStatusTabs({ counts, active, onSelect, panelId }) {
     const left = tab.offsetLeft; // strip is `relative`, so this is already strip-relative
     const right = left + tab.offsetWidth;
     if (left < strip.scrollLeft) strip.scrollLeft = left - 8;
-    else if (right > strip.scrollLeft + strip.clientWidth) strip.scrollLeft = right - strip.clientWidth + 8;
+    else if (right > strip.scrollLeft + strip.clientWidth) strip.scrollLeft = right - strip.clientWidth + 16;
   }, [activeIndex, counts]);
 
   function onKeyDown(e) {
@@ -45,10 +55,16 @@ export default function OrderStatusTabs({ counts, active, onSelect, panelId }) {
   }
 
   return (
-    <div ref={stripRef} className="relative overflow-x-auto rounded-2xl border border-[#e6ddd2] bg-white p-1.5">
-      <div role="tablist" aria-label="Filter orders by status" onKeyDown={onKeyDown} className="flex min-w-max gap-1">
+    <div
+      ref={stripRef}
+      className="relative snap-x overflow-x-auto rounded-2xl border border-[#D9CFC1] bg-white p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
+      {/* pr-4: the last tab stays visibly cut off on narrow screens, which hints that the strip scrolls. */}
+      <div role="tablist" aria-label="Filter orders by status" onKeyDown={onKeyDown} className="flex min-w-max gap-1 pr-4 md:pr-0">
         {tabs.map((tab, i) => {
           const selected = i === activeIndex;
+          const tone = TAB_TONE[tab.value];
+          const pill = tone.pill ?? statusMeta(tab.value).badge;
           return (
             <button
               key={tab.label}
@@ -62,24 +78,14 @@ export default function OrderStatusTabs({ counts, active, onSelect, panelId }) {
               aria-controls={panelId}
               tabIndex={selected ? 0 : -1}
               onClick={() => onSelect(tab.value)}
-              className={`relative flex min-h-[44px] flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm transition-colors duration-150 ${focusRing} ${
-                selected
-                  ? 'bg-[#f1ebe1] font-semibold text-[#2b1d14]'
-                  : 'font-medium text-[#4A3F35] hover:bg-[#faf7f2]'
+              className={`flex min-h-11 flex-1 snap-start items-center justify-center gap-2 whitespace-nowrap rounded-t-xl rounded-b-md border-b-[3px] px-4 text-sm font-semibold transition-colors duration-150 ${focusRing} ${
+                selected ? `${tone.active} text-[#2B2118]` : 'border-transparent text-[#4A3F35] hover:bg-[#FAF7F2]'
               }`}
             >
-              
               {tab.label}
-              <span
-                className={`min-w-6 rounded-full px-1.5 py-0.5 text-xs tabular-nums ${
-                  selected ? 'bg-[#2b1d14] text-white' : 'bg-[#f1ebe1] text-[#5C4D40]'
-                }`}
-              >
+              <span className={`min-w-6 rounded-full px-1.5 py-0.5 text-xs font-semibold tabular-nums ${pill}`}>
                 {counts ? formatNumber(tab.count ?? 0) : '–'}
               </span>
-              {selected && (
-                <span aria-hidden="true" className="absolute inset-x-4 bottom-1 h-0.5 rounded-full bg-[#2b1d14]" />
-              )}
             </button>
           );
         })}

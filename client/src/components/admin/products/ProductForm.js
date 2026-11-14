@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect, useId, useState } from 'react';
-import FilterSelect from './FilterSelect';
+import FilterSelect from '@/components/ui/FilterSelect';
+import MobileBackBar from '../MobileBackBar';
 import FormSection from './FormSection';
 import PhotoDropZone from './PhotoDropZone';
 import PhotoGallery, { toPhotoItem } from './PhotoGallery';
@@ -88,14 +89,16 @@ function Field({ id, label, required, error, hint, children }) {
 export function FormPageLayout({ title, children }) {
   return (
     <div className="mx-auto w-full max-w-[1152px]">
-      <nav aria-label="Breadcrumb" className="text-sm text-[#6F6358]">
+      {/* Below lg the top bar shows "Back to Products" + the title, so the breadcrumb is desktop-only. */}
+      <MobileBackBar href="/admin/products" label="Products" title={`${title.charAt(0)}${title.slice(1).toLowerCase()}`} />
+      <nav aria-label="Breadcrumb" className="hidden text-sm text-[#6F6358] lg:block">
         <Link href="/admin/products" className={`rounded hover:text-[#2B2118] ${focusRing}`}>
           Product Management
         </Link>
         <span aria-hidden="true"> › </span>
         <span aria-current="page" className="text-[#2B2118]">{title}</span>
       </nav>
-      <h1 className="mb-6 mt-2 text-[32px] font-semibold leading-tight text-[#2B2118] sm:text-[40px]">{title}</h1>
+      <h1 className="mb-6 text-[32px] font-semibold leading-tight text-[#2B2118] sm:text-[40px] lg:mt-2">{title}</h1>
       {children}
     </div>
   );
@@ -450,16 +453,18 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
         </p>
       )}
 
-      <div className="sticky bottom-0 z-10 -mx-6 mt-8 flex flex-wrap items-center justify-end gap-3 border-t border-[#D9CFC1] bg-white px-6 py-4 lg:-mx-10 lg:px-10">
+      {/* Below lg: one 64px row (8 + 48 + 8) plus the safe-area inset, Cancel 2/5 and Save 3/5;
+          the status text moves into the disabled button. From lg: unchanged. */}
+      <div className="sticky bottom-0 z-10 -mx-6 mt-8 flex flex-nowrap items-center justify-end gap-3 border-t border-[#D9CFC1] bg-white px-6 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 lg:-mx-10 lg:flex-wrap lg:px-10 lg:pb-4 lg:pt-4">
         {!sold && (dirty || noChanges) && (
-          <span className="mr-auto text-[13px] text-[#6F6358]" aria-live="polite">
+          <span className="mr-auto hidden text-[13px] text-[#6F6358] lg:inline" aria-live="polite">
             {noChanges ? 'No changes to save' : 'You have unsaved changes.'}
           </span>
         )}
         <Link
           href="/admin/products"
           onClick={handleCancelClick}
-          className={`flex min-h-11 items-center rounded-xl border border-[#D9CFC1] bg-white px-5 text-sm font-semibold text-[#2B2118] hover:bg-[#F5F0E8] ${focusRing}`}
+          className={`flex min-h-12 items-center justify-center rounded-xl border border-[#D9CFC1] bg-white px-5 text-sm font-semibold text-[#2B2118] hover:bg-[#F5F0E8] lg:min-h-11 lg:justify-start ${sold ? 'flex-1' : 'flex-[2]'} lg:flex-none ${focusRing}`}
         >
           {sold ? 'Back to products' : 'Cancel'}
         </Link>
@@ -467,9 +472,22 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
           <button
             type="submit"
             disabled={busy || (mode === 'edit' && !dirty)}
-            className={`min-h-11 rounded-xl bg-[#B5532E] px-6 text-sm font-semibold text-white hover:bg-[#9C4425] disabled:cursor-not-allowed disabled:bg-[#E5DCCD] disabled:text-[#5C4D40] ${focusRing}`}
+            className={`min-h-12 flex-[3] rounded-xl bg-[#B5532E] px-6 text-sm font-semibold text-white hover:bg-[#9C4425] disabled:cursor-not-allowed disabled:bg-[#E5DCCD] disabled:text-[#5C4D40] lg:min-h-11 lg:flex-none ${focusRing}`}
           >
-            {submitting ? 'Saving...' : mode === 'edit' ? 'Save changes' : 'Add product'}
+            {submitting ? (
+              'Saving...'
+            ) : mode === 'edit' ? (
+              noChanges ? (
+                <>
+                  <span className="lg:hidden">No changes</span>
+                  <span className="hidden lg:inline">Save changes</span>
+                </>
+              ) : (
+                'Save changes'
+              )
+            ) : (
+              'Add product'
+            )}
           </button>
         )}
       </div>

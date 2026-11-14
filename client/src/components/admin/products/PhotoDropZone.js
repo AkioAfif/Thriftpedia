@@ -49,15 +49,17 @@ export default function PhotoDropZone({ disabled, uploading, onFiles }) {
         className="peer sr-only"
       />
       <span
-        className={`flex flex-col items-center gap-1.5 rounded-[14px] border-2 px-4 py-6 text-center text-[#2B2118] peer-focus-visible:ring-2 peer-focus-visible:ring-[#B5532E] peer-focus-visible:ring-offset-2 peer-disabled:cursor-not-allowed peer-disabled:border-dashed peer-disabled:border-[#D9CFC1] peer-disabled:bg-[#F5F0E8] peer-disabled:text-[#5C4D40] ${
+        className={`flex h-[120px] flex-col items-center justify-center gap-1.5 rounded-[14px] border-2 px-4 text-center lg:h-auto lg:py-6 text-[#2B2118] peer-focus-visible:ring-2 peer-focus-visible:ring-[#B5532E] peer-focus-visible:ring-offset-2 peer-disabled:cursor-not-allowed peer-disabled:border-dashed peer-disabled:border-[#D9CFC1] peer-disabled:bg-[#F5F0E8] peer-disabled:text-[#5C4D40] ${
           over ? 'border-solid border-[#B5532E] bg-[#FBE6DC]' : 'border-dashed border-[#B5532E] bg-[#FFF8F4]'
         }`}
       >
         <span className={disabled ? 'text-[#5C4D40]' : 'text-[#B5532E]'}>
           <UploadIcon />
         </span>
-        <span className="text-sm font-semibold">{uploading ? 'Uploading...' : 'Drag photos here or browse'}</span>
-        <span className="text-[13px] text-[#6F6358]">JPG, PNG or WebP · max 5 MB each</span>
+        {/* Below lg (touch): one short line; from lg the drag hint and file rules, as before. */}
+        <span className="text-sm font-semibold lg:hidden">{uploading ? 'Uploading...' : 'Tap to add photos'}</span>
+        <span className="hidden text-sm font-semibold lg:inline">{uploading ? 'Uploading...' : 'Drag photos here or browse'}</span>
+        <span className="hidden text-[13px] text-[#6F6358] lg:inline">JPG, PNG or WebP · max 5 MB each</span>
       </span>
     </label>
   );
