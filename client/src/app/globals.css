@@ -260,3 +260,12 @@
 @media (prefers-reduced-motion: no-preference) {
   .loading-dot { animation: loading-dot 900ms ease-in-out infinite both; }
 }
+
+input[type='password']::-ms-reveal,
+input[type='password']::-ms-clear {
+  display: none;
+}
+input[type='password']::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  pointer-events: none;
+}
