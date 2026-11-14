@@ -7,7 +7,6 @@ import FilterSelect from '@/components/ui/FilterSelect';
 import FilterSheet, { EMPTY_DRAFT } from './FilterSheet';
 
 const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-1';
-const smallLabel = 'mb-1.5 block text-[13px] font-medium text-[#6F6358]';
 
 function FunnelIcon() {
   return (
@@ -90,7 +89,7 @@ export default function ProductFilters({
             enterKeyHint="search"
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search by name or brand"
-            className="h-12 w-full rounded-xl border-[1.5px] border-[#D9CFC1] bg-white pl-12 pr-12 text-[15px] text-[#2B2118] outline-none placeholder:text-[#6F6358] hover:border-[#B5A595] focus:border-[#B5532E] focus:shadow-[0_0_0_4px_#FBE6DC] [&::-webkit-search-cancel-button]:hidden"
+            className="h-12 w-full rounded-xl border-[1.5px] border-[#D9CFC1] bg-white pl-12 pr-12 md:h-[52px] md:rounded-[14px] text-[15px] text-[#2B2118] outline-none placeholder:text-[#6F6358] hover:border-[#B5A595] focus:border-[#B5532E] focus:shadow-[0_0_0_4px_#FBE6DC] [&::-webkit-search-cancel-button]:hidden"
           />
           {searchValue && (
             <button
@@ -103,12 +102,6 @@ export default function ProductFilters({
             </button>
           )}
         </form>
-
-        {/* md and up: Sort sits at the right end of the search row. */}
-        <div className="hidden w-[220px] shrink-0 md:block">
-          <span aria-hidden="true" className={smallLabel}>Sort by</span>
-          {sortSelect('filter-sort')}
-        </div>
 
         {/* Under md: Filters button + Sort side by side. */}
         <div className="grid grid-cols-2 gap-3 md:hidden">
@@ -135,40 +128,57 @@ export default function ProductFilters({
         </div>
       </div>
 
-      {/* md and up: second row with labelled selects. */}
-      <div className="mt-4 hidden grid-cols-3 gap-3 md:grid">
-        <div className="min-w-0">
-          <span aria-hidden="true" className={smallLabel}>Category</span>
+      {/* md and up: one bar (#F5F0E8) with Category, Size and Condition, each labelled inside
+          its 40px trigger, a 24px divider, then Sort pushed to the right. */}
+      <div className="mt-4 hidden flex-wrap items-center gap-2 rounded-2xl border border-[#E5DCCD] bg-[#F5F0E8] p-2 md:flex">
+        <div className="min-w-[160px]">
           <FilterSelect
             id="filter-category"
             label="Category"
+            inlineLabel="Category"
+            compact
             emptyLabel="All"
             value={filters.category}
             onChange={(category) => onChange({ category })}
             options={categoryOptions}
           />
         </div>
-        <div className="min-w-0">
-          <span aria-hidden="true" className={smallLabel}>Size</span>
+        <div className="min-w-[120px]">
           <FilterSelect
             id="filter-size"
             label="Size"
+            inlineLabel="Size"
+            compact
             emptyLabel="All"
             value={filters.size}
             onChange={(size) => onChange({ size })}
             options={SIZE_OPTIONS}
           />
         </div>
-        <div className="min-w-0">
-          <span aria-hidden="true" className={smallLabel}>Condition</span>
+        <div className="min-w-[170px]">
           <FilterSelect
             id="filter-condition"
             label="Condition"
+            inlineLabel="Condition"
+            compact
             emptyLabel="All"
-            align="right"
             value={filters.condition}
             onChange={(condition) => onChange({ condition })}
             options={CONDITION_OPTIONS}
+          />
+        </div>
+        <span aria-hidden="true" className="mx-1 h-6 w-px bg-[#D9CFC1]" />
+        <div className="ml-auto min-w-[200px]">
+          <FilterSelect
+            id="filter-sort"
+            label="Sort by"
+            inlineLabel="Sort"
+            compact
+            value={filters.sort}
+            defaultValue="newest"
+            align="right"
+            onChange={(sort) => onChange({ sort })}
+            options={SORT_OPTIONS}
           />
         </div>
       </div>

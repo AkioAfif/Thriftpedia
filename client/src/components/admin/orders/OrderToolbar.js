@@ -10,7 +10,7 @@ const smallLabel = 'mb-1.5 block text-[13px] font-medium text-[#6F6358]';
 
 const sortLabel = (value) => ORDER_SORT_OPTIONS.find((o) => o.value === value)?.label ?? value;
 
-// Search submits on Enter (keyboard "search" key on mobile) or, from md, the Search button.
+// Search submits on Enter (the keyboard "search" key on mobile); there is no Search button.
 // `appliedQ` is the search the list currently uses (from the URL); chips show it, not the draft.
 export default function OrderToolbar({
   searchInput,
@@ -30,7 +30,7 @@ export default function OrderToolbar({
 
   return (
     <div>
-      <div className="flex flex-col gap-3 md:flex-row md:items-end">
+      <div className="flex flex-col gap-3">
         <form
           role="search"
           onSubmit={(e) => {
@@ -54,9 +54,9 @@ export default function OrderToolbar({
               value={searchInput}
               onChange={(e) => onSearchInputChange(e.target.value)}
               placeholder="Search order ID or buyer"
-              className="h-12 w-full rounded-xl border-[1.5px] border-[#D9CFC1] bg-white pl-12 pr-12 text-[15px] text-[#2B2118] outline-none placeholder:text-[#6F6358] hover:border-[#B5A595] focus:border-[#B5532E] focus:shadow-[0_0_0_4px_#FBE6DC] md:pr-[8.75rem] [&::-webkit-search-cancel-button]:hidden"
+              className="h-12 w-full rounded-xl border-[1.5px] border-[#D9CFC1] bg-white pl-12 pr-12 text-[15px] text-[#2B2118] outline-none placeholder:text-[#6F6358] hover:border-[#B5A595] focus:border-[#B5532E] focus:shadow-[0_0_0_4px_#FBE6DC] md:h-[52px] md:rounded-[14px] [&::-webkit-search-cancel-button]:hidden"
             />
-            <div className="absolute right-0.5 top-1/2 flex -translate-y-1/2 items-center gap-1 md:right-1.5">
+            <div className="absolute right-0.5 top-1/2 flex -translate-y-1/2 items-center gap-1 md:right-1">
               {searchInput && (
                 <button
                   type="button"
@@ -67,18 +67,12 @@ export default function OrderToolbar({
                   <CloseIcon width={16} height={16} />
                 </button>
               )}
-              {/* Outline so it never outweighs the field; under md, Enter submits. */}
-              <button
-                type="submit"
-                className={`hidden h-9 min-w-[84px] rounded-lg border-[1.5px] border-[#B5532E] bg-white px-4 text-sm font-semibold text-[#B5532E] transition-colors hover:bg-[#FBE6DC] md:inline-flex md:items-center md:justify-center ${focusRing}`}
-              >
-                Search
-              </button>
             </div>
           </div>
         </form>
 
-        <div className="w-full md:w-[220px] md:shrink-0">
+        {/* Below md: unchanged (labelled Sort under the search). */}
+        <div className="w-full md:hidden">
           <span aria-hidden="true" className={smallLabel}>Sort by</span>
           <FilterSelect
             id="order-sort"
@@ -89,6 +83,24 @@ export default function OrderToolbar({
             onChange={onSortChange}
             options={ORDER_SORT_OPTIONS}
           />
+        </div>
+
+        {/* md and up: same strip as Product Management, Sort labelled inside its trigger at the right. */}
+        <div className="hidden min-h-14 items-center gap-2 rounded-2xl border border-[#E5DCCD] bg-[#F5F0E8] p-2 md:flex">
+          <span aria-hidden="true" className="ml-auto h-6 w-px bg-[#D9CFC1]" />
+          <div className="min-w-[230px]">
+            <FilterSelect
+              id="order-sort-desktop"
+              label="Sort by"
+              inlineLabel="Sort"
+              compact
+              value={sort}
+              defaultValue="newest"
+              align="right"
+              onChange={onSortChange}
+              options={ORDER_SORT_OPTIONS}
+            />
+          </div>
         </div>
       </div>
 

@@ -73,6 +73,8 @@ export default function FilterSelect({
   disabled = false,
   invalid = false,
   describedBy,
+  inlineLabel, // optional: "Category", "Sort" ... shown inside the trigger before the value
+  compact = false, // optional: 40px trigger instead of 44px
 }) {
   const uid = useId();
   const rootRef = useRef(null);
@@ -195,14 +197,22 @@ export default function FilterSelect({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={open ? `${uid}-list` : undefined}
-        aria-labelledby={`${uid}-label ${id}`}
+        aria-labelledby={inlineLabel ? undefined : `${uid}-label ${id}`}
         aria-describedby={describedBy}
         disabled={disabled}
         onClick={() => (open ? close() : openList())}
         onKeyDown={onTriggerKeyDown}
-        className={`flex h-11 w-full items-center justify-between gap-2 rounded-xl border-[1.5px] px-3.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:bg-[#F5F0E8] disabled:text-[#6F6358] ${border} ${tone}`}
+        className={`flex ${compact ? 'h-10' : 'h-11'} w-full items-center justify-between gap-2 rounded-xl border-[1.5px] px-3.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:bg-[#F5F0E8] disabled:text-[#6F6358] ${border} ${tone}`}
       >
-        <span className="min-w-0 truncate">{triggerText}</span>
+        {inlineLabel ? (
+          // Label + value inside the trigger; the button's text is its accessible name.
+          <span className="flex min-w-0 items-baseline gap-1.5">
+            <span className={`shrink-0 text-[13px] font-normal ${isActive ? 'text-[#B5532E]' : 'text-[#6F6358]'}`}>{inlineLabel}</span>
+            <span className={`min-w-0 truncate font-semibold ${isActive ? 'text-[#B5532E]' : 'text-[#2B2118]'}`}>{triggerText}</span>
+          </span>
+        ) : (
+          <span className="min-w-0 truncate">{triggerText}</span>
+        )}
         <span
           aria-hidden="true"
           className={`shrink-0 transition-transform duration-150 motion-reduce:transition-none ${open ? 'rotate-180' : ''} ${
