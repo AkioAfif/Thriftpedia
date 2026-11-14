@@ -110,6 +110,8 @@ export function Navbar() {
   };
 
   const initials = getInitials(user?.name);
+  // Admins get a way back to the dashboard and no buyer-only wishlist/orders entries.
+  const isAdmin = String(user?.role ?? '').toUpperCase() === 'ADMIN';
   const isHome = pathname === '/';
   const isCatalog = pathname?.startsWith('/catalog') ?? false;
 
@@ -175,6 +177,7 @@ export function Navbar() {
 
             {ready && isLoggedIn && (
               <>
+                {!isAdmin && (
                 <button
                   type="button"
                   aria-label={`Wishlist, ${query.isPending ? 'loading' : count + ' items'}`}
@@ -184,6 +187,24 @@ export function Navbar() {
                   <Image src="/icons/wishlist-badge.svg" width={18} height={18} alt="" />
                   <span className="ml-1 font-metadata text-xs" aria-live="polite">{query.isPending ? '…' : count}</span>
                 </button>
+                )}
+
+                {/* Admin only, in the wishlist's spot: a 44x44 dashboard icon below md, a labelled pill from md. */}
+                {isAdmin && (
+                  <Link
+                    href="/admin/dashboard"
+                    aria-label="Admin dashboard"
+                    className={`flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center gap-2 rounded-full bg-[#B5532E] text-sm font-semibold text-white hover:bg-[#9C4425] transition-colors md:px-4 ${focusRing} focus-visible:ring-offset-2`}
+                  >
+                    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                    </svg>
+                    <span className="hidden whitespace-nowrap md:inline">Admin dashboard</span>
+                  </Link>
+                )}
 
                 <div ref={profileAreaRef} className="relative flex items-center pl-2 border-l border-[#E6DDD2]">
                   <button
@@ -202,7 +223,13 @@ export function Navbar() {
                   {profileOpen && (
                     <>
                       <div className="absolute right-0 top-full mt-2 w-56 z-50 bg-white rounded-xl border border-[#E6DDD2] shadow-lg p-2">
-                        <Link href="/orders" onClick={() => setProfileOpen(false)} className="buyer-secondary">Your orders</Link>
+                        {isAdmin ? (
+                          <Link href="/admin/dashboard" onClick={() => setProfileOpen(false)} className="buyer-secondary">
+                            Dashboard
+                          </Link>
+                        ) : (
+                          <Link href="/orders" onClick={() => setProfileOpen(false)} className="buyer-secondary">Your orders</Link>
+                        )}
                         <div className="px-3 py-2 border-b border-[#E6DDD2]/60">
                           <p className="font-bold text-sm text-[#2B2118] truncate">
                             {user?.name || 'Account'}
