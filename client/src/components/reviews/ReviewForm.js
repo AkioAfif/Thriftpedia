@@ -5,13 +5,14 @@ import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
+import { draftKey, usePersistedForm } from '@/hooks/usePersistedForm';
 import { ActionDialog } from '@/components/ui/ActionDialog';
 import { Button } from '@/components/ui/Button';
 import { createProductReview } from '@/lib/services/buyerService';
 import { canOptimizeImage } from '@/lib/imageHosts';
 
 export function ReviewForm({ product, onClose }) {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const client = useQueryClient();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
@@ -20,6 +21,17 @@ export function ReviewForm({ product, onClose }) {
   const [busy, setBusy] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const lock = useRef(false);
+  // Rating + comment survive a refresh (per account and product); cleared once published or discarded.
+  const draft = usePersistedForm({
+    key: draftKey(user, 'review', product._id),
+    value: { rating, comment },
+    baseline: { rating: 0, comment: '' },
+    onRestore: (saved) => {
+      if (Number.isInteger(saved.rating) && saved.rating >= 1 && saved.rating <= 5) setRating(saved.rating);
+      if (typeof saved.comment === 'string') setComment(saved.comment.slice(0, 1000));
+    },
+  });
+  function discard() { draft.clear(); onClose(); }
   const ratingError = Number.isInteger(rating) && rating >= 1 && rating <= 5 ? '' : 'Choose a rating from 1 to 5 stars.';
   const commentError = comment.length > 1000 ? 'Keep your comment to 1,000 characters or fewer.' : '';
   const dirty = rating > 0 || comment.length > 0;
@@ -33,7 +45,7 @@ export function ReviewForm({ product, onClose }) {
     try {
       await createProductReview(token, product._id, rating, comment);
       await client.invalidateQueries({ queryKey: ['reviews', product._id] });
-      toast.success('Your review has been published.'); onClose();
+      draft.clear(); toast.success('Your review has been published.'); onClose();
     } catch (err) {
       setError(err.status === 403 ? 'This order is not eligible for a review. Only completed purchases can be reviewed.' : err.message);
       if (err.status === 409) await client.invalidateQueries({ queryKey: ['reviews', product._id] });
@@ -41,7 +53,7 @@ export function ReviewForm({ product, onClose }) {
   }
 
   return <ActionDialog title={confirm ? 'Discard this draft?' : 'Write a review'} busy={busy} onRequestClose={confirm ? () => setConfirm(false) : requestClose}>
-    {confirm ? <div className="space-y-lg"><p className="body-md">Your rating and comment haven’t been submitted. Discarding will remove this draft.</p><div className="flex flex-col gap-md md:flex-row"><Button variant="buyerPrimary" size="lg" className="min-h-12 flex-1" onClick={() => setConfirm(false)}>Keep editing</Button><Button variant="buyerSecondary" size="lg" className="min-h-12 flex-1 text-error" onClick={onClose}>Discard draft</Button></div></div>
+    {confirm ? <div className="space-y-lg"><p className="body-md">Your rating and comment haven’t been submitted. Discarding will remove this draft.</p><div className="flex flex-col gap-md md:flex-row"><Button variant="buyerPrimary" size="lg" className="min-h-12 flex-1" onClick={() => setConfirm(false)}>Keep editing</Button><Button variant="buyerSecondary" size="lg" className="min-h-12 flex-1 text-error" onClick={discard}>Discard draft</Button></div></div>
       : <form onSubmit={submit} noValidate className="space-y-lg">
         <div className="flex items-start gap-md">
           {product.photos?.[0] && <Image src={product.photos[0]} alt="" width={64} height={80} unoptimized={!canOptimizeImage(product.photos[0])} className="h-20 w-16 shrink-0 rounded-lg object-cover" />}
