@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { HangerLogoIcon } from '@/components/ui/Icons';
-import { BagIcon, BoxIcon, DashboardIcon } from './icons';
+import { HangerIcon } from '@/components/ui/icons/HangerIcon';
+import { BagIcon, DashboardIcon } from './icons';
 
 const NAV_ITEMS = [
   { href: '/admin/dashboard', label: 'Dashboard', Icon: DashboardIcon },
-  { href: '/admin/products', label: 'Product Management', Icon: BoxIcon },
+  { href: '/admin/products', label: 'Product Management', Icon: HangerIcon },
   { href: '/admin/orders', label: 'Order Management', Icon: BagIcon },
 ];
 
