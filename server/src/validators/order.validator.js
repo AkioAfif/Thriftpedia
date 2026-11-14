@@ -5,10 +5,40 @@ const { ORDER_STATUS, ADMIN_SETTABLE_STATUSES } = require('../constants/order');
 const OBJECT_ID_RE = /^[a-f\d]{24}$/i;
 const isObjectIdString = (v) => typeof v === 'string' && OBJECT_ID_RE.test(v);
 
+const ADDRESS_RULES = {
+  recipientName: { max: 100 },
+  phone: { max: 20, re: /^\+?\d{8,15}$/, hint: '8-15 digits, optional leading +' },
+  address: { max: 500 },
+  city: { max: 100 },
+  postalCode: { max: 10, re: /^\d{5}$/, hint: '5 digits' },
+};
+
+// Returns an error message, or null after trimming the values in place.
+function checkShippingAddress(addr) {
+  if (typeof addr !== 'object' || addr === null || Array.isArray(addr)) {
+    return 'shippingAddress must be an object';
+  }
+  const unknown = Object.keys(addr).filter((key) => !(key in ADDRESS_RULES));
+  if (unknown.length > 0) return `Unknown shippingAddress field: ${unknown.join(', ')}`;
+  for (const [key, { max, re, hint }] of Object.entries(ADDRESS_RULES)) {
+    const value = addr[key];
+    if (typeof value !== 'string' || !value.trim() || value.trim().length > max) {
+      return `shippingAddress.${key} is required (max ${max} characters)`;
+    }
+    if (re && !re.test(value.trim())) return `shippingAddress.${key} must be ${hint}`;
+  }
+  for (const key of Object.keys(ADDRESS_RULES)) addr[key] = addr[key].trim();
+  return null;
+}
+
 function validateCreateOrder(req, res, next) {
   const body = req.body ?? {};
   if (!isObjectIdString(body.productId)) {
     return next(new AppError(400, 'productId is required and must be a valid id'));
+  }
+  if (body.shippingAddress !== undefined) {
+    const error = checkShippingAddress(body.shippingAddress);
+    if (error) return next(new AppError(400, error));
   }
   next();
 }

@@ -1,9 +1,11 @@
 const orderService = require('../services/order.service');
+const paymentService = require('../services/payment.service');
 
 async function create(req, res) {
   const order = await orderService.createOrder({
     buyerId: req.user.id,            // from JWT, never from body
-    productId: req.body.productId,   // the ONLY field read from body
+    productId: req.body.productId,
+    shippingAddress: req.body.shippingAddress, // optional, shape checked by validateCreateOrder
   });
   res.status(201).json({ message: 'Order created', data: order });
 }
@@ -29,4 +31,11 @@ async function updateStatus(req, res) {
   res.status(200).json({ message: 'Order status updated', data: order });
 }
 
-module.exports = { create, list, getById, updateStatus };
+async function cancel(req, res) {
+  const order = await orderService.cancelOrderByBuyer(req.user, req.params.orderId);
+  // After the commit, so a Midtrans outage never blocks the cancel.
+  if (order.paymentToken) await paymentService.cancelMidtransTransaction(order._id);
+  res.status(200).json({ message: 'Order cancelled', data: order });
+}
+
+module.exports = { create, list, getById, updateStatus, cancel };
