@@ -3,7 +3,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { CONDITION_OPTIONS, SIZE_OPTIONS, SORT_OPTIONS } from '@/lib/adminProducts';
 import { CloseIcon, SearchIcon } from '../icons';
-import FilterSelect from './FilterSelect';
+import FilterSelect from '@/components/ui/FilterSelect';
 import FilterSheet, { EMPTY_DRAFT } from './FilterSheet';
 
 const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-1';

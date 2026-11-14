@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { CONDITION_OPTIONS, SIZE_OPTIONS } from '@/lib/adminProducts';
 import { CloseIcon } from '../icons';
-import FilterSelect from './FilterSelect';
+import FilterSelect from '@/components/ui/FilterSelect';
 
 const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2';
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled])';
