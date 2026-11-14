@@ -258,7 +258,6 @@ export function Navbar() {
           open
           onClose={closeAuth}
           initialTab={authTab}
-          hideForgotPassword
           onSuccess={handleAuthSuccess}
         />
       )}

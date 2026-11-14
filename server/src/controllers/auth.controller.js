@@ -65,4 +65,67 @@ const me = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, me };
+const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body ?? {};
+
+    if (!isString(email) || !email.trim()) {
+      return res.status(400).json({
+        message: 'Email is required',
+      });
+    }
+
+    await authService.requestPasswordReset(normalizeEmail(email));
+
+    return res.status(200).json({
+      message: 'If the email is registered, a password reset link will be sent.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const resetPassword = async (req, res, next) => {
+  try {
+    const { token, password } = req.body ?? {};
+
+    // Validasi input
+    if (
+      !isString(token) ||
+      !token.trim() ||
+      !isString(password)
+    ) {
+      return res.status(400).json({
+        message: 'Token and new password are required',
+      });
+    }
+
+    // Token reset berupa 64 karakter hexadecimal
+    if (!/^[a-f0-9]{64}$/i.test(token)) {
+      return res.status(400).json({
+        message: 'Invalid reset token',
+      });
+    }
+
+    // Samakan aturan password dengan registrasi
+    if (
+      password.length < 8 ||
+      password.length > 72 ||
+      !/\d/.test(password)
+    ) {
+      return res.status(400).json({
+        message: 'Password must be 8–72 characters and include a number',
+      });
+    }
+
+    await authService.resetPassword(token, password);
+
+    return res.status(200).json({
+      message: 'Password reset successfully. Please log in.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { register, login, me, forgotPassword, resetPassword };

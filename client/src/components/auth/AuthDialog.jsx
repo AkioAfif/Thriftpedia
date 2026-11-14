@@ -12,6 +12,7 @@ import ForgotPasswordForm from './ForgotPasswordForm';
 import ResetEmailSent from './ResetEmailSent';
 import { useAuth } from '@/context/AuthContext';
 import { loginUser, registerUser } from '@/lib/services/authApi';
+import { requestPasswordReset } from '@/lib/services/authApi';
 
 export default function AuthDialog({
   open,
@@ -89,34 +90,27 @@ export default function AuthDialog({
   }, [open, onClose]);
 
   // Handler untuk permintaan reset password
-  async function handleResetRequest(email) {
-    setResetError('');
+async function handleResetRequest(email) {
+  setResetError('');
 
-    // Hanya untuk menguji tampilan di auth-preview
-    if (resetPreview) {
-      setAuthView('sent');
-      return;
-    }
-
-    // Jangan mengklaim email terkirim jika API belum tersedia
-    if (!onResetPassword) {
-      setResetError('Password reset is not available yet.');
-      return;
-    }
-
-    setResetLoading(true);
-
-    try {
-      await onResetPassword(email);
-      setAuthView('sent');
-    } catch {
-      setResetError(
-        'Unable to process your request. Please try again.'
-      );
-    } finally {
-      setResetLoading(false);
-    }
+  if (resetPreview) {
+    setAuthView('sent');
+    return;
   }
+
+  setResetLoading(true);
+
+  try {
+    await requestPasswordReset(email);
+    setAuthView('sent');
+  } catch (error) {
+    setResetError(
+      'Unable to process your request. Please try again.'
+    );
+  } finally {
+    setResetLoading(false);
+  }
+}
 
   function backToLogin() {
     setActiveTab('login');
@@ -158,14 +152,12 @@ async function handleAuthSubmit({ mode, values }) {
         password: values.password,
       });
 
-      // Dengan onSuccess: langsung login memakai kredensial yang sama
-      if (onSuccess) {
-        try {
-          await logInWith(values);
-          return;
-        } catch {
-          // auto-login gagal: lanjut ke tab Login seperti biasa
-        }
+      // Selalu coba auto-login setelah register berhasil
+      try {
+        await logInWith(values);
+        return;
+      } catch {
+        // Jika auto-login gagal, pengguna tetap bisa login manual
       }
 
       // Setelah berhasil register, pindah ke tab Login
