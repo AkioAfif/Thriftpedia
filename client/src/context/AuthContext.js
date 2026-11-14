@@ -1,11 +1,30 @@
 'use client';
 
 import { clearToken, setToken } from '@/lib/adminAuth';
-import { createContext, useCallback, useContext, useMemo, useSyncExternalStore } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useSyncExternalStore } from 'react';
 
 const TOKEN_KEY = 'token';
 const USER_KEY = 'user';
 const EMPTY = JSON.stringify([null, null]);
+function isTokenValid(token) {
+  if (!token || typeof token !== 'string') return false;
+
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return false;
+
+    // Decode payload JWT (Base64URL)
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(base64));
+
+    // exp menggunakan satuan detik, Date.now() milidetik
+    if (typeof payload.exp !== 'number') return false;
+
+    return payload.exp * 1000 > Date.now();
+  } catch {
+    return false;
+  }
+}
 
 const listeners = new Set();
 
@@ -53,11 +72,19 @@ export function AuthProvider({ children }) {
   }, [raw]);
 
   const login = useCallback((newToken, newUser) => {
+    const isAdmin = String(newUser?.role ?? '').toUpperCase() === 'ADMIN';
+
+    // Simpan sesi utama untuk semua pengguna
     localStorage.setItem(TOKEN_KEY, newToken);
-    localStorage.setItem('thriftpedia_token', newToken);
     localStorage.setItem(USER_KEY, JSON.stringify(newUser ?? null));
-    // Admin pages read their own key (adminAuth), so an admin logged in here can open them too.
-    if (String(newUser?.role ?? '').toUpperCase() === 'ADMIN') setToken(newToken);
+
+    // Token khusus admin hanya disimpan untuk role ADMIN
+    if (isAdmin) {
+      setToken(newToken);
+    } else {
+      clearToken();
+    }
+
     notify();
   }, []);
 
@@ -69,8 +96,37 @@ export function AuthProvider({ children }) {
     notify();
   }, []);
 
+  useEffect(() => {
+    if (!token) return;
+
+    // Jika token sudah expired atau formatnya tidak valid
+    if (!isTokenValid(token)) {
+      logout();
+      return;
+    }
+
+    const payload = JSON.parse(
+      atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))
+    );
+
+    const expiresIn = payload.exp * 1000 - Date.now();
+
+    const timeout = setTimeout(() => {
+      logout();
+    }, Math.min(expiresIn, 2147483647));
+
+    return () => clearTimeout(timeout);
+  }, [token, logout]);
+
   const value = useMemo(
-    () => ({ token, user, isLoggedIn: Boolean(token), ready, login, logout }),
+    () => ({
+      token,
+      user,
+      isLoggedIn: isTokenValid(token),
+      ready,
+      login,
+      logout,
+    }),
     [token, user, ready, login, logout]
   );
 

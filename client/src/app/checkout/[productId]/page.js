@@ -211,7 +211,6 @@ export default function CheckoutPage() {
         onClose={() => setAuthOpen(false)}
         context="checkout"
         initialTab="login"
-        hideForgotPassword
         onSuccess={handleAuthSuccess}
       />
     </main>

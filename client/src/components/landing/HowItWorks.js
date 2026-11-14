@@ -12,7 +12,7 @@ export function HowItWorks() {
     <section
       id="how-it-works"
       aria-labelledby="how-it-works-title"
-      className="relative scroll-mt-20 overflow-hidden bg-[#C8653A] py-20 text-white md:py-24"
+      className="relative scroll-mt-20 overflow-hidden bg-primary py-20 text-white md:py-24"
     >
       <div className="relative z-20 mx-auto w-full max-w-[1152px] px-6 py-8">
         <Reveal className="mx-auto mb-16 max-w-[576px] text-center">

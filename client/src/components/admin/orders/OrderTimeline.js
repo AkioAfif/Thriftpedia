@@ -27,9 +27,9 @@ function CheckMark() {
 
 // done = green with a check, current = terracotta with a #FBE6DC ring, upcoming = outlined.
 const CIRCLE = {
-  done: 'bg-[#5F7A5E] text-white',
-  current: 'bg-[#B5532E] text-white ring-4 ring-[#FBE6DC]',
-  upcoming: 'border-2 border-[#D9CFC1] bg-white text-[#6F6358]',
+  done: 'bg-secondary text-white',
+  current: 'bg-primary text-white ring-4 ring-[#FBE6DC]',
+  upcoming: 'border-2 border-[#D9CFC1] bg-white text-text-secondary',
 };
 
 // Shared by the admin detail page and the buyer page (/orders/[orderId]).
@@ -55,7 +55,7 @@ export function OrderStepper({ status, history }) {
               <span
                 aria-hidden="true"
                 className={`absolute left-[15px] top-8 h-[calc(100%-2rem)] w-0.5 ${
-                  states[i + 1] === 'upcoming' ? 'bg-[#D9CFC1]' : 'bg-[#5F7A5E]'
+                  states[i + 1] === 'upcoming' ? 'bg-[#D9CFC1]' : 'bg-secondary'
                 }`}
               />
             )}
@@ -67,7 +67,7 @@ export function OrderStepper({ status, history }) {
             </span>
             <span
               className={`text-[15px] ${
-                state === 'current' ? 'font-bold text-[#2B2118]' : state === 'done' ? 'font-semibold text-[#2B2118]' : 'text-[#6F6358]'
+                state === 'current' ? 'font-bold text-text' : state === 'done' ? 'font-semibold text-text' : 'text-text-secondary'
               }`}
             >
               {statusMeta(step).label}
@@ -86,7 +86,7 @@ export default function OrderTimeline({ history }) {
   const entries = list.map((entry, index) => ({ entry, note: historyNote(entry, index) })).reverse();
 
   if (entries.length === 0) {
-    return <p className="text-sm text-[#6F6358]">No history recorded for this order.</p>;
+    return <p className="text-sm text-text-secondary">No history recorded for this order.</p>;
   }
 
   return (
@@ -101,16 +101,16 @@ export default function OrderTimeline({ history }) {
             : null;
         return (
           <li key={`${entry.status}-${entry.at}`} className="relative flex min-w-0 gap-4 pb-6 last:pb-0">
-            {!last && <span aria-hidden="true" className="absolute bottom-0 left-[9px] top-6 w-0.5 bg-[#EAE4DA]" />}
+            {!last && <span aria-hidden="true" className="absolute bottom-0 left-[9px] top-6 w-0.5 bg-border" />}
             <span aria-hidden="true" className="flex w-5 shrink-0 justify-center pt-1">
               <span
-                className={`rounded-full ${statusMeta(entry.status).dot} ${latest ? 'size-5 ring-4 ring-[#F5F0E8]' : 'mt-1 size-3'}`}
+                className={`rounded-full ${statusMeta(entry.status).dot} ${latest ? 'size-5 ring-4 ring-surface-muted' : 'mt-1 size-3'}`}
               />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="break-words text-[15px] font-semibold text-[#2B2118]">{statusMeta(entry.status).label}</p>
-              {note && <p className="mt-1 break-words text-sm text-[#2B2118]">{note}</p>}
-              <p className="mt-1 text-[13px] tabular-nums text-[#6F6358]">
+              <p className="break-words text-[15px] font-semibold text-text">{statusMeta(entry.status).label}</p>
+              {note && <p className="mt-1 break-words text-sm text-text">{note}</p>}
+              <p className="mt-1 text-[13px] tabular-nums text-text-secondary">
                 <time dateTime={entry.at}>{formatOrderDateTime(entry.at)}</time>
                 {actor && <> · {actor}</>}
               </p>

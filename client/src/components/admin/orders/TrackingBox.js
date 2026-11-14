@@ -12,7 +12,7 @@ function CopyIcon() {
   );
 }
 
-// Tracking number + courier on a #DCEBF2 tile; Copy uses the browser clipboard only.
+// Tracking number + courier on a badge-info tile; Copy uses the browser clipboard only.
 export default function TrackingBox({ trackingNumber, courier }) {
   async function copy() {
     try {
@@ -24,10 +24,10 @@ export default function TrackingBox({ trackingNumber, courier }) {
   }
 
   return (
-    <dl className="rounded-2xl bg-[#DCEBF2] p-4">
-      <dt className="text-[13px] font-medium text-[#6F6358]">Tracking number</dt>
+    <dl className="rounded-2xl bg-badge-info p-4">
+      <dt className="text-[13px] font-medium text-text-secondary">Tracking number</dt>
       <dd className="mt-1 flex items-center justify-between gap-2">
-        <span className="min-w-0 break-all text-base font-semibold tabular-nums text-[#2B2118]">{trackingNumber}</span>
+        <span className="min-w-0 break-all text-base font-semibold tabular-nums text-text">{trackingNumber}</span>
         <button
           type="button"
           onClick={copy}
@@ -40,8 +40,8 @@ export default function TrackingBox({ trackingNumber, courier }) {
       </dd>
       {courier && (
         <>
-          <dt className="mt-3 text-[13px] font-medium text-[#6F6358]">Courier</dt>
-          <dd className="mt-1 break-words text-sm font-medium text-[#2B2118]">{courier}</dd>
+          <dt className="mt-3 text-[13px] font-medium text-text-secondary">Courier</dt>
+          <dd className="mt-1 break-words text-sm font-medium text-text">{courier}</dd>
         </>
       )}
     </dl>

@@ -418,7 +418,6 @@ function ProductDetail() {
         onClose={() => setLoginAction(null)}
         context={loginAction === 'buy' ? 'checkout' : 'wishlist'}
         initialTab="login"
-        hideForgotPassword
         onSuccess={handleAuthSuccess}
       />
     </main>

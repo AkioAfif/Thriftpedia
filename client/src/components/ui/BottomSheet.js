@@ -36,19 +36,19 @@ export function BottomSheet({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 bg-[#2B2118]/50 backdrop-blur-xs flex flex-col justify-end transition-opacity"
+      className="fixed inset-0 z-50 bg-text/50 backdrop-blur-xs flex flex-col justify-end transition-opacity"
     >
       <div
         className="flex-1 w-full"
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="w-full max-h-[85vh] bg-[#FAF7F2] rounded-t-3xl border-t border-[#E6DDD2] p-5 flex flex-col gap-4 shadow-pop overflow-hidden animate-in slide-in-from-bottom duration-200">
+      <div className="w-full max-h-[85vh] bg-canvas rounded-t-3xl border-t border-[#E6DDD2] p-5 flex flex-col gap-4 shadow-pop overflow-hidden animate-in slide-in-from-bottom duration-200">
         <div className="flex items-center justify-between pb-3 border-b border-[#E6DDD2]">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-base text-[#2B2118]">{title}</span>
+            <span className="font-bold text-base text-text">{title}</span>
             {badgeText && (
-              <span className="h-6 px-2.5 rounded-full bg-[#FBEDE6] text-[#B5532E] text-xs font-mono font-bold flex items-center justify-center">
+              <span className="h-6 px-2.5 rounded-full bg-[#FBEDE6] text-primary text-xs font-mono font-bold flex items-center justify-center">
                 {badgeText}
               </span>
             )}
@@ -57,7 +57,7 @@ export function BottomSheet({
             type="button"
             aria-label="Close filters"
             onClick={onClose}
-            className="min-w-[40px] min-h-[40px] rounded-full text-[#5C4D40] hover:text-[#2B2118] hover:bg-[#EAE4DA]/50 flex items-center justify-center transition-colors focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none"
+            className="min-w-[40px] min-h-[40px] rounded-full text-[#5C4D40] hover:text-text hover:bg-border/50 flex items-center justify-center transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
           >
             <CloseIcon className="w-5 h-5" />
           </button>

@@ -42,7 +42,7 @@ export default function LoginPage() {
     'mt-1 w-full rounded-lg border border-[#e8e1d8] bg-white px-3 py-3 text-sm outline-none focus:border-[#b4532a]';
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#faf7f2] px-6 text-[#2b1d14]">
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-6 text-[#2b1d14]">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-[24rem] rounded-2xl border border-[#e8e1d8] bg-white p-8"

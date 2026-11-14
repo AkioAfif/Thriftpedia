@@ -19,12 +19,12 @@ export function Footer() {
       <div className="bg-[#5A3A2A] px-6 pb-10 sm:px-8">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 pb-8 pt-10 md:flex-row">
           <Link href="/catalog" className={`flex items-center gap-2.5 rounded-xl p-0.5 ${focusRing}`}>
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F25A2A]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary">
               <HangerLogoIcon />
             </div>
             <div className="font-display text-[28px] font-bold leading-none tracking-tight">
               <span className="text-white">thrift</span>
-              <span className="text-[#F25A2A]">pedia</span>
+              <span className="text-primary">pedia</span>
             </div>
           </Link>
 
