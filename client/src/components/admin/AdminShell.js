@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 
 function FullScreenMessage({ title, message, children }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#faf7f2] px-6">
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-6">
       <div className="max-w-[28rem] text-center">
         <h1 className="text-2xl font-bold text-[#2b1d14]">{title}</h1>
         <p className="mt-3 text-sm text-[#6b5d52]">{message}</p>
@@ -66,7 +66,7 @@ export default function AdminShell({ children }) {
 
   if (status === 'checking') {
     return (
-      <div className="min-h-screen bg-[#faf7f2] p-10">
+      <div className="min-h-screen bg-canvas p-10">
         <div className="h-10 w-64 animate-pulse rounded-lg bg-[#efe9e0]" />
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
           <div className="h-72 animate-pulse rounded-[20px] bg-[#efe9e0]" />
@@ -108,7 +108,7 @@ export default function AdminShell({ children }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#faf7f2] text-[#2b1d14] lg:flex-row">
+    <div className="flex min-h-screen flex-col bg-canvas text-[#2b1d14] lg:flex-row">
       <Sidebar user={user} onLogout={logout} />
       <main className="min-w-0 flex-1 p-6 lg:p-10">{children}</main>
     </div>

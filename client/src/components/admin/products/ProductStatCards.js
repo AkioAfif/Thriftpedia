@@ -12,7 +12,7 @@ const CARDS = [
     label: 'Total',
     key: 'total',
     Icon: HangerIcon,
-    tone: 'bg-[#F5F0E8] text-[#2B2118]',
+    tone: 'bg-surface-muted text-text',
     border: 'border-[#E5DCCD]',
     pressedBorder: 'border-[#4A3F35]',
   },
@@ -30,9 +30,9 @@ const CARDS = [
     label: 'Sold',
     key: 'sold',
     Icon: ClipboardIcon,
-    tone: 'bg-[#FBE6DC] text-[#B5532E]',
+    tone: 'bg-[#FBE6DC] text-primary',
     border: 'border-[#EBC3AE]',
-    pressedBorder: 'border-[#B5532E]',
+    pressedBorder: 'border-primary',
   },
 ];
 
@@ -51,7 +51,7 @@ export default function ProductStatCards({ stats, activeStatus, onSelect }) {
             type="button"
             aria-pressed={pressed}
             onClick={() => onSelect(pressed && value ? '' : value)}
-            className={`flex min-h-[44px] min-w-0 items-center gap-4 rounded-2xl border-2 p-3 text-left transition-colors duration-150 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 sm:p-5 ${tone} ${
+            className={`flex min-h-[44px] min-w-0 items-center gap-4 rounded-2xl border-2 p-3 text-left transition-colors duration-150 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:p-5 ${tone} ${
               pressed ? pressedBorder : border
             }`}
           >
@@ -59,7 +59,7 @@ export default function ProductStatCards({ stats, activeStatus, onSelect }) {
               <Icon />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-sm text-[#6F6358]">{label}</span>
+              <span className="block text-sm text-text-secondary">{label}</span>
               {showSkeleton ? (
                 <span aria-hidden="true" className="mt-1.5 block h-8 w-16 animate-pulse rounded-md bg-white" />
               ) : (

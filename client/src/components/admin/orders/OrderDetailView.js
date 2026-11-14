@@ -22,21 +22,21 @@ import {
   updateOrderStatus,
 } from '@/lib/adminOrders';
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2';
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
 const cardCls = 'rounded-[20px] border border-[#D9CFC1] bg-white p-5 sm:p-7';
 const pulse = 'animate-pulse rounded-[20px] bg-[#efe9e0]';
 
 function Breadcrumb({ backHref, current }) {
   return (
     <nav aria-label="Breadcrumb">
-      <ol className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-[#6F6358]">
+      <ol className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-text-secondary">
         <li>
-          <Link href={backHref} className={`rounded hover:text-[#2B2118] hover:underline ${focusRing}`}>
+          <Link href={backHref} className={`rounded hover:text-text hover:underline ${focusRing}`}>
             Order Management
           </Link>
         </li>
         <li aria-hidden="true">›</li>
-        <li aria-current="page" className="min-w-0 truncate text-[#2B2118]">
+        <li aria-current="page" className="min-w-0 truncate text-text">
           {current}
         </li>
       </ol>
@@ -47,8 +47,8 @@ function Breadcrumb({ backHref, current }) {
 function StateMessage({ title, children, action }) {
   return (
     <div className={`${cardCls} px-6 py-16 text-center`}>
-      <p className="text-lg font-semibold text-[#2B2118]">{title}</p>
-      <p className="mx-auto mt-2 max-w-[28rem] text-sm text-[#6F6358]">{children}</p>
+      <p className="text-lg font-semibold text-text">{title}</p>
+      <p className="mx-auto mt-2 max-w-[28rem] text-sm text-text-secondary">{children}</p>
       {action}
     </div>
   );
@@ -167,7 +167,7 @@ export default function OrderDetailView() {
                 <button
                   type="button"
                   onClick={reload}
-                  className={`mt-5 min-h-11 rounded-xl bg-[#B5532E] px-5 text-sm font-semibold text-white hover:bg-[#9C4425] ${focusRing}`}
+                  className={`mt-5 min-h-11 rounded-xl bg-primary px-5 text-sm font-semibold text-white hover:bg-primary-hover ${focusRing}`}
                 >
                   Try again
                 </button>
@@ -193,16 +193,16 @@ export default function OrderDetailView() {
       <header className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="break-words text-[32px] font-semibold leading-tight tabular-nums text-[#2B2118]">Order {label}</h1>
+            <h1 className="break-words text-[32px] font-semibold leading-tight tabular-nums text-text">Order {label}</h1>
             <OrderStatusBadge status={order.status} size="lg" />
           </div>
-          <p className="mt-1.5 text-sm tabular-nums text-[#6F6358]">
+          <p className="mt-1.5 text-sm tabular-nums text-text-secondary">
             Placed <time dateTime={order.createdAt}>{formatOrderDateTime(order.createdAt)}</time>
           </p>
         </div>
         <Link
           href={backHref}
-          className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl border-[1.5px] border-[#B5532E] bg-white px-5 text-sm font-semibold text-[#B5532E] hover:bg-[#FBE6DC] ${focusRing}`}
+          className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl border-[1.5px] border-primary bg-white px-5 text-sm font-semibold text-primary hover:bg-[#FBE6DC] ${focusRing}`}
         >
           <span aria-hidden="true">←</span> Back to orders
         </Link>

@@ -192,12 +192,12 @@ function ProductManagement() {
     <div className="min-w-0">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-[32px] font-semibold leading-tight text-[#2B2118] sm:text-[40px]">Product Management</h1>
-          <p className="mt-2 text-[15px] text-[#6F6358]">Status updates automatically when buyers order.</p>
+          <h1 className="text-[32px] font-semibold leading-tight text-text sm:text-[40px]">Product Management</h1>
+          <p className="mt-2 text-[15px] text-text-secondary">Status updates automatically when buyers order.</p>
         </div>
         <Link
           href="/admin/products/new"
-          className="inline-flex min-h-[44px] w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-[#B5532E] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#9C4425] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 sm:w-auto"
+          className="inline-flex min-h-[44px] w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:w-auto"
         >
           <PlusIcon />
           Add Product
@@ -223,11 +223,11 @@ function ProductManagement() {
 
       {(filtered || showMeta) && (
         <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-[#6F6358]" aria-live="polite">
+          <p className="text-sm text-text-secondary" aria-live="polite">
             {showMeta ? (
               <>
                 Showing {formatNumber(from)}–{formatNumber(to)} of{' '}
-                <span className="font-semibold text-[#2B2118]">{formatNumber(total)}</span> products
+                <span className="font-semibold text-text">{formatNumber(total)}</span> products
               </>
             ) : null}
           </p>

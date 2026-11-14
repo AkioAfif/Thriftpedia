@@ -18,15 +18,15 @@ export default function CatalogError({ error, reset }) {
         id="error-state-view"
         className="bg-white rounded-2xl border border-[#E6DDD2] p-10 sm:p-14 flex flex-col items-center justify-center text-center gap-3 shadow-card max-w-[28rem] w-full"
       >
-        <div className="w-14 h-14 rounded-full bg-[#FFDAD6] flex items-center justify-center text-[#BA1A1A] mb-1">
-          <ErrorOutlineIcon className="w-7 h-7 text-[#BA1A1A]" />
+        <div className="w-14 h-14 rounded-full bg-error-tint flex items-center justify-center text-error mb-1">
+          <ErrorOutlineIcon className="w-7 h-7 text-error" />
         </div>
-        <h2 className="font-bold text-lg text-[#2B2118]">Failed to load products</h2>
+        <h2 className="font-bold text-lg text-text">Failed to load products</h2>
         <p className="text-sm text-[#5C4D40] max-w-[28rem]">{errorMessage}</p>
         <button
           type="button"
           onClick={() => reset()}
-          className="mt-3 min-h-[40px] px-6 py-2.5 rounded-xl border border-[#B5532E] text-[#B5532E] hover:bg-[#FBEDE6] text-xs font-semibold shadow-xs transition-colors focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none"
+          className="mt-3 min-h-[40px] px-6 py-2.5 rounded-xl border border-primary text-primary hover:bg-[#FBEDE6] text-xs font-semibold shadow-xs transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
         >
           Try again
         </button>

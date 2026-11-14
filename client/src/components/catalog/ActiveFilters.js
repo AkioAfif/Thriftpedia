@@ -39,14 +39,14 @@ export function ActiveFilters() {
       {sizes.length > 0 && (
         <span
           data-filter-type="size"
-          className="h-8 px-3 py-1.5 rounded-full bg-white text-[#2B2118] text-[13px] font-medium border border-[#E6DDD2] shadow-xs shrink-0 inline-flex items-center gap-1.5"
+          className="h-8 px-3 py-1.5 rounded-full bg-white text-text text-[13px] font-medium border border-[#E6DDD2] shadow-xs shrink-0 inline-flex items-center gap-1.5"
         >
           <span>Size: {sizes.join(', ')}</span>
           <button
             type="button"
             aria-label="Remove Size filter"
             onClick={() => removeFilterGroup('size')}
-            className="w-5 h-5 rounded-full text-[#5C4D40] hover:text-[#B5532E] hover:bg-[#FAF7F2] flex items-center justify-center transition-colors focus-visible:ring-1 focus-visible:ring-[#B5532E] focus-visible:outline-none -mr-1"
+            className="w-5 h-5 rounded-full text-[#5C4D40] hover:text-primary hover:bg-canvas flex items-center justify-center transition-colors focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-none -mr-1"
           >
             <CloseIcon className="w-3.5 h-3.5" />
           </button>
@@ -57,7 +57,7 @@ export function ActiveFilters() {
       {(minPrice !== null || maxPrice !== null) && (
         <span
           data-filter-type="price"
-          className="h-8 px-3 py-1.5 rounded-full bg-white text-[#2B2118] text-[13px] font-medium border border-[#E6DDD2] shadow-xs shrink-0 inline-flex items-center gap-1.5"
+          className="h-8 px-3 py-1.5 rounded-full bg-white text-text text-[13px] font-medium border border-[#E6DDD2] shadow-xs shrink-0 inline-flex items-center gap-1.5"
         >
           <span>
             Price:{' '}
@@ -69,7 +69,7 @@ export function ActiveFilters() {
             type="button"
             aria-label="Remove Price filter"
             onClick={() => removeFilterGroup('price')}
-            className="w-5 h-5 rounded-full text-[#5C4D40] hover:text-[#B5532E] hover:bg-[#FAF7F2] flex items-center justify-center transition-colors focus-visible:ring-1 focus-visible:ring-[#B5532E] focus-visible:outline-none -mr-1"
+            className="w-5 h-5 rounded-full text-[#5C4D40] hover:text-primary hover:bg-canvas flex items-center justify-center transition-colors focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-none -mr-1"
           >
             <CloseIcon className="w-3.5 h-3.5" />
           </button>
@@ -80,14 +80,14 @@ export function ActiveFilters() {
       {conditions.length > 0 && (
         <span
           data-filter-type="condition"
-          className="h-8 px-3 py-1.5 rounded-full bg-white text-[#2B2118] text-[13px] font-medium border border-[#E6DDD2] shadow-xs shrink-0 inline-flex items-center gap-1.5"
+          className="h-8 px-3 py-1.5 rounded-full bg-white text-text text-[13px] font-medium border border-[#E6DDD2] shadow-xs shrink-0 inline-flex items-center gap-1.5"
         >
           <span>Condition: {conditionLabels.join(', ')}</span>
           <button
             type="button"
             aria-label="Remove Condition filter"
             onClick={() => removeFilterGroup('condition')}
-            className="w-5 h-5 rounded-full text-[#5C4D40] hover:text-[#B5532E] hover:bg-[#FAF7F2] flex items-center justify-center transition-colors focus-visible:ring-1 focus-visible:ring-[#B5532E] focus-visible:outline-none -mr-1"
+            className="w-5 h-5 rounded-full text-[#5C4D40] hover:text-primary hover:bg-canvas flex items-center justify-center transition-colors focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-none -mr-1"
           >
             <CloseIcon className="w-3.5 h-3.5" />
           </button>
@@ -98,14 +98,14 @@ export function ActiveFilters() {
       {hideSold && (
         <span
           data-filter-type="hideSold"
-          className="h-8 px-3 py-1.5 rounded-full bg-white text-[#2B2118] text-[13px] font-medium border border-[#E6DDD2] shadow-xs shrink-0 inline-flex items-center gap-1.5"
+          className="h-8 px-3 py-1.5 rounded-full bg-white text-text text-[13px] font-medium border border-[#E6DDD2] shadow-xs shrink-0 inline-flex items-center gap-1.5"
         >
           <span>Hide sold items</span>
           <button
             type="button"
             aria-label="Remove Hide sold filter"
             onClick={() => removeFilterGroup('hideSold')}
-            className="w-5 h-5 rounded-full text-[#5C4D40] hover:text-[#B5532E] hover:bg-[#FAF7F2] flex items-center justify-center transition-colors focus-visible:ring-1 focus-visible:ring-[#B5532E] focus-visible:outline-none -mr-1"
+            className="w-5 h-5 rounded-full text-[#5C4D40] hover:text-primary hover:bg-canvas flex items-center justify-center transition-colors focus-visible:ring-1 focus-visible:ring-primary focus-visible:outline-none -mr-1"
           >
             <CloseIcon className="w-3.5 h-3.5" />
           </button>
@@ -116,7 +116,7 @@ export function ActiveFilters() {
       <button
         type="button"
         onClick={resetAll}
-        className="min-h-[32px] px-2 text-xs font-bold text-[#5C4D40] hover:text-[#B5532E] transition-colors ml-1 underline shrink-0 whitespace-nowrap focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none rounded"
+        className="min-h-[32px] px-2 text-xs font-bold text-[#5C4D40] hover:text-primary transition-colors ml-1 underline shrink-0 whitespace-nowrap focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded"
       >
         Reset all
       </button>

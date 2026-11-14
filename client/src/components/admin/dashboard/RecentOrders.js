@@ -34,12 +34,12 @@ const total = (order) => (order.total == null ? '—' : formatRupiah(order.total
 function OrderList({ orders }) {
   return (
     <>
-      <ul className="divide-y divide-[#EAE4DA] md:hidden">
+      <ul className="divide-y divide-border md:hidden">
         {orders.map((order) => {
           const item = orderItem(order);
           return (
             <li key={order._id} className="even:bg-[#FBF8F3]">
-              <Link href={`/admin/orders/${order._id}`} className={cn('flex gap-3 px-5 py-4 hover:bg-[#F5F0E8]', focusRing)}>
+              <Link href={`/admin/orders/${order._id}`} className={cn('flex gap-3 px-5 py-4 hover:bg-surface-muted', focusRing)}>
                 <Thumb src={item.photo} />
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center justify-between gap-2">
@@ -47,7 +47,7 @@ function OrderList({ orders }) {
                     <StatusBadge status={order.status} />
                   </span>
                   <span className="mt-1 block truncate text-sm text-text">{item.name}</span>
-                  <span className="mt-1 flex justify-between gap-2 text-[13px] tabular-nums text-[#6F6358]">
+                  <span className="mt-1 flex justify-between gap-2 text-[13px] tabular-nums text-text-secondary">
                     <span className="font-semibold text-text">{total(order)}</span>
                     <span>{formatOrderDateTime(order.createdAt)}</span>
                   </span>
@@ -59,7 +59,7 @@ function OrderList({ orders }) {
       </ul>
 
       <table className="hidden w-full text-left text-sm md:table">
-        <thead className="border-b border-[#EAE4DA] text-sm text-[#4A3F35]">
+        <thead className="border-b border-border text-sm text-[#4A3F35]">
           <tr>
             <th scope="col" className="px-5 py-3 font-semibold">Order</th>
             <th scope="col" className="px-3 py-3 font-semibold">Item</th>
@@ -68,11 +68,11 @@ function OrderList({ orders }) {
             <th scope="col" className="px-5 py-3 font-semibold">Date</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#EAE4DA]">
+        <tbody className="divide-y divide-border">
           {orders.map((order) => {
             const item = orderItem(order);
             return (
-              <tr key={order._id} className="relative even:bg-[#FBF8F3] hover:bg-[#F5F0E8]">
+              <tr key={order._id} className="relative even:bg-[#FBF8F3] hover:bg-surface-muted">
                 <td className="px-5 py-3">
                   <Link
                     href={`/admin/orders/${order._id}`}
@@ -91,7 +91,7 @@ function OrderList({ orders }) {
                 <td className="px-3 py-3">
                   <StatusBadge status={order.status} />
                 </td>
-                <td className="whitespace-nowrap px-5 py-3 text-[13px] tabular-nums text-[#6F6358]">
+                <td className="whitespace-nowrap px-5 py-3 text-[13px] tabular-nums text-text-secondary">
                   {formatOrderDateTime(order.createdAt)}
                 </td>
               </tr>
@@ -120,7 +120,7 @@ function ListSkeleton() {
 // Completed / Cancelled as one quiet line, not as cards.
 function ClosedSummary({ counts }) {
   return (
-    <p className="flex flex-wrap gap-x-5 gap-y-1 border-t border-[#EAE4DA] px-5 py-3 text-[13px] text-[#6F6358]">
+    <p className="flex flex-wrap gap-x-5 gap-y-1 border-t border-border px-5 py-3 text-[13px] text-text-secondary">
       {['COMPLETED', 'CANCELLED'].map((status) => (
         <span key={status} className="inline-flex items-center gap-2">
           {statusMeta(status).label}
@@ -148,7 +148,7 @@ export function RecentOrders({ section }) {
         {section.status === 'loading' && <ListSkeleton />}
         {section.status === 'error' && <SectionError className="m-5" message={section.error} onRetry={section.retry} />}
         {section.status === 'ready' && orders.length === 0 && (
-          <p className="px-5 py-6 text-sm text-[#6F6358]">No orders yet. Orders appear here when buyers check out.</p>
+          <p className="px-5 py-6 text-sm text-text-secondary">No orders yet. Orders appear here when buyers check out.</p>
         )}
         {section.status === 'ready' && orders.length > 0 && <OrderList orders={orders} />}
         {section.status === 'ready' && <ClosedSummary counts={section.data?.counts ?? {}} />}

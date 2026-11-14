@@ -13,10 +13,10 @@ const CONDITION_STYLES = {
   FAIR_DISTRESSED: 'bg-[#f6dfd2] text-[#7A3416]',
 };
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-1';
-const primaryBtn = `inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#B5532E] px-6 text-sm font-semibold text-white transition-colors hover:bg-[#9C4425] ${focusRing}`;
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1';
+const primaryBtn = `inline-flex min-h-[44px] items-center justify-center rounded-xl bg-primary px-6 text-sm font-semibold text-white transition-colors hover:bg-primary-hover ${focusRing}`;
 // Outline terracotta: Add Product stays the only filled button on the page.
-const outlineBtn = `inline-flex min-h-[44px] items-center justify-center rounded-xl border-[1.5px] border-[#B5532E] bg-white px-6 text-sm font-semibold text-[#B5532E] transition-colors hover:bg-[#FBE6DC] ${focusRing}`;
+const outlineBtn = `inline-flex min-h-[44px] items-center justify-center rounded-xl border-[1.5px] border-primary bg-white px-6 text-sm font-semibold text-primary transition-colors hover:bg-[#FBE6DC] ${focusRing}`;
 const SOLD_DELETE_HINT = 'Sold products have an order and can’t be deleted.';
 
 const COLUMNS = [
@@ -82,8 +82,8 @@ function RowActions({ product, onDelete }) {
         aria-label={`${sold ? 'View' : 'Edit'} ${product.name}`}
         className={`inline-flex min-h-[44px] items-center rounded-xl px-4 text-sm font-semibold transition-colors ${focusRing} ${
           sold
-            ? 'border border-[#D9CFC1] bg-white text-[#2B2118] hover:bg-[#F5F0E8]'
-            : 'border-[1.5px] border-[#B5532E] bg-white text-[#B5532E] hover:bg-[#FBE6DC]'
+            ? 'border border-[#D9CFC1] bg-white text-text hover:bg-surface-muted'
+            : 'border-[1.5px] border-primary bg-white text-primary hover:bg-[#FBE6DC]'
         }`}
       >
         {sold ? 'View' : 'Edit'}
@@ -100,7 +100,7 @@ function RowActions({ product, onDelete }) {
         className={`flex size-11 items-center justify-center rounded-xl border bg-white transition-colors ${focusRing} ${
           sold
             ? 'cursor-not-allowed border-[#E8E1D8] text-[#A89B8E]'
-            : 'border-[#D9CFC1] text-[#6F6358] hover:border-[#EBC3AE] hover:bg-[#FCEDEA] hover:text-[#BA1A1A]'
+            : 'border-[#D9CFC1] text-text-secondary hover:border-[#EBC3AE] hover:bg-[#FCEDEA] hover:text-error'
         }`}
       >
         <TrashIcon width={18} height={18} />
@@ -155,7 +155,7 @@ function LoadingRows() {
           ))}
         </tbody>
       </table>
-      <ul className="divide-y divide-[#EAE4DA] md:hidden" aria-hidden="true">
+      <ul className="divide-y divide-border md:hidden" aria-hidden="true">
         {Array.from({ length: 4 }, (_, i) => (
           <li key={i} className="flex gap-3 p-4">
             <span className="block h-20 w-16 animate-pulse rounded-lg bg-[#efe9e0]" />
@@ -174,9 +174,9 @@ function LoadingRows() {
 function StateMessage({ icon, title, children, action, live }) {
   return (
     <div role={live ? 'alert' : undefined} className="flex flex-col items-center px-6 py-16 text-center sm:py-24">
-      <span className="text-[#6F6358]">{icon}</span>
-      <p className="mt-5 text-xl font-semibold text-[#2B2118] sm:text-2xl">{title}</p>
-      <p className="mt-2 max-w-[28rem] text-sm text-[#6F6358]">{children}</p>
+      <span className="text-text-secondary">{icon}</span>
+      <p className="mt-5 text-xl font-semibold text-text sm:text-2xl">{title}</p>
+      <p className="mt-2 max-w-[28rem] text-sm text-text-secondary">{children}</p>
       {action && <div className="mt-6 w-full max-w-[12rem]">{action}</div>}
     </div>
   );
@@ -248,27 +248,27 @@ export default function ProductTable({
               {items.map((product) => (
                 <tr
                   key={product._id}
-                  className={`border-t border-[#EAE4DA] hover:bg-[#F5F0E8] ${product.status === 'SOLD' ? 'bg-[#F7F2EA]' : 'even:bg-[#FBF8F3]'}`}
+                  className={`border-t border-border hover:bg-surface-muted ${product.status === 'SOLD' ? 'bg-[#F7F2EA]' : 'even:bg-[#FBF8F3]'}`}
                 >
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-3">
                       <ProductThumb product={product} className="h-[50px] w-10" />
                       <div className="min-w-0 max-w-[240px]">
-                        <p className="truncate font-semibold text-[#2B2118]" title={product.name}>
+                        <p className="truncate font-semibold text-text" title={product.name}>
                           {product.name}
                         </p>
-                        <p className="truncate text-[13px] text-[#6F6358]">{product.brand || '—'}</p>
+                        <p className="truncate text-[13px] text-text-secondary">{product.brand || '—'}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3.5 text-[#2B2118]">{product.category?.name ?? '—'}</td>
-                  <td className="px-4 py-3.5 text-[#2B2118]">{sizeLabel(product.size)}</td>
+                  <td className="px-4 py-3.5 text-text">{product.category?.name ?? '—'}</td>
+                  <td className="px-4 py-3.5 text-text">{sizeLabel(product.size)}</td>
                   <td className="px-4 py-3.5">
                     <Badge className={CONDITION_STYLES[product.condition] ?? 'bg-[#efe9e0] text-[#4A3F35]'}>
                       {conditionLabel(product.condition)}
                     </Badge>
                   </td>
-                  <td className="min-w-[110px] whitespace-nowrap px-4 py-3.5 text-left font-semibold tabular-nums text-[#2B2118]">
+                  <td className="min-w-[110px] whitespace-nowrap px-4 py-3.5 text-left font-semibold tabular-nums text-text">
                     {formatRupiah(product.price)}
                   </td>
                   <td className="px-4 py-3.5">
@@ -283,7 +283,7 @@ export default function ProductTable({
           </table>
         </div>
 
-        <ul className="divide-y divide-[#EAE4DA] md:hidden" aria-label="Products">
+        <ul className="divide-y divide-border md:hidden" aria-label="Products">
           {items.map((product) => (
             <li
               key={product._id}
@@ -291,12 +291,12 @@ export default function ProductTable({
             >
               <ProductThumb product={product} className="h-20 w-16" />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold text-[#2B2118]">{product.name}</p>
-                <p className="truncate text-[13px] text-[#6F6358]">
+                <p className="truncate font-semibold text-text">{product.name}</p>
+                <p className="truncate text-[13px] text-text-secondary">
                   {[product.brand, sizeLabel(product.size)].filter(Boolean).join(' · ')}
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                  <span className="font-semibold tabular-nums text-[#2B2118]">{formatRupiah(product.price)}</span>
+                  <span className="font-semibold tabular-nums text-text">{formatRupiah(product.price)}</span>
                   <StatusBadge status={product.status} />
                 </div>
                 <div className="mt-3">

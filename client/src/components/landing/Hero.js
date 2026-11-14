@@ -11,8 +11,8 @@ const decor = 'pointer-events-none absolute z-0';
 function HeroDecor() {
   return (
     <div aria-hidden="true">
-      {/* Left blob #F6E7C1 @ 45% */}
-      <div className={cn(decor, '-bottom-16 -left-36 size-[280px] rounded-full bg-[#F6E7C1] opacity-45 blur-[35px] md:size-[374px]')} />
+      {/* Left blob uses the badge-warning token at 45%. */}
+      <div className={cn(decor, '-bottom-16 -left-36 size-[280px] rounded-full bg-badge-warning opacity-45 blur-[35px] md:size-[374px]')} />
       {/* Right blob #F4D9CC @ 45%, edges fade out through a large blur, no stroke */}
       <div
         className={cn(decor, 'left-[78%] top-[54%] h-[330px] w-[380px] -translate-x-1/2 -translate-y-1/2 bg-[#F4D9CC] opacity-45 blur-[80px] sm:h-[480px] sm:w-[540px] lg:h-[560px] lg:w-[640px]')}

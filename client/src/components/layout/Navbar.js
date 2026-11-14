@@ -12,16 +12,16 @@ import AuthDialog from '@/components/auth/AuthDialog';
 import { MobileMenu } from './MobileMenu';
 
 const focusRing =
-  'focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none';
+  'focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none';
 
 // Existing desktop nav styles: active = bold with terracotta underline.
-const navIdle = 'text-[#5C4D40] hover:text-[#2B2118] transition-colors py-1 rounded';
-const navActive = 'text-[#2B2118] font-bold border-b-2 border-[#B5532E] py-1 pb-0.5 tracking-tight rounded';
+const navIdle = 'text-[#5C4D40] hover:text-text transition-colors py-1 rounded';
+const navActive = 'text-text font-bold border-b-2 border-primary py-1 pb-0.5 tracking-tight rounded';
 
 const toastStyle = {
   borderRadius: '12px',
-  background: '#FAF7F2',
-  color: '#2B2118',
+  background: 'var(--canvas)',
+  color: 'var(--text)',
   border: '1px solid #E6DDD2',
 };
 
@@ -116,7 +116,7 @@ export function Navbar() {
   return (
     <>
       <header
-        className="sticky top-0 z-40 w-full bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#E6DDD2] py-3.5 px-4 sm:px-8 flex items-center transition-all"
+        className="sticky top-0 z-40 w-full bg-canvas/95 backdrop-blur-md border-b border-[#E6DDD2] py-3.5 px-4 sm:px-8 flex items-center transition-all"
         id="main-header"
       >
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-4">
@@ -125,12 +125,12 @@ export function Navbar() {
             href="/"
             className={`flex items-center gap-2.5 group rounded-xl p-0.5 ${focusRing}`}
           >
-            <div className="w-10 h-10 rounded-xl bg-[#F25A2A] flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105">
               <HangerLogoIcon />
             </div>
             <div className="font-display font-bold text-[18px] sm:text-[28px] tracking-[-0.5px] leading-none select-none">
-              <span className="text-[#2B2118]">thrift</span>
-              <span className="text-[#F25A2A]">pedia</span>
+              <span className="text-text">thrift</span>
+              <span className="text-primary">pedia</span>
             </div>
           </Link>
 
@@ -159,14 +159,14 @@ export function Navbar() {
                 <button
                   type="button"
                   onClick={() => openAuth('login')}
-                  className={`min-h-[44px] px-3 flex items-center text-sm font-semibold text-[#2B2118] hover:text-[#B5532E] transition-colors rounded-xl ${focusRing}`}
+                  className={`min-h-[44px] px-3 flex items-center text-sm font-semibold text-text hover:text-primary transition-colors rounded-xl ${focusRing}`}
                 >
                   Log in
                 </button>
                 <button
                   type="button"
                   onClick={() => openAuth('register')}
-                  className={`min-h-[44px] px-5 flex items-center justify-center text-sm font-semibold leading-none rounded-xl border border-[#B5532E] text-[#B5532E] hover:bg-[#FBEDE6] transition-colors ${focusRing}`}
+                  className={`min-h-[44px] px-5 flex items-center justify-center text-sm font-semibold leading-none rounded-xl border border-primary text-primary hover:bg-[#FBEDE6] transition-colors ${focusRing}`}
                 >
                   Register
                 </button>
@@ -179,7 +179,7 @@ export function Navbar() {
                   type="button"
                   aria-label={`Wishlist, ${query.isPending ? 'loading' : count + ' items'}`}
                   onClick={handleWishlistClick}
-                  className={`relative min-w-[44px] min-h-[44px] rounded-full text-[#5C4D40] hover:text-[#2B2118] hover:bg-[#F1EBE1] flex items-center justify-center transition-colors ${focusRing}`}
+                  className={`relative min-w-[44px] min-h-[44px] rounded-full text-[#5C4D40] hover:text-text hover:bg-[#F1EBE1] flex items-center justify-center transition-colors ${focusRing}`}
                 >
                   <Image src="/icons/wishlist-badge.svg" width={18} height={18} alt="" />
                   <span className="ml-1 font-metadata text-xs" aria-live="polite">{query.isPending ? '…' : count}</span>
@@ -193,7 +193,7 @@ export function Navbar() {
                     aria-haspopup="menu"
                     aria-expanded={profileOpen}
                     onClick={() => setProfileOpen((prev) => !prev)}
-                    className={`min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center font-bold text-xs text-[#2B2118] bg-[#E7DCD0] hover:bg-[#DBCABA] transition-colors cursor-pointer select-none border border-[#CFBEAE] ${focusRing}`}
+                    className={`min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center font-bold text-xs text-text bg-[#E7DCD0] hover:bg-[#DBCABA] transition-colors cursor-pointer select-none border border-[#CFBEAE] ${focusRing}`}
                     title={user?.name || 'Account'}
                   >
                     {initials}
@@ -204,7 +204,7 @@ export function Navbar() {
                       <div className="absolute right-0 top-full mt-2 w-56 z-50 bg-white rounded-xl border border-[#E6DDD2] shadow-lg p-2">
                         <Link href="/orders" onClick={() => setProfileOpen(false)} className="buyer-secondary">Your orders</Link>
                         <div className="px-3 py-2 border-b border-[#E6DDD2]/60">
-                          <p className="font-bold text-sm text-[#2B2118] truncate">
+                          <p className="font-bold text-sm text-text truncate">
                             {user?.name || 'Account'}
                           </p>
                           {user?.email && (
@@ -214,7 +214,7 @@ export function Navbar() {
                         <button
                           type="button"
                           onClick={handleLogout}
-                          className={`mt-1 w-full min-h-[44px] px-3 text-left text-sm font-medium text-[#BA1A1A] hover:bg-[#F1EBE1] rounded-lg transition-colors ${focusRing}`}
+                          className={`mt-1 w-full min-h-[44px] px-3 text-left text-sm font-medium text-error hover:bg-[#F1EBE1] rounded-lg transition-colors ${focusRing}`}
                         >
                           Log out
                         </button>
@@ -232,7 +232,7 @@ export function Navbar() {
               aria-label="Toggle menu"
               aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className={`md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center text-[#2B2118] hover:bg-[#F1EBE1] rounded-xl transition-colors ${focusRing}`}
+              className={`md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center text-text hover:bg-[#F1EBE1] rounded-xl transition-colors ${focusRing}`}
             >
               <MenuIcon />
             </button>

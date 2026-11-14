@@ -17,9 +17,9 @@ export function DashboardHeader({ adminName }) {
     <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
         <h1 className="text-3xl font-semibold text-text sm:text-4xl">Dashboard</h1>
-        <p className="mt-2 text-[15px] text-[#6F6358]">
+        <p className="mt-2 text-[15px] text-text-secondary">
           {firstName ? `Hi ${firstName}, here's what needs you today.` : "Here's what needs you today."}
-          <span className="mt-1 block text-[13px] text-[#6F6358]">{todayFormat.format(new Date())} WIB</span>
+          <span className="mt-1 block text-[13px] text-text-secondary">{todayFormat.format(new Date())} WIB</span>
         </p>
       </div>
       <Link

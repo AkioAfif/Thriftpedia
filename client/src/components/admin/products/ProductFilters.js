@@ -4,7 +4,7 @@ import { CONDITION_OPTIONS, SIZE_OPTIONS, SORT_OPTIONS } from '@/lib/adminProduc
 import { CloseIcon, SearchIcon } from '../icons';
 import FilterSelect from './FilterSelect';
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-1';
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1';
 
 // Search commits on Enter right away, or by itself after a short pause (handled by the page).
 export default function ProductFilters({
@@ -20,7 +20,7 @@ export default function ProductFilters({
   const categoryOptions = categories.map((cat) => ({ value: cat.slug, label: cat.name }));
 
   return (
-    <div className="rounded-2xl border border-[#E5DCCD] bg-[#F5F0E8] p-4">
+    <div className="rounded-2xl border border-[#E5DCCD] bg-surface-muted p-4">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_repeat(4,minmax(0,1fr))]">
         <form
           role="search"
@@ -33,7 +33,7 @@ export default function ProductFilters({
           <label htmlFor="product-search" className="sr-only">
             Search products by name or brand
           </label>
-          <span aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#6F6358]">
+          <span aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">
             <SearchIcon width={18} height={18} />
           </span>
           <input
@@ -44,14 +44,14 @@ export default function ProductFilters({
             enterKeyHint="search"
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search by name or brand"
-            className={`h-11 w-full rounded-xl border border-[#D9CFC1] bg-white pl-11 pr-12 text-sm text-[#2B2118] placeholder:text-[#6F6358] hover:border-[#B5532E] [&::-webkit-search-cancel-button]:hidden ${focusRing}`}
+            className={`h-11 w-full rounded-xl border border-[#D9CFC1] bg-white pl-11 pr-12 text-sm text-text placeholder:text-text-secondary hover:border-primary [&::-webkit-search-cancel-button]:hidden ${focusRing}`}
           />
           {searchValue && (
             <button
               type="button"
               onClick={() => onSearchChange('')}
               aria-label="Clear search"
-              className={`absolute right-1 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-lg text-[#6F6358] hover:bg-[#F5F0E8] ${focusRing}`}
+              className={`absolute right-1 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-lg text-text-secondary hover:bg-surface-muted ${focusRing}`}
             >
               <CloseIcon width={16} height={16} />
             </button>
@@ -98,7 +98,7 @@ export default function ProductFilters({
           <button
             type="button"
             onClick={onReset}
-            className={`min-h-[44px] rounded-lg px-3 text-sm font-semibold text-[#B5532E] underline-offset-4 hover:underline ${focusRing}`}
+            className={`min-h-[44px] rounded-lg px-3 text-sm font-semibold text-primary underline-offset-4 hover:underline ${focusRing}`}
           >
             Reset filters
           </button>

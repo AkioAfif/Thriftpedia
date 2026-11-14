@@ -13,7 +13,7 @@ const NAV_ITEMS = [
 ];
 
 const focusRing =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E]';
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary';
 
 function getInitials(name) {
   const parts = String(name).trim().split(/\s+/).filter(Boolean);
@@ -36,12 +36,12 @@ export default function Sidebar({ user, onLogout }) {
         aria-label="Go to catalog"
         className={`group flex items-center gap-2.5 rounded-xl p-0.5 ${focusRing}`}
       >
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F25A2A] shadow-sm transition-transform group-hover:scale-105">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary shadow-sm transition-transform group-hover:scale-105">
           <HangerLogoIcon />
         </div>
         <div className="select-none font-display text-[24px] font-bold leading-none tracking-[-0.5px]">
-          <span className="text-[#2B2118]">thrift</span>
-          <span className="text-[#F25A2A]">pedia</span>
+          <span className="text-text">thrift</span>
+          <span className="text-primary">pedia</span>
         </div>
       </Link>
 
@@ -57,7 +57,7 @@ export default function Sidebar({ user, onLogout }) {
               href={href}
               aria-current={active ? 'page' : undefined}
               className={`flex shrink-0 items-center gap-3 rounded-[10px] px-4 py-3 text-sm font-medium ${focusRing} ${
-                active ? 'bg-[#b4532a] text-white' : 'text-[#2b1d14] hover:bg-[#faf7f2]'
+                active ? 'bg-[#b4532a] text-white' : 'text-[#2b1d14] hover:bg-canvas'
               }`}
             >
               <Icon />
@@ -80,7 +80,7 @@ export default function Sidebar({ user, onLogout }) {
         <button
           type="button"
           onClick={onLogout}
-          className={`rounded-[10px] border border-[#e8e1d8] bg-white px-4 py-3 text-sm font-medium text-[#2b1d14] hover:bg-[#faf7f2] lg:w-full ${focusRing}`}
+          className={`rounded-[10px] border border-[#e8e1d8] bg-white px-4 py-3 text-sm font-medium text-[#2b1d14] hover:bg-canvas lg:w-full ${focusRing}`}
         >
           Log out
         </button>

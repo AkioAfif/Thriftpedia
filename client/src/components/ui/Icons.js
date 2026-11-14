@@ -66,7 +66,7 @@ export function ArrowForwardIcon({ className = 'w-4 h-4' }) {
   );
 }
 
-export function TuneIcon({ className = 'w-4 h-4 text-[#B5532E]' }) {
+export function TuneIcon({ className = 'w-4 h-4 text-primary' }) {
   return (
     <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
       <line x1="4" y1="21" x2="4" y2="14" />
@@ -116,7 +116,7 @@ export function ChevronDownIcon({ className = 'w-3.5 h-3.5' }) {
   );
 }
 
-export function SearchOffIcon({ className = 'w-7 h-7 text-[#B5532E]' }) {
+export function SearchOffIcon({ className = 'w-7 h-7 text-primary' }) {
   return (
     <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="11" cy="11" r="7" />
@@ -126,7 +126,7 @@ export function SearchOffIcon({ className = 'w-7 h-7 text-[#B5532E]' }) {
   );
 }
 
-export function ErrorOutlineIcon({ className = 'w-7 h-7 text-[#BA1A1A]' }) {
+export function ErrorOutlineIcon({ className = 'w-7 h-7 text-error' }) {
   return (
     <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="12" cy="12" r="10" />
