@@ -18,15 +18,16 @@ import { OrderBackBar, OrderBackButton } from '@/components/orders/OrderBackNav'
 import { OrderStatusRibbon } from '@/components/orders/OrderStatusRibbon';
 import { useOrdersHref } from '@/components/orders/ordersReturn';
 import { OrderThumb } from '@/components/orders/OrderThumb';
+import { BuyerShippingAddress } from '@/components/orders/ShippingAddress';
+import { useOrderPayment } from '@/components/orders/useOrderPayment';
 import { ProductReviews } from '@/components/reviews/ProductReviews';
 import { ActionDialog } from '@/components/ui/ActionDialog';
+import { LoadingDots } from '@/components/ui/LoadingDots';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { CheckIcon, ErrorOutlineIcon } from '@/components/ui/Icons';
+import { CheckIcon, CloseIcon, ErrorOutlineIcon } from '@/components/ui/Icons';
+import { canPay, hasAddress } from '@/lib/payment';
 
-// TODO: remove this flag (and keep the cancel UI) once PATCH /api/orders/:id/cancel is merged into main.
-const BUYER_CANCEL_ENABLED = process.env.NEXT_PUBLIC_BUYER_CANCEL === 'true';
-
-const PAGE = 'mx-auto w-full max-w-[1120px] flex-1 px-margin-mobile py-lg md:px-margin-tablet lg:py-xl';
+const PAGE = 'mx-auto w-full max-w-[1120px] flex-1 px-margin-mobile py-lg md:px-margin-tablet lg:px-8 lg:py-xl';
 const CARD = 'rounded-2xl border border-border bg-surface p-md sm:p-lg';
 
 export default function OrderPage({ params }) {
@@ -77,7 +78,7 @@ function OrderView({ orderId }) {
       </Notice>
     );
   } else if (placed) body = <PlacedView order={query.data} />;
-  else body = <OrderDetail order={query.data} queryKey={queryKey} onReload={() => query.refetch()} />;
+  else body = <OrderDetail order={query.data} token={token} queryKey={queryKey} onReload={() => query.refetch()} />;
 
   return <main className={PAGE}>{body}</main>;
 }
@@ -139,10 +140,21 @@ function PlacedView({ order }) {
   );
 }
 
-function OrderDetail({ order, queryKey, onReload }) {
+function OrderDetail({ order, token, queryKey, onReload }) {
   const item = orderItem(order);
   const history = Array.isArray(order.statusHistory) ? order.statusHistory : [];
-  const canCancel = BUYER_CANCEL_ENABLED && order.status === 'PENDING';
+  const canCancel = order.status === 'PENDING';
+  const client = useQueryClient();
+  const payment = useOrderPayment({
+    order,
+    token,
+    refresh: () => {
+      onReload();
+      client.invalidateQueries({ queryKey: ['orders-page'] });
+    },
+  });
+  const payable = canPay(order) && !payment.unavailable;
+  const addressed = hasAddress(order);
   // Lives here, not in CancelOrder: after a 403/404/409 reload the order may no longer be PENDING.
   const [cancelNotice, setCancelNotice] = useState('');
   const backHref = useOrdersHref();
@@ -175,12 +187,27 @@ function OrderDetail({ order, queryKey, onReload }) {
         </p>
       </header>
 
-      <OrderStatusRibbon order={order} total={total} canCancel={canCancel} />
+      <OrderStatusRibbon
+        order={order}
+        total={total}
+        canCancel={canCancel}
+        payable={payable && addressed}
+        actions={
+          payable || canCancel ? (
+            <>
+              {payable && <PayNowButton busy={payment.busy} disabled={!addressed} onPay={payment.pay} />}
+              {canCancel && <CancelOrder order={order} queryKey={queryKey} onReload={onReload} onNotice={setCancelNotice} />}
+            </>
+          ) : null
+        }
+        note={paymentNote({ payment, payable, addressed })}
+      />
 
-      {/* DOM order = mobile order: progress, item, history, review. From lg: item and review on
-          the left (7/12), the progress card on the right (5/12), sticky. */}
-      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-12 lg:gap-6">
-        <div className={`lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1 lg:self-stretch ${progressHiddenOnMobile ? 'max-lg:hidden' : ''}`}>
+      {/* DOM order = mobile order: progress, item, address, history, review. From md: item, address
+          and review stacked on the left (7/12), progress on the right (5/12), sticky from lg; its
+          wrapper stretches to the row height so the sticky card can travel. */}
+      <div className="grid grid-cols-1 items-start gap-5 md:grid-cols-12 lg:gap-6">
+        <div className={`min-w-0 md:col-span-5 md:col-start-8 md:row-start-1 md:self-stretch ${progressHiddenOnMobile ? 'max-lg:hidden' : ''}`}>
           <section aria-labelledby="progress-title" className="rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-5 lg:sticky lg:top-24">
             <h2 id="progress-title" className="text-[18px] font-semibold text-[#2B2118]">Order progress</h2>
             {!cancelled && (
@@ -206,29 +233,33 @@ function OrderDetail({ order, queryKey, onReload }) {
                 {cancelNotice}
               </p>
             )}
-            {canCancel && <CancelOrder order={order} queryKey={queryKey} onReload={onReload} onNotice={setCancelNotice} />}
           </section>
         </div>
 
-        <div className="min-w-0 lg:col-span-7 lg:col-start-1 lg:row-start-1">
-          <BuyerOrderItem item={item} productId={productId} fromPath={`/orders/${order._id}`} />
-        </div>
-
-        {/* Below lg the history is its own card after the item (from lg it is in the progress card). */}
-        <section aria-labelledby="history-title" className="rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-5 lg:hidden">
-          <h2 id="history-title" className="text-[18px] font-semibold text-[#2B2118]">Status history</h2>
-          <div className="mt-3">
-            <OrderTimeline history={history} />
+        {/* When the progress card is hidden below lg, the left column takes the full md width. */}
+        <div className={`flex min-w-0 flex-col gap-5 md:col-start-1 md:row-start-1 lg:col-span-7 lg:gap-6 ${progressHiddenOnMobile ? 'md:col-span-12' : 'md:col-span-7'}`}>
+          <div className="min-w-0">
+            <BuyerOrderItem item={item} productId={productId} fromPath={`/orders/${order._id}`} />
           </div>
-        </section>
 
-        <section aria-label="Review" className="min-w-0 rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-5 lg:col-span-7 lg:col-start-1 lg:row-start-2">
-          {order.product?._id ? (
-            <ProductReviews product={order.product} order={order} />
-          ) : (
-            <p className="text-body-md text-text-secondary">This product was removed, so it can’t be reviewed.</p>
-          )}
-        </section>
+          <BuyerShippingAddress address={order.shippingAddress} />
+
+          {/* Below lg the history is its own card (from lg it is in the progress card). */}
+          <section aria-labelledby="history-title" className="rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-5 lg:hidden">
+            <h2 id="history-title" className="text-[18px] font-semibold text-[#2B2118]">Status history</h2>
+            <div className="mt-3">
+              <OrderTimeline history={history} />
+            </div>
+          </section>
+
+          <section aria-label="Review" className="min-w-0 rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-5">
+            {order.product?._id ? (
+              <ProductReviews product={order.product} order={order} />
+            ) : (
+              <p className="text-body-md text-text-secondary">This product was removed, so it can’t be reviewed.</p>
+            )}
+          </section>
+        </div>
       </div>
     </div>
   );
@@ -265,15 +296,15 @@ function CancelOrder({ order, queryKey, onReload, onNotice }) {
   }
 
   return (
-    <div className="mt-md border-t border-border pt-md">
+    <>
       <button
         type="button"
         onClick={() => { setDialogError(''); onNotice(''); setOpen(true); }}
-        className="buyer-control -mx-1 inline-flex min-h-11 items-center rounded-md px-1 text-body-md font-semibold text-error underline-offset-4 hover:underline"
+        className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border-[1.5px] border-[#B3402A] bg-transparent px-5 text-sm font-semibold text-[#B3402A] transition-colors duration-150 hover:bg-[#FBE9E5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B3402A] focus-visible:ring-offset-2 motion-reduce:transition-none sm:w-auto"
       >
+        <CloseIcon className="size-4 shrink-0" />
         Cancel order
       </button>
-      <p className="text-[13px] text-text-secondary">You can cancel while your order is Pending.</p>
 
       {open && (
         <ActionDialog title="Cancel this order?" busy={busy} onRequestClose={() => setOpen(false)}>
@@ -302,8 +333,51 @@ function CancelOrder({ order, queryKey, onReload, onNotice }) {
           </div>
         </ActionDialog>
       )}
-    </div>
+    </>
   );
+}
+
+function PayNowButton({ busy, disabled, onPay }) {
+  return (
+    <button
+      type="button"
+      onClick={onPay}
+      disabled={busy || disabled}
+      aria-busy={busy}
+      aria-describedby={disabled ? 'pay-note' : undefined}
+      className={`relative inline-flex h-12 w-full items-center justify-center rounded-xl px-6 text-[15px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 motion-reduce:transition-none sm:w-auto ${
+        disabled ? 'cursor-not-allowed bg-[#E8E1D8] text-[#5C4D40]' : `bg-[#B5532E] text-white ${busy ? 'cursor-wait' : 'hover:bg-[#9C4425]'}`
+      }`}
+    >
+      {/* The label keeps the button width while the dots show. */}
+      <span className={busy ? 'invisible' : undefined}>Pay now</span>
+      {busy && <LoadingDots className="absolute inset-0 justify-center" />}
+    </button>
+  );
+}
+
+// One short live line under the ribbon actions (null = none). Errors first, then the payment's progress.
+function paymentNote({ payment, payable, addressed }) {
+  if (payment.error) {
+    return (
+      <span className="inline-flex items-start gap-1.5 text-[#B3402A]">
+        <ErrorOutlineIcon className="mt-0.5 size-4 shrink-0 text-[#B3402A]" />
+        {payment.error}
+      </span>
+    );
+  }
+  if (payment.confirming) {
+    return (
+      <span className="inline-flex items-center gap-2">
+        Payment is being confirmed.
+        <LoadingDots />
+      </span>
+    );
+  }
+  if (payment.unconfirmed) return 'We haven’t received the payment yet. If you paid, it can take a few minutes to show here.';
+  if (payment.unavailable) return 'Online payment isn’t available right now.';
+  if (payable && !addressed) return <span id="pay-note">Online payment needs a delivery address, and this order has none.</span>;
+  return null;
 }
 
 function DetailSkeleton() {
@@ -314,21 +388,25 @@ function DetailSkeleton() {
         <Skeleton className="h-9 w-64 rounded" />
         <Skeleton className="h-4 w-48 rounded" />
       </div>
-      <Skeleton className="h-[124px] w-full rounded-[20px]" />
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-12 lg:gap-6">
-        <div className="rounded-[20px] border border-[#D9CFC1] bg-white p-5 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1">
+      {/* Ribbon: below sm it stacks status, total and the full-width Pay now / Cancel buttons. */}
+      <Skeleton className="h-[296px] w-full rounded-[20px] sm:h-[196px]" />
+      <div className="grid grid-cols-1 items-start gap-5 md:grid-cols-12 lg:gap-6">
+        <div className="min-w-0 rounded-[20px] border border-[#D9CFC1] bg-white p-5 md:col-span-5 md:col-start-8 md:row-start-1">
           <Skeleton className="h-6 w-36 rounded" />
-          {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="mt-4 h-8 w-40 rounded" />)}
+          {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="mt-4 h-8 w-40 max-w-full rounded" />)}
         </div>
-        <div className="flex gap-4 rounded-[20px] border border-[#D9CFC1] bg-white p-5 lg:col-span-7 lg:col-start-1 lg:row-start-1">
-          <Skeleton className="size-24 rounded-2xl md:size-32" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-6 w-3/4 rounded" />
-            <Skeleton className="h-6 w-1/3 rounded-full" />
-            <Skeleton className="h-5 w-1/4 rounded" />
+        <div className="flex min-w-0 flex-col gap-5 md:col-span-7 md:col-start-1 md:row-start-1 lg:gap-6">
+          <div className="flex gap-4 rounded-[20px] border border-[#D9CFC1] bg-white p-5">
+            <Skeleton className="size-24 shrink-0 rounded-2xl md:size-32" />
+            <div className="min-w-0 flex-1 space-y-2">
+              <Skeleton className="h-6 w-3/4 rounded" />
+              <Skeleton className="h-6 w-1/3 rounded-full" />
+              <Skeleton className="h-5 w-1/4 rounded" />
+            </div>
           </div>
+          <Skeleton className="h-[188px] rounded-[20px]" />
+          <Skeleton className="h-40 rounded-[20px]" />
         </div>
-        <Skeleton className="h-40 rounded-[20px] lg:col-span-7 lg:col-start-1 lg:row-start-2" />
       </div>
     </div>
   );

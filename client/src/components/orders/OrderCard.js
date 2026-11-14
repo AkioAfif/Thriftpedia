@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { rememberOrdersQuery } from './ordersReturn';
 import OrderStatusBadge from '@/components/admin/orders/OrderStatusBadge';
 import { OrderThumb } from '@/components/orders/OrderThumb';
+import { PaymentBadge } from '@/components/orders/PaymentBadge';
 import { formatOrderDateTime, orderItem, orderLabel, statusMeta } from '@/lib/orderView';
 import { conditionLabel, formatRupiah, sizeLabel } from '@/lib/adminProducts';
+import { canPay, hasAddress, paymentMeta, paymentStatusOf } from '@/lib/payment';
 
 function Arrow() {
   return (
@@ -15,15 +17,28 @@ function Arrow() {
   );
 }
 
-// Decorative: the whole card is the link, so this only looks like a button.
-function ViewDetails() {
+// Decorative: the whole card is the link (to the detail page, where paying happens), so this
+// only looks like a button. "Pay now" when the order can be paid online, else "View details".
+function ViewDetails({ pay }) {
   return (
     <span
       aria-hidden="true"
-      className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border-[1.5px] border-[#B5532E] bg-white px-4 text-sm font-semibold text-[#B5532E] transition-colors duration-150 group-hover:bg-[#FBE6DC] motion-reduce:transition-none"
+      className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border-[1.5px] border-[#B5532E] px-4 text-sm font-semibold transition-colors duration-150 motion-reduce:transition-none ${
+        pay ? 'bg-[#B5532E] text-white group-hover:bg-[#9C4425]' : 'bg-white text-[#B5532E] group-hover:bg-[#FBE6DC]'
+      }`}
     >
-      View details
+      {pay ? 'Pay now' : 'View details'}
       <Arrow />
+    </span>
+  );
+}
+
+// Status + payment, wrapping onto a second line when space runs out.
+function Badges({ order, className = '' }) {
+  return (
+    <span className={`flex min-w-0 flex-wrap items-center gap-1.5 ${className}`}>
+      <OrderStatusBadge status={order.status} />
+      <PaymentBadge order={order} size="sm" />
     </span>
   );
 }
@@ -38,6 +53,8 @@ export function OrderCard({ order }) {
     .filter(Boolean)
     .join(' · ');
   const placed = <time dateTime={order.createdAt}>{formatOrderDateTime(order.createdAt)}</time>;
+  const pay = canPay(order) && hasAddress(order);
+  const payment = paymentMeta(paymentStatusOf(order)).label;
 
   return (
     <li>
@@ -45,7 +62,7 @@ export function OrderCard({ order }) {
         href={`/orders/${order._id}`}
         // Lets the detail page link back to this tab and page.
         onClick={() => rememberOrdersQuery(window.location.search.replace(/^\?/, ''))}
-        aria-label={`Order ${label}, ${item.name}, ${statusMeta(order.status).label}, total ${total}. View details`}
+        aria-label={`Order ${label}, ${item.name}, ${statusMeta(order.status).label}, payment ${payment}, total ${total}. ${pay ? 'Pay now' : 'View details'}`}
         className="group block rounded-2xl border border-[#D9CFC1] bg-white p-4 transition-colors duration-150 hover:border-[#B5532E] hover:bg-[#FBF8F3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 motion-reduce:transition-none md:p-5"
       >
         {/* md and up */}
@@ -63,16 +80,16 @@ export function OrderCard({ order }) {
               <span className="block text-[13px] text-[#6F6358]">Total</span>
               <span className="block text-[20px] font-semibold leading-tight tabular-nums text-[#2B2118]">{total}</span>
             </span>
-            <OrderStatusBadge status={order.status} />
-            <ViewDetails />
+            <Badges order={order} className="max-w-[220px] justify-end" />
+            <ViewDetails pay={pay} />
           </span>
         </span>
 
         {/* below md */}
         <span className="block md:hidden">
-          <span className="flex items-center justify-between gap-3">
-            <span className="min-w-0 truncate text-sm font-semibold tabular-nums text-[#2B2118]">{label}</span>
-            <OrderStatusBadge status={order.status} className="min-w-0 shrink-0" />
+          <span className="flex items-start justify-between gap-3">
+            <span className="min-w-0 truncate pt-1 text-sm font-semibold tabular-nums text-[#2B2118]">{label}</span>
+            <Badges order={order} className="justify-end" />
           </span>
           <span className="mt-3 flex gap-3">
             <OrderThumb src={item.photo} alt="" sizes="56px" className="size-14 rounded-xl" />
@@ -84,7 +101,7 @@ export function OrderCard({ order }) {
           </span>
           <span className="mt-3 flex items-center justify-between gap-3 border-t border-[#EAE4DA] pt-3">
             <span className="min-w-0 text-base font-semibold tabular-nums text-[#2B2118]">{total}</span>
-            <ViewDetails />
+            <ViewDetails pay={pay} />
           </span>
         </span>
       </Link>

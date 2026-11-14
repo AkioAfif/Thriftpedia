@@ -11,6 +11,8 @@ import OrderStatusBadge from './OrderStatusBadge';
 import OrderStatusPanel from './OrderStatusPanel';
 import OrderSummaryRow from './OrderSummaryRow';
 import OrderTimeline from './OrderTimeline';
+import ShippingAddressCard from './ShippingAddressCard';
+import { PaymentBadge } from '@/components/orders/PaymentBadge';
 import { useAuth } from '@/context/AuthContext';
 import {
   fetchOrder,
@@ -67,10 +69,13 @@ function DetailSkeleton() {
           <div key={i} className={`h-28 ${pulse}`} />
         ))}
       </div>
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
-        <div className={`h-96 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1 ${pulse}`} />
-        <div className={`h-60 lg:col-span-7 lg:col-start-1 lg:row-start-1 ${pulse}`} />
-        <div className={`h-72 lg:col-span-7 lg:col-start-1 lg:row-start-2 ${pulse}`} />
+      <div className="mt-6 grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+        <div className={`h-96 lg:col-span-5 lg:col-start-8 lg:row-start-1 ${pulse}`} />
+        <div className="flex flex-col gap-6 lg:col-span-7 lg:col-start-1 lg:row-start-1">
+          <div className={`h-60 ${pulse}`} />
+          <div className={`h-56 ${pulse}`} />
+          <div className={`h-72 ${pulse}`} />
+        </div>
       </div>
     </div>
   );
@@ -200,6 +205,7 @@ export default function OrderDetailView() {
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="break-words text-[32px] font-semibold leading-tight tabular-nums text-[#2B2118]">Order {label}</h1>
             <OrderStatusBadge status={order.status} size="lg" />
+            <PaymentBadge order={order} size="lg" />
           </div>
           <p className="mt-1.5 text-sm tabular-nums text-[#6F6358]">
             Placed <time dateTime={order.createdAt}>{formatOrderDateTime(order.createdAt)}</time>
@@ -217,9 +223,10 @@ export default function OrderDetailView() {
         <OrderSummaryRow order={order} buyer={buyer} />
       </div>
 
-      {/* DOM order = mobile order: progress, item, history. From lg the progress column moves right. */}
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
-        <div className="lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1">
+      {/* DOM order = mobile order: progress, item, address, history. From lg the progress column
+          moves right and the left cards stack in one column (no gaps tied to the right's height). */}
+      <div className="mt-6 grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+        <div className="min-w-0 lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:self-stretch">
           <div className="space-y-4 lg:sticky lg:top-6">
             {order.status === 'CANCELLED' && (
               <p className="rounded-2xl border border-[#EBC3AE] bg-[#F7DDD6] px-5 py-4 text-sm font-medium text-[#8A2E1B]">
@@ -230,11 +237,9 @@ export default function OrderDetailView() {
           </div>
         </div>
 
-        <div className="min-w-0 lg:col-span-7 lg:col-start-1 lg:row-start-1">
+        <div className="flex min-w-0 flex-col gap-6 lg:col-span-7 lg:col-start-1 lg:row-start-1">
           <OrderItemCard item={item} />
-        </div>
-
-        <div className="min-w-0 lg:col-span-7 lg:col-start-1 lg:row-start-2">
+          <ShippingAddressCard address={order.shippingAddress} />
           <DetailCard titleId="order-history-title" title="Status history">
             <OrderTimeline history={order.statusHistory} />
           </DetailCard>
