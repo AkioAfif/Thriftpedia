@@ -1,11 +1,15 @@
 import Link from 'next/link';
 import { HangerLogoIcon } from '@/components/ui/Icons';
+import { FooterLinks } from './FooterLinks';
 
 const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#5A3A2A]';
 
-// Contact, Terms and Privacy only render once their route exists in app/ (/contact, /terms,
-// /privacy). None exist yet, so the list is empty; add an entry when the page ships.
-const FOOTER_LINKS = [];
+// Only list routes that exist in app/.
+const FOOTER_LINKS = [
+  { href: '/contact', label: 'Contact' },
+  { href: '/terms', label: 'Terms' },
+  { href: '/privacy', label: 'Privacy' },
+];
 
 const DEMO_VIDEO_URL = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL?.trim() || '';
 
@@ -28,15 +32,7 @@ export function Footer() {
             </div>
           </Link>
 
-          {FOOTER_LINKS.length > 0 && (
-            <nav aria-label="Footer" className="flex flex-wrap items-center justify-center gap-x-10 gap-y-2 text-[15px] font-medium">
-              {FOOTER_LINKS.map((link) => (
-                <Link key={link.href} href={link.href} className={`inline-flex min-h-11 items-center rounded hover:text-primary-tint ${focusRing}`}>
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          )}
+          {FOOTER_LINKS.length > 0 && <FooterLinks links={FOOTER_LINKS} />}
 
           {DEMO_VIDEO_URL ? (
             <a
