@@ -15,7 +15,23 @@ function CheckIcon() {
 
 // Drop-in replacement for the old native <select>: same props, same onChange(value).
 // The empty option (when `emptyLabel` is set) is listed as "All".
-export default function FilterSelect({ id, label, value, onChange, emptyLabel, options, defaultValue = '', align = 'left' }) {
+// variant="field" is the form look (no active tint) and adds disabled/invalid/describedBy;
+// includeEmpty={false} keeps the placeholder out of the list (a required choice).
+export default function FilterSelect({
+  id,
+  label,
+  value,
+  onChange,
+  emptyLabel,
+  options,
+  defaultValue = '',
+  align = 'left',
+  variant = 'filter',
+  includeEmpty = true,
+  disabled = false,
+  invalid = false,
+  describedBy,
+}) {
   const uid = useId();
   const rootRef = useRef(null);
   const buttonRef = useRef(null);
@@ -23,10 +39,11 @@ export default function FilterSelect({ id, label, value, onChange, emptyLabel, o
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const list = emptyLabel ? [{ value: '', label: 'All' }, ...options] : options;
+  const list = emptyLabel && includeEmpty ? [{ value: '', label: 'All' }, ...options] : options;
   const selectedIndex = Math.max(0, list.findIndex((o) => o.value === value));
   const current = list.find((o) => o.value === value);
-  const isActive = value !== defaultValue;
+  const isField = variant === 'field';
+  const isActive = !isField && value !== defaultValue;
   const triggerText = emptyLabel && !value ? emptyLabel : current?.label ?? emptyLabel ?? '';
   const optionId = (i) => `${uid}-opt-${i}`;
 
@@ -112,11 +129,19 @@ export default function FilterSelect({ id, label, value, onChange, emptyLabel, o
         aria-expanded={open}
         aria-controls={open ? `${uid}-list` : undefined}
         aria-labelledby={`${uid}-label ${id}`}
+        aria-describedby={describedBy}
+        disabled={disabled}
         onClick={() => (open ? close() : openList())}
         onKeyDown={onTriggerKeyDown}
-        className={`flex h-11 w-full items-center justify-between gap-2 rounded-xl border pl-4 pr-3 text-left text-sm transition-colors ${focusRing} ${
-          open ? 'border-[#B5532E] ring-1 ring-[#B5532E]' : isActive ? 'border-[#EBC3AE]' : 'border-[#D9CFC1] hover:border-[#B5532E]'
-        } ${isActive ? 'bg-[#FBE6DC] font-semibold text-[#B5532E]' : 'bg-white text-[#2B2118]'}`}
+        className={
+          isField
+            ? `flex h-11 w-full items-center justify-between gap-2 rounded-xl border bg-white pl-3 pr-3 text-left text-sm focus-visible:outline-none focus-visible:border-[#B5532E] focus-visible:shadow-[0_0_0_1px_#B5532E,0_0_0_4px_#FBE6DC] disabled:cursor-not-allowed disabled:bg-[#F5F0E8] ${
+                open ? 'border-[#B5532E] shadow-[0_0_0_1px_#B5532E,0_0_0_4px_#FBE6DC]' : invalid ? 'border-[#B3402A]' : 'border-[#D9CFC1]'
+              } ${value ? 'text-[#2B2118]' : 'text-[#6F6358]'}`
+            : `flex h-11 w-full items-center justify-between gap-2 rounded-xl border pl-4 pr-3 text-left text-sm transition-colors ${focusRing} ${
+                open ? 'border-[#B5532E] ring-1 ring-[#B5532E]' : isActive ? 'border-[#EBC3AE]' : 'border-[#D9CFC1] hover:border-[#B5532E]'
+              } ${isActive ? 'bg-[#FBE6DC] font-semibold text-[#B5532E]' : 'bg-white text-[#2B2118]'}`
+        }
       >
         <span className="min-w-0 truncate">{triggerText}</span>
         <span aria-hidden="true" className={`shrink-0 transition-transform duration-150 ${open ? 'rotate-180' : ''} ${isActive ? 'text-[#B5532E]' : 'text-[#6F6358]'}`}>

@@ -26,7 +26,7 @@ function PhotoPreview({ src, alt }) {
       <div
         role="img"
         aria-label={`${alt} could not be loaded`}
-        className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[#CFBEAE] bg-[#EFEBE4] px-3 text-center"
+        className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-1 rounded-[14px] border border-dashed border-[#CFBEAE] bg-[#F5F0E8] px-2 text-center"
       >
         <span className="text-xs font-semibold text-[#5C4D40]">Image unavailable</span>
         <span className="text-xs text-[#6F6358]">Remove it and upload again</span>
@@ -40,12 +40,22 @@ function PhotoPreview({ src, alt }) {
       alt={alt}
       draggable={false}
       onError={() => setFailed(true)}
-      className="aspect-[4/5] w-full rounded-xl border border-[#e6ddd2] bg-[#EFEBE4] object-cover"
+      className="aspect-[4/5] w-full rounded-[14px] border border-[#EAE4DA] bg-[#F5F0E8] object-cover"
     />
   );
 }
 
-const arrowBtn = `flex size-10 items-center justify-center rounded-lg border border-[#D9CFC1] bg-white text-[#2B2118] hover:bg-[#F5F0E8] disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`;
+// 36px white circle buttons with an icon; each has an aria-label and a tooltip (title).
+const circleBtn = `flex size-9 shrink-0 items-center justify-center rounded-full border border-[#D9CFC1] bg-white text-[#2B2118] shadow-sm hover:bg-[#F5F0E8] ${focusRing}`;
+const arrowBtn = `${circleBtn} disabled:cursor-not-allowed disabled:border-[#EAE4DA] disabled:bg-[#F5F0E8] disabled:text-[#A89B8E] disabled:shadow-none`;
+
+function StarIcon() {
+  return (
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round">
+      <path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9L12 3.5Z" />
+    </svg>
+  );
+}
 
 // Index 0 is the cover. Reorder by dragging (HTML5 drag events) or with the arrow buttons;
 // every change produces a new array and is announced to screen readers.
@@ -109,7 +119,7 @@ export default function PhotoGallery({ photos, onChange, readOnly = false }) {
       <p aria-live="polite" className="sr-only">
         {message}
       </p>
-      <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3" onDragLeave={(e) => {
+      <ul className="mt-4 grid grid-cols-3 gap-3" onDragLeave={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget)) setDropIndex(null);
       }}>
         {photos.map((photo, index) => {
@@ -128,7 +138,7 @@ export default function PhotoGallery({ photos, onChange, readOnly = false }) {
               onDragOver={(e) => onDragOver(e, index)}
               onDrop={onDrop}
               onDragEnd={endDrag}
-              className={`relative rounded-xl transition-opacity ${readOnly ? '' : 'cursor-grab active:cursor-grabbing'} ${
+              className={`relative min-w-0 rounded-[14px] transition-opacity ${readOnly ? '' : 'cursor-grab active:cursor-grabbing'} ${
                 dragging ? 'opacity-40' : ''
               }`}
             >
@@ -137,8 +147,19 @@ export default function PhotoGallery({ photos, onChange, readOnly = false }) {
 
               <div className="relative">
                 <PhotoPreview src={photo.url} alt={`Product photo ${index + 1}${index === 0 ? ' (cover)' : ''}`} />
+                {index > 0 && !readOnly && (
+                  <button
+                    type="button"
+                    onClick={() => move(index, 0)}
+                    aria-label={`Make photo ${index + 1} the cover`}
+                    title="Make cover"
+                    className={`absolute left-1.5 top-1.5 ${circleBtn} hover:bg-[#FBE6DC] hover:text-[#B5532E]`}
+                  >
+                    <StarIcon />
+                  </button>
+                )}
                 {index === 0 && (
-                  <span className="absolute bottom-2 left-2 rounded-full bg-[#2B2118] px-2.5 py-1 text-xs font-semibold text-white">
+                  <span className="absolute bottom-2 left-2 rounded-full bg-[#B5532E] px-2.5 py-1 text-xs font-semibold text-white">
                     Cover
                   </span>
                 )}
@@ -147,7 +168,8 @@ export default function PhotoGallery({ photos, onChange, readOnly = false }) {
                     type="button"
                     onClick={() => remove(index)}
                     aria-label={`Remove photo ${index + 1}`}
-                    className={`absolute right-2 top-2 flex size-8 items-center justify-center rounded-full bg-white/95 text-[#2B2118] shadow-sm ${focusRing}`}
+                    title="Remove photo"
+                    className={`absolute right-1.5 top-1.5 ${circleBtn} hover:border-[#EBC3AE] hover:bg-[#FCEDEA] hover:text-[#B3402A]`}
                   >
                     <CloseIcon width={14} height={14} />
                   </button>
@@ -155,13 +177,14 @@ export default function PhotoGallery({ photos, onChange, readOnly = false }) {
               </div>
 
               {!readOnly && (
-                <div className="mt-2 flex items-center gap-1.5">
+                <div className="mt-2 flex items-center justify-between gap-1">
                   <button
                     id={btnId(photo.id, 'left')}
                     type="button"
                     onClick={() => moveBy(index, -1)}
                     disabled={index === 0}
                     aria-label={`Move photo ${index + 1} left`}
+                    title="Move left"
                     className={arrowBtn}
                   >
                     <ChevronLeftIcon width={16} height={16} />
@@ -172,19 +195,11 @@ export default function PhotoGallery({ photos, onChange, readOnly = false }) {
                     onClick={() => moveBy(index, 1)}
                     disabled={index === photos.length - 1}
                     aria-label={`Move photo ${index + 1} right`}
+                    title="Move right"
                     className={arrowBtn}
                   >
                     <ChevronRightIcon width={16} height={16} />
                   </button>
-                  {index > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => move(index, 0)}
-                      className={`ml-auto min-h-10 rounded-lg px-2 text-xs font-semibold text-[#B5532E] hover:bg-[#FBE6DC] ${focusRing}`}
-                    >
-                      Make cover
-                    </button>
-                  )}
                 </div>
               )}
             </li>
