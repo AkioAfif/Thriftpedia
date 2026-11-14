@@ -157,7 +157,7 @@ export function Navbar() {
                 <button
                   type="button"
                   onClick={() => openAuth('register')}
-                  className={`min-h-[44px] px-5 flex items-center text-sm font-semibold rounded-xl border border-[#B5532E] text-[#B5532E] hover:bg-[#FBEDE6] transition-colors ${focusRing}`}
+                  className={`min-h-[44px] px-5 flex items-center justify-center text-sm font-semibold leading-none rounded-xl border border-[#B5532E] text-[#B5532E] hover:bg-[#FBEDE6] transition-colors ${focusRing}`}
                 >
                   Register
                 </button>
