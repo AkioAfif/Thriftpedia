@@ -18,11 +18,11 @@ function ProportionBar({ available, sold }) {
 
 function Figure({ label, value, tone = 'text-text' }) {
   return (
-    <div>
+    <div className="min-w-0">
       <dt className="text-[13px] text-[#6F6358]">
         {label}
       </dt>
-      <dd className={cn('mt-1 text-2xl font-semibold tabular-nums', tone)}>{formatCount(value)}</dd>
+      <dd className={cn('mt-1 text-[28px] font-semibold leading-tight tabular-nums md:text-2xl md:leading-8', tone)}>{formatCount(value)}</dd>
     </div>
   );
 }
@@ -33,7 +33,7 @@ function InventoryBody({ products }) {
   const total = Number(products.total) || available + sold;
   return (
     <>
-      <dl className="mt-5 grid grid-cols-3 gap-4">
+      <dl className="mt-4 grid grid-cols-3 gap-3 md:mt-5 md:gap-4">
         <Figure label="Available" value={available} tone="text-[#5F7A5E]" />
         <Figure label="Sold" value={sold} tone="text-[#B5532E]" />
         <Figure label="Total" value={total} />
@@ -57,27 +57,28 @@ export function InventoryPanel({ section }) {
         <SectionHeading id="inventory-title" title="Inventory" icon={<HangerIcon />} />
       </div>
 
-      <div className="px-5 pb-5">
+      <div className="px-4 pb-4 md:px-5 md:pb-5">
         {section.status === 'loading' && (
           <div aria-hidden="true">
-            <div className="mt-5 grid grid-cols-3 gap-4">
+            <div className="mt-4 grid grid-cols-3 gap-3 md:mt-5 md:gap-4">
               {[0, 1, 2].map((i) => (
-                <Skeleton key={i} className="h-14 rounded-lg" />
+                <Skeleton key={i} className="h-[60px] rounded-lg md:h-14" />
               ))}
             </div>
             <Skeleton className="mt-4 h-3 rounded-full" />
           </div>
         )}
-        {section.status === 'error' && <SectionError className="mt-5" message={section.error} onRetry={section.retry} />}
+        {section.status === 'error' && <SectionError className="mt-4 md:mt-5" message={section.error} onRetry={section.retry} />}
         {section.status === 'ready' && <InventoryBody products={section.data?.products ?? {}} />}
 
-        <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <Link href="/admin/products" className={secondaryButton}>
+        {/* Below md: two full-width actions stacked; from md: one row, as before. */}
+        <div className="mt-5 flex flex-col gap-2 md:mt-6 md:flex-row md:flex-wrap md:items-center md:gap-x-4 md:gap-y-2">
+          <Link href="/admin/products" className={cn(secondaryButton, 'w-full md:w-auto')}>
             Manage products
           </Link>
           <Link
             href="/admin/products?status=SOLD"
-            className={cn('inline-flex min-h-11 items-center rounded-md px-1 text-sm font-semibold text-primary hover:underline', focusRing)}
+            className={cn('inline-flex min-h-11 w-full items-center justify-center rounded-md px-1 text-sm font-semibold text-primary hover:underline md:w-auto md:justify-start', focusRing)}
           >
             View sold items
           </Link>

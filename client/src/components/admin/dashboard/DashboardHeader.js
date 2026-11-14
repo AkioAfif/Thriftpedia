@@ -11,21 +11,22 @@ const todayFormat = new Intl.DateTimeFormat('en-GB', {
   timeZone: 'Asia/Jakarta',
 });
 
+// Below md: 28px title with a tight greeting/date block; "Add product" moves to the floating button.
 export function DashboardHeader({ adminName }) {
   const firstName = adminName.trim().split(/\s+/)[0];
   return (
     <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
-        <h1 className="text-3xl font-semibold text-text sm:text-4xl">Dashboard</h1>
-        <p className="mt-2 text-[15px] text-[#6F6358]">
+        <h1 className="text-[28px] font-semibold leading-[1.2] text-text md:text-4xl md:leading-10">Dashboard</h1>
+        <p className="mt-1 text-[15px] text-[#6F6358] md:mt-2">
           {firstName ? `Hi ${firstName}, here's what needs you today.` : "Here's what needs you today."}
-          <span className="mt-1 block text-[13px] text-[#6F6358]">{todayFormat.format(new Date())} WIB</span>
+          <span className="mt-0.5 block text-[13px] text-[#6F6358] md:mt-1">{todayFormat.format(new Date())} WIB</span>
         </p>
       </div>
       <Link
         href="/admin/products/new"
         className={cn(
-          'inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-[10px] bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-hover',
+          'hidden min-h-11 shrink-0 items-center justify-center gap-2 rounded-[10px] bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-hover md:inline-flex',
           focusRing
         )}
       >

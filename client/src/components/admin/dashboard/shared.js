@@ -5,8 +5,8 @@ export const focusRing =
 
 export const panel = 'rounded-2xl border border-[#D9CFC1] bg-surface';
 
-// Top strip of the white cards: #F5F0E8 with a #EAE4DA divider.
-export const panelHeader = 'border-b border-[#EAE4DA] bg-[#F5F0E8] px-5 py-3';
+// Top strip of the white cards: #F5F0E8 with a #EAE4DA divider. 16px sides below md.
+export const panelHeader = 'border-b border-[#EAE4DA] bg-[#F5F0E8] px-4 py-3 md:px-5';
 
 // Secondary = white with a terracotta outline (#B5532E on white: 6.9:1).
 export const secondaryButton = cn(
@@ -18,8 +18,8 @@ export const formatCount = (n) => new Intl.NumberFormat('id-ID').format(Number(n
 
 export function SectionHeading({ id, title, icon, action }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <h2 id={id} className="flex items-center gap-2.5 text-xl font-semibold text-text">
+    <div className="flex items-center justify-between gap-3 md:flex-wrap">
+      <h2 id={id} className="flex min-w-0 items-center gap-2.5 text-lg font-semibold text-text md:text-xl">
         {icon && <span className="text-text-secondary">{icon}</span>}
         {title}
       </h2>
