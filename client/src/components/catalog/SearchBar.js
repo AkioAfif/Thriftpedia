@@ -38,7 +38,7 @@ export function SearchBar() {
     <form
       id="catalog-search-form"
       onSubmit={handleSubmit}
-      className="w-full md:w-[440px] shrink-0 relative flex items-center bg-white border border-[#E6DDD2] rounded-full px-3.5 py-1.5 shadow-sm focus-within:border-[#B5532E] focus-within:ring-1 focus-within:ring-[#B5532E] transition-all"
+      className="w-full md:w-[440px] shrink-0 relative flex items-center bg-white border border-[#E6DDD2] rounded-full px-3.5 py-1.5 shadow-sm max-md:py-0.5 max-md:pr-0.5 focus-within:border-[#B5532E] focus-within:ring-1 focus-within:ring-[#B5532E] transition-all"
     >
       <span className="text-[#6E5D4F] text-[20px] ml-1 mr-2 shrink-0 select-none">
         <SearchIcon className="w-5 h-5 text-[#6E5D4F]" />
@@ -59,16 +59,19 @@ export function SearchBar() {
           id="search-clear-btn"
           aria-label="Clear search"
           onClick={handleClear}
-          className="min-w-[32px] min-h-[32px] rounded-full text-[#6E5D4F] hover:text-[#2B2118] flex items-center justify-center shrink-0 mr-1 focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none"
+          className="min-w-[32px] min-h-[32px] max-md:min-w-11 max-md:min-h-11 rounded-full text-[#6E5D4F] hover:text-[#2B2118] flex items-center justify-center shrink-0 mr-1 focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none"
         >
           <CloseIcon className="w-4 h-4" />
         </button>
       )}
+      {/* Below md: a 44px round icon button so the field keeps its width; from md: unchanged. */}
       <button
         type="submit"
-        className="min-h-[36px] px-4 py-1.5 rounded-full bg-[#B5532E] hover:bg-[#9C4425] text-white text-xs font-semibold shrink-0 transition-colors ml-1 shadow-xs focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none"
+        aria-label="Search"
+        className="flex min-h-[36px] items-center justify-center px-4 py-1.5 rounded-full bg-[#B5532E] hover:bg-[#9C4425] text-white text-xs font-semibold shrink-0 transition-colors ml-1 shadow-xs focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none max-md:size-11 max-md:px-0 max-md:py-0"
       >
-        Search
+        <SearchIcon className="w-5 h-5 text-white md:hidden" />
+        <span className="hidden md:inline">Search</span>
       </button>
     </form>
   );

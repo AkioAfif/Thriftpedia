@@ -101,7 +101,7 @@ export function PriceRangeInput({
       </span>
       <div
         className={cn(
-          'grid grid-cols-2 gap-3 items-end',
+          'grid grid-cols-2 gap-3 items-end min-w-0',
           isMobile && 'flex items-center gap-2'
         )}
       >
@@ -128,7 +128,7 @@ export function PriceRangeInput({
               onBlur={!isMobile ? validateAndApply : undefined}
               onKeyDown={handleKeyDown}
               placeholder={isMobile ? 'Min' : '150,000'}
-              className="w-full bg-transparent border-0 p-0 text-xs font-sans text-[#2B2118] focus:ring-0 focus:outline-none placeholder:text-[#8C7E72]"
+              className="w-full min-w-0 flex-1 bg-transparent border-0 p-0 text-xs font-sans text-[#2B2118] focus:ring-0 focus:outline-none placeholder:text-[#8C7E72]"
             />
           </div>
         </div>
@@ -160,7 +160,7 @@ export function PriceRangeInput({
               onBlur={!isMobile ? validateAndApply : undefined}
               onKeyDown={handleKeyDown}
               placeholder={isMobile ? 'Max' : '850,000'}
-              className="w-full bg-transparent border-0 p-0 text-xs font-sans text-[#2B2118] focus:ring-0 focus:outline-none placeholder:text-[#8C7E72]"
+              className="w-full min-w-0 flex-1 bg-transparent border-0 p-0 text-xs font-sans text-[#2B2118] focus:ring-0 focus:outline-none placeholder:text-[#8C7E72]"
             />
           </div>
         </div>
