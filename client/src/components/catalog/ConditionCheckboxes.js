@@ -14,7 +14,7 @@ export function ConditionCheckboxes({
       className={cn('space-y-3 pb-6 border-b border-[#E6DDD2]', isMobile && 'pb-4')}
       data-layer="Filter/Condition"
     >
-      <span className="text-xs font-bold uppercase tracking-wider text-[#2B2118] block font-mono">
+      <span className="text-sm font-semibold text-[#2B2118] block font-sans">
         Condition
       </span>
       <div className="flex flex-col gap-1 text-sm">

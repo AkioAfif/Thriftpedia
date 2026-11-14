@@ -7,19 +7,19 @@ export function SizeChips({ selectedSizes = [], onToggleSize }) {
   return (
     <div className="space-y-3 pb-6 border-b border-[#E6DDD2]" data-layer="Filter/Size">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#2B2118] font-mono">
+        <span className="text-sm font-semibold text-[#2B2118] font-sans">
           Size
         </span>
         {selectedSizes.length > 0 && (
           <span
             id="size-selected-count"
-            className="text-xs font-bold uppercase tracking-wider text-[#2B2118] font-mono"
+            className="text-xs font-semibold text-[#2B2118] font-sans"
           >
             {selectedSizes.length} SELECTED
           </span>
         )}
       </div>
-      <div className="grid grid-cols-4 gap-2 text-xs font-mono" id="size-button-group">
+      <div className="grid grid-cols-4 gap-2 text-xs font-sans" id="size-button-group">
         {SIZES.map((size) => {
           const isSelected = selectedSizes.includes(size);
           return (

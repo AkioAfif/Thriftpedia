@@ -1,17 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useWishlist } from '@/context/BuyerContext';
 import toast from 'react-hot-toast';
 import { HangerLogoIcon, MenuIcon } from '@/components/ui/Icons';
 import { useAuth } from '@/context/AuthContext';
+import AuthDialog from '@/components/auth/AuthDialog';
 import { MobileMenu } from './MobileMenu';
 
 const focusRing =
   'focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none';
+
+// Existing desktop nav styles: active = bold with terracotta underline.
+const navIdle = 'text-[#5C4D40] hover:text-[#2B2118] transition-colors py-1 rounded';
+const navActive = 'text-[#2B2118] font-bold border-b-2 border-[#B5532E] py-1 pb-0.5 tracking-tight rounded';
 
 const toastStyle = {
   borderRadius: '12px',
@@ -30,12 +35,68 @@ function getInitials(name) {
     .join('');
 }
 
+// Closes an open menu on a pointerdown outside its areas, or on Escape (focus returns to the trigger).
+function useDismiss(open, close, triggerRef, areaRef, extraAreaRef) {
+  useEffect(() => {
+    if (!open) return undefined;
+    const onPointerDown = (event) => {
+      if (areaRef.current?.contains(event.target) || extraAreaRef?.current?.contains(event.target)) return;
+      close();
+    };
+    const onKeyDown = (event) => {
+      if (event.key !== 'Escape') return;
+      close();
+      triggerRef.current?.focus();
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [open, close, triggerRef, areaRef, extraAreaRef]);
+}
+
 export function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const { count, query } = useWishlist();
   const { user, isLoggedIn, ready, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  // One auth dialog for Log in and Register: null | 'login' | 'register'.
+  const [authTab, setAuthTab] = useState(null);
+  const [menuPath, setMenuPath] = useState(pathname);
+  const profileAreaRef = useRef(null);
+  const profileButtonRef = useRef(null);
+  const hamburgerRef = useRef(null);
+  const mobileMenuRef = useRef(null);
+
+  // Route changed: close both menus (adjusting state during render, no effect needed).
+  if (menuPath !== pathname) {
+    setMenuPath(pathname);
+    setProfileOpen(false);
+    setMobileMenuOpen(false);
+  }
+
+  const closeProfile = useCallback(() => setProfileOpen(false), []);
+  const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
+  const closeAuth = useCallback(() => setAuthTab(null), []);
+  // Navbar dialog only: after login/register go to the admin dashboard or the catalog.
+  // AuthDialog sends the API user { id, name, email, role } and closes itself afterwards.
+  const handleAuthSuccess = useCallback(
+    (authUser) => {
+      setAuthTab(null);
+      router.push(String(authUser?.role ?? '').toUpperCase() === 'ADMIN' ? '/admin/dashboard' : '/catalog');
+    },
+    [router]
+  );
+  const openAuth = useCallback((tab) => {
+    setMobileMenuOpen(false);
+    setAuthTab(tab);
+  }, []);
+  useDismiss(profileOpen, closeProfile, profileButtonRef, profileAreaRef);
+  useDismiss(mobileMenuOpen, closeMobileMenu, hamburgerRef, mobileMenuRef, hamburgerRef);
 
   const handleLogout = () => {
     logout();
@@ -49,6 +110,8 @@ export function Navbar() {
   };
 
   const initials = getInitials(user?.name);
+  const isHome = pathname === '/';
+  const isCatalog = pathname?.startsWith('/catalog') ?? false;
 
   return (
     <>
@@ -59,7 +122,7 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-4">
           {/* Logo */}
           <Link
-            href="/catalog"
+            href="/"
             className={`flex items-center gap-2.5 group rounded-xl p-0.5 ${focusRing}`}
           >
             <div className="w-10 h-10 rounded-xl bg-[#F25A2A] flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105">
@@ -74,44 +137,39 @@ export function Navbar() {
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center justify-center gap-10 text-sm font-medium">
             <Link
-              href="#"
-              className={`text-[#5C4D40] hover:text-[#2B2118] transition-colors py-1 rounded ${focusRing}`}
+              href="/"
+              aria-current={isHome ? 'page' : undefined}
+              className={`${isHome ? navActive : navIdle} ${focusRing}`}
             >
               Home
             </Link>
             <Link
               href="/catalog"
-              aria-current="page"
-              className={`text-[#2B2118] font-bold border-b-2 border-[#B5532E] py-1 pb-0.5 tracking-tight rounded ${focusRing}`}
+              aria-current={isCatalog ? 'page' : undefined}
+              className={`${isCatalog ? navActive : navIdle} ${focusRing}`}
             >
               Catalog
             </Link>
-            {isLoggedIn && (
-              <Link
-                href="#"
-                className={`text-[#5C4D40] hover:text-[#2B2118] transition-colors py-1 rounded ${focusRing}`}
-              >
-                About
-              </Link>
-            )}
           </nav>
 
           {/* Right side */}
           <div className="flex items-center gap-2 sm:gap-3 min-h-[44px]">
             {ready && !isLoggedIn && (
               <div className="hidden md:flex items-center gap-3">
-                <Link
-                  href="/login"
+                <button
+                  type="button"
+                  onClick={() => openAuth('login')}
                   className={`min-h-[44px] px-3 flex items-center text-sm font-semibold text-[#2B2118] hover:text-[#B5532E] transition-colors rounded-xl ${focusRing}`}
                 >
                   Log in
-                </Link>
-                <Link
-                  href="/register"
-                  className={`min-h-[44px] px-5 flex items-center text-sm font-semibold rounded-xl border border-[#B5532E] text-[#B5532E] hover:bg-[#FBEDE6] transition-colors ${focusRing}`}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => openAuth('register')}
+                  className={`min-h-[44px] px-5 flex items-center justify-center text-sm font-semibold leading-none rounded-xl border border-[#B5532E] text-[#B5532E] hover:bg-[#FBEDE6] transition-colors ${focusRing}`}
                 >
                   Register
-                </Link>
+                </button>
               </div>
             )}
 
@@ -127,10 +185,12 @@ export function Navbar() {
                   <span className="ml-1 font-metadata text-xs" aria-live="polite">{query.isPending ? '…' : count}</span>
                 </button>
 
-                <div className="relative flex items-center pl-2 border-l border-[#E6DDD2]">
+                <div ref={profileAreaRef} className="relative flex items-center pl-2 border-l border-[#E6DDD2]">
                   <button
+                    ref={profileButtonRef}
                     type="button"
                     aria-label="Account menu"
+                    aria-haspopup="menu"
                     aria-expanded={profileOpen}
                     onClick={() => setProfileOpen((prev) => !prev)}
                     className={`min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center font-bold text-xs text-[#2B2118] bg-[#E7DCD0] hover:bg-[#DBCABA] transition-colors cursor-pointer select-none border border-[#CFBEAE] ${focusRing}`}
@@ -141,12 +201,6 @@ export function Navbar() {
 
                   {profileOpen && (
                     <>
-                      <button
-                        type="button"
-                        aria-label="Close account menu"
-                        className="fixed inset-0 z-40 cursor-default"
-                        onClick={() => setProfileOpen(false)}
-                      />
                       <div className="absolute right-0 top-full mt-2 w-56 z-50 bg-white rounded-xl border border-[#E6DDD2] shadow-lg p-2">
                         <Link href="/orders" onClick={() => setProfileOpen(false)} className="buyer-secondary">Your orders</Link>
                         <div className="px-3 py-2 border-b border-[#E6DDD2]/60">
@@ -173,8 +227,10 @@ export function Navbar() {
 
             {/* Hamburger for mobile */}
             <button
+              ref={hamburgerRef}
               type="button"
               aria-label="Toggle menu"
+              aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen((prev) => !prev)}
               className={`md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center text-[#2B2118] hover:bg-[#F1EBE1] rounded-xl transition-colors ${focusRing}`}
             >
@@ -186,11 +242,26 @@ export function Navbar() {
 
       <MobileMenu
         isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
+        menuRef={mobileMenuRef}
+        onClose={closeMobileMenu}
         isLoggedIn={isLoggedIn}
         user={user}
         onLogout={handleLogout}
+        onAuth={openAuth}
       />
+
+      {/* key remounts the dialog so initialTab applies each time it opens. onSuccess makes
+          Register log in straight away and then redirects; AuthDialog closes itself after login. */}
+      {authTab && (
+        <AuthDialog
+          key={authTab}
+          open
+          onClose={closeAuth}
+          initialTab={authTab}
+          hideForgotPassword
+          onSuccess={handleAuthSuccess}
+        />
+      )}
     </>
   );
 }

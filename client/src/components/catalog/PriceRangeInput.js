@@ -96,7 +96,7 @@ export function PriceRangeInput({
         isMobile && 'pb-4'
       )}
     >
-      <span className="text-xs font-bold uppercase tracking-wider text-[#2B2118] block font-mono">
+      <span className="text-sm font-semibold text-[#2B2118] block font-sans">
         {isMobile ? 'Price' : 'Price Range'}
       </span>
       <div
@@ -115,7 +115,7 @@ export function PriceRangeInput({
             </label>
           )}
           <div className="h-10 bg-white border border-[#E6DDD2] rounded-xl px-3 flex items-center focus-within:border-[#B5532E] focus-within:ring-2 focus-within:ring-[#B5532E] transition-all shadow-xs">
-            <span className="text-xs text-[#5C4D40] font-mono mr-1.5 shrink-0 font-semibold select-none">
+            <span className="text-xs text-[#5C4D40] font-sans mr-1.5 shrink-0 font-semibold select-none">
               Rp
             </span>
             <input
@@ -128,7 +128,7 @@ export function PriceRangeInput({
               onBlur={!isMobile ? validateAndApply : undefined}
               onKeyDown={handleKeyDown}
               placeholder={isMobile ? 'Min' : '150,000'}
-              className="w-full bg-transparent border-0 p-0 text-xs font-mono text-[#2B2118] focus:ring-0 focus:outline-none placeholder:text-[#8C7E72]"
+              className="w-full bg-transparent border-0 p-0 text-xs font-sans text-[#2B2118] focus:ring-0 focus:outline-none placeholder:text-[#8C7E72]"
             />
           </div>
         </div>
@@ -147,7 +147,7 @@ export function PriceRangeInput({
             </label>
           )}
           <div className="h-10 bg-white border border-[#E6DDD2] rounded-xl px-3 flex items-center focus-within:border-[#B5532E] focus-within:ring-2 focus-within:ring-[#B5532E] transition-all shadow-xs">
-            <span className="text-xs text-[#5C4D40] font-mono mr-1.5 shrink-0 font-semibold select-none">
+            <span className="text-xs text-[#5C4D40] font-sans mr-1.5 shrink-0 font-semibold select-none">
               Rp
             </span>
             <input
@@ -160,7 +160,7 @@ export function PriceRangeInput({
               onBlur={!isMobile ? validateAndApply : undefined}
               onKeyDown={handleKeyDown}
               placeholder={isMobile ? 'Max' : '850,000'}
-              className="w-full bg-transparent border-0 p-0 text-xs font-mono text-[#2B2118] focus:ring-0 focus:outline-none placeholder:text-[#8C7E72]"
+              className="w-full bg-transparent border-0 p-0 text-xs font-sans text-[#2B2118] focus:ring-0 focus:outline-none placeholder:text-[#8C7E72]"
             />
           </div>
         </div>

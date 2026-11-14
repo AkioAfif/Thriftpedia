@@ -8,24 +8,26 @@ import ProductForm, {
   FormLoading,
   FormPageLayout,
 } from '@/components/admin/products/ProductForm';
-import { clearToken } from '@/lib/adminAuth';
+import { useAuth } from '@/context/AuthContext';
 import { createProduct, fetchCategories } from '@/lib/adminProducts';
 
 export default function NewProductPage() {
   const router = useRouter();
+  // Clears token, user and thriftpedia_token together, so the Navbar is logged out too.
+  const { logout } = useAuth();
   const [state, setState] = useState({ status: 'loading', categories: [], error: '' });
   const [attempt, setAttempt] = useState(0);
 
   const handleAuthError = useCallback(
     (err) => {
       if (err?.status === 401) {
-        clearToken();
+        logout();
         router.replace('/login');
         return true;
       }
       return false;
     },
-    [router]
+    [router, logout]
   );
 
   useEffect(() => {

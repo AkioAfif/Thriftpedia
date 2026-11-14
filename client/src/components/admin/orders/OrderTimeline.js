@@ -1,4 +1,4 @@
-import { ORDER_STEPS, formatOrderDateTime, historyNote, statusMeta } from '@/lib/adminOrders';
+import { ORDER_STEPS, formatOrderDateTime, historyNote, statusMeta } from '@/lib/orderView';
 
 const STEP_STATE_TEXT = { done: 'completed', current: 'current step', upcoming: 'not reached yet' };
 
