@@ -37,15 +37,16 @@ function sentenceFor(order, { canCancel, payable }) {
   }
 }
 
-// Full-width "where is my order" block. Below sm: status, total, then `actions` full width.
-// From sm: status left, total right, actions in a row under both, right-aligned.
-// `note` is a short live line under the actions (payment confirmation, unavailable, ...).
+// Full-width "where is my order" block, read top to bottom: status + payment badge, sentence,
+// total, then actions. Below sm everything stacks and the buttons are full width (first action on
+// top); from sm the total sits right of the status and the actions line up right-aligned, the
+// first one rightmost. `note` is an info row under the buttons (payment confirming, unavailable...).
 export function OrderStatusRibbon({ order, total, canCancel, payable = false, actions = null, note = null }) {
   const meta = statusMeta(order.status);
   return (
     <section
       aria-label="Current status"
-      className={`grid grid-cols-1 gap-4 rounded-[20px] border-2 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-6 sm:p-5 ${TONE[order.status] ?? 'bg-[#F5F0E8] border-[#8A7A6B]'}`}
+      className={`grid grid-cols-1 gap-4 rounded-[20px] border-2 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-6 sm:p-6 ${TONE[order.status] ?? 'bg-[#F5F0E8] border-[#8A7A6B]'}`}
     >
       <div className="min-w-0">
         <p className="text-[13px] font-medium text-[#5C4D40]">Current status</p>
@@ -63,9 +64,9 @@ export function OrderStatusRibbon({ order, total, canCancel, payable = false, ac
         <div className="flex min-w-0 flex-col gap-3 border-t border-[#2B2118]/10 pt-4 sm:col-span-2">
           {actions && <div className="flex flex-col gap-3 sm:flex-row-reverse sm:flex-wrap sm:justify-start">{actions}</div>}
           {/* Always mounted (empty = hidden) so screen readers announce a note when it appears. */}
-          <p role="status" className="break-words text-sm text-[#5C4D40] empty:hidden sm:text-right">
+          <div role="status" className="min-w-0 empty:hidden">
             {note}
-          </p>
+          </div>
         </div>
       )}
     </section>

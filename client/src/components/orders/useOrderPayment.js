@@ -10,7 +10,7 @@ const POLL_MAX = 5;
 
 // Pay now for one order. The browser never decides that an order is paid: whatever Snap reports,
 // the order is fetched again (`refresh`) and then polled a few times, because the official status
-// only arrives through the Midtrans webhook.
+// only arrives through the Midtrans webhook. `order` may be undefined while it loads.
 export function useOrderPayment({ order, token, refresh }) {
   const [busy, setBusy] = useState(false);
   const [unavailable, setUnavailable] = useState(false); // 503: payment not configured on the server
@@ -30,7 +30,7 @@ export function useOrderPayment({ order, token, refresh }) {
   }, []);
 
   // Polling stops as soon as the order moves (paid, expired, cancelled), after POLL_MAX tries, or on unmount.
-  const changed = Boolean(poll) && (order.status !== poll.status || paymentStatusOf(order) !== poll.payment);
+  const changed = Boolean(poll) && (order?.status !== poll.status || paymentStatusOf(order) !== poll.payment);
   const confirming = Boolean(poll) && !poll.done && !changed;
   const unconfirmed = Boolean(poll?.done) && !changed;
 
@@ -55,7 +55,7 @@ export function useOrderPayment({ order, token, refresh }) {
   }
 
   async function pay() {
-    if (busy) return;
+    if (busy || !order) return;
     const snapshot = { status: order.status, payment: paymentStatusOf(order) };
     setBusy(true);
     setError('');
