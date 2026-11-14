@@ -121,7 +121,7 @@ export function ProductCard({ product, wishlist = false }) {
             <span
               className={`text-base sm:text-lg font-bold font-mono leading-none max-md:font-sans ${
                 isSold
-                  ? 'text-[#6E5D4F] line-through'
+                  ? 'text-[#6E5D4F]'
                   : 'text-text'
               }`}
             >
