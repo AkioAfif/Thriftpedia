@@ -8,10 +8,15 @@ import { useWishlist } from '@/context/BuyerContext';
 import toast from 'react-hot-toast';
 import { HangerLogoIcon, MenuIcon } from '@/components/ui/Icons';
 import { useAuth } from '@/context/AuthContext';
+import AuthDialog from '@/components/auth/AuthDialog';
 import { MobileMenu } from './MobileMenu';
 
 const focusRing =
   'focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none';
+
+// Existing desktop nav styles: active = bold with terracotta underline.
+const navIdle = 'text-[#5C4D40] hover:text-[#2B2118] transition-colors py-1 rounded';
+const navActive = 'text-[#2B2118] font-bold border-b-2 border-[#B5532E] py-1 pb-0.5 tracking-tight rounded';
 
 const toastStyle = {
   borderRadius: '12px',
@@ -59,6 +64,8 @@ export function Navbar() {
   const { user, isLoggedIn, ready, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  // One auth dialog for Log in and Register: null | 'login' | 'register'.
+  const [authTab, setAuthTab] = useState(null);
   const [menuPath, setMenuPath] = useState(pathname);
   const profileAreaRef = useRef(null);
   const profileButtonRef = useRef(null);
@@ -74,6 +81,11 @@ export function Navbar() {
 
   const closeProfile = useCallback(() => setProfileOpen(false), []);
   const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
+  const closeAuth = useCallback(() => setAuthTab(null), []);
+  const openAuth = useCallback((tab) => {
+    setMobileMenuOpen(false);
+    setAuthTab(tab);
+  }, []);
   useDismiss(profileOpen, closeProfile, profileButtonRef, profileAreaRef);
   useDismiss(mobileMenuOpen, closeMobileMenu, hamburgerRef, mobileMenuRef, hamburgerRef);
 
@@ -89,6 +101,8 @@ export function Navbar() {
   };
 
   const initials = getInitials(user?.name);
+  const isHome = pathname === '/';
+  const isCatalog = pathname?.startsWith('/catalog') ?? false;
 
   return (
     <>
@@ -99,7 +113,7 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-4">
           {/* Logo */}
           <Link
-            href="/catalog"
+            href="/"
             className={`flex items-center gap-2.5 group rounded-xl p-0.5 ${focusRing}`}
           >
             <div className="w-10 h-10 rounded-xl bg-[#F25A2A] flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105">
@@ -114,44 +128,39 @@ export function Navbar() {
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center justify-center gap-10 text-sm font-medium">
             <Link
-              href="#"
-              className={`text-[#5C4D40] hover:text-[#2B2118] transition-colors py-1 rounded ${focusRing}`}
+              href="/"
+              aria-current={isHome ? 'page' : undefined}
+              className={`${isHome ? navActive : navIdle} ${focusRing}`}
             >
               Home
             </Link>
             <Link
               href="/catalog"
-              aria-current="page"
-              className={`text-[#2B2118] font-bold border-b-2 border-[#B5532E] py-1 pb-0.5 tracking-tight rounded ${focusRing}`}
+              aria-current={isCatalog ? 'page' : undefined}
+              className={`${isCatalog ? navActive : navIdle} ${focusRing}`}
             >
               Catalog
             </Link>
-            {isLoggedIn && (
-              <Link
-                href="#"
-                className={`text-[#5C4D40] hover:text-[#2B2118] transition-colors py-1 rounded ${focusRing}`}
-              >
-                About
-              </Link>
-            )}
           </nav>
 
           {/* Right side */}
           <div className="flex items-center gap-2 sm:gap-3 min-h-[44px]">
             {ready && !isLoggedIn && (
               <div className="hidden md:flex items-center gap-3">
-                <Link
-                  href="/login"
+                <button
+                  type="button"
+                  onClick={() => openAuth('login')}
                   className={`min-h-[44px] px-3 flex items-center text-sm font-semibold text-[#2B2118] hover:text-[#B5532E] transition-colors rounded-xl ${focusRing}`}
                 >
                   Log in
-                </Link>
-                <Link
-                  href="/register"
+                </button>
+                <button
+                  type="button"
+                  onClick={() => openAuth('register')}
                   className={`min-h-[44px] px-5 flex items-center text-sm font-semibold rounded-xl border border-[#B5532E] text-[#B5532E] hover:bg-[#FBEDE6] transition-colors ${focusRing}`}
                 >
                   Register
-                </Link>
+                </button>
               </div>
             )}
 
@@ -229,7 +238,21 @@ export function Navbar() {
         isLoggedIn={isLoggedIn}
         user={user}
         onLogout={handleLogout}
+        onAuth={openAuth}
       />
+
+      {/* key remounts the dialog so initialTab applies each time it opens. onSuccess makes
+          Register log in straight away; AuthDialog closes itself after a successful login. */}
+      {authTab && (
+        <AuthDialog
+          key={authTab}
+          open
+          onClose={closeAuth}
+          initialTab={authTab}
+          hideForgotPassword
+          onSuccess={closeAuth}
+        />
+      )}
     </>
   );
 }

@@ -1,10 +1,10 @@
 'use client';
 
-import { createContext, useContext, useRef, useState, useSyncExternalStore } from 'react';
+import { createContext, useCallback, useContext, useEffect, useEffectEvent, useRef, useState, useSyncExternalStore } from 'react';
 import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast, { Toaster } from 'react-hot-toast';
 import { useAuth } from './AuthContext';
-import { BuyerLoginDialog } from '@/components/auth/BuyerLoginDialog';
+import AuthDialog from '@/components/auth/AuthDialog';
 import { getWishlist, saveWishlistItem, removeWishlistItem } from '@/lib/services/buyerService';
 
 const BuyerContext = createContext(null);
@@ -19,11 +19,14 @@ function Notifications() {
 }
 
 function WishlistProvider({ children }) {
-  const { token, user, ready, login } = useAuth();
+  const { token, user, ready } = useAuth();
   const client = useQueryClient();
   const [intent, setIntent] = useState(null);
   const [pending, setPending] = useState([]);
   const locks = useRef(new Set());
+  // Save/remove waiting for a successful login; run once the new buyer token is in context.
+  const pendingSave = useRef(null);
+  const closeIntent = useCallback(() => setIntent(null), []);
   const buyer = Boolean(token) && String(user?.role || 'BUYER').toUpperCase() === 'BUYER';
   const query = useQuery({ queryKey: ['wishlist', token], queryFn: ({ signal }) => getWishlist(token, signal), enabled: ready && buyer, retry: false, staleTime: 30000 });
   const items = buyer ? query.data ?? [] : [];
@@ -58,15 +61,29 @@ function WishlistProvider({ children }) {
     }
   }
 
+  const runPendingSave = useEffectEvent((currentToken) => {
+    const next = pendingSave.current;
+    pendingSave.current = null;
+    void change(next.product, next.currentSaved, currentToken);
+  });
+  useEffect(() => {
+    if (token && buyer && !intent && pendingSave.current) runPendingSave(token);
+  }, [token, buyer, intent]);
+
   return <BuyerContext.Provider value={{ items, count: items.length, savedIds, query, buyer, pending,
     isPending: (id) => pending.includes(`${token}:${id}`),
     toggle: (product) => change(product, savedIds.has(product._id)), requestLogin: () => setIntent({}) }}>
     {children}
-    {intent && <BuyerLoginDialog productName={intent.product?.name} onClose={() => setIntent(null)}
-      onSuccess={async (newToken, newUser) => {
-        if (String(newUser.role).toUpperCase() !== 'BUYER' && intent.product) throw new Error('Wishlist is available for buyer accounts.');
-        login(newToken, newUser); setIntent(null);
-        if (intent.product) await change(intent.product, Boolean(intent.currentSaved), newToken);
+    {intent && <AuthDialog open onClose={closeIntent}
+      context={intent.product ? 'wishlist' : 'general'} initialTab="login" hideForgotPassword
+      onSuccess={(newUser) => {
+        // AuthDialog has already logged in; never save to the wishlist of a non-buyer (admin) account.
+        if (!intent.product) return;
+        if (String(newUser?.role || '').toUpperCase() !== 'BUYER') {
+          toast.error('Wishlist is available for buyer accounts.');
+          return;
+        }
+        pendingSave.current = { product: intent.product, currentSaved: Boolean(intent.currentSaved) };
       }} />}
   </BuyerContext.Provider>;
 }
