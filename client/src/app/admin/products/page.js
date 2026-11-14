@@ -206,12 +206,22 @@ function ProductManagement() {
         </Link>
       </div>
 
-      <div className="mt-6">
+      {/* Below md: the segmented status control above the filters (unchanged). */}
+      <div className="mt-6 md:hidden">
         <ProductStatCards stats={stats} activeStatus={filters.status} onSelect={(status) => updateFilters({ status })} />
       </div>
 
-      <div className="mt-4">
+      {/* From md the status tabs sit inside the toolbar card (row 2, left). */}
+      <div className="mt-4 md:mt-6">
         <ProductFilters
+          statusSlot={
+            <ProductStatCards
+              variant="tabs"
+              stats={stats}
+              activeStatus={filters.status}
+              onSelect={(status) => updateFilters({ status })}
+            />
+          }
           searchValue={search.value}
           onSearchChange={(value) => setSearch((s) => ({ ...s, value }))}
           onSearchSubmit={() => updateFilters({ q: search.value.trim() })}
@@ -223,8 +233,39 @@ function ProductManagement() {
         />
       </div>
 
+      {/* md and up: summary left, Reset right, active chips below (16px under the toolbar). */}
       {(filtered || showMeta) && (
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-4 hidden md:block">
+          <div className="flex min-h-11 items-center justify-between gap-4">
+            <p className="text-[13px] text-[#6F6358]">
+              {showMeta ? (
+                <>
+                  Showing {formatNumber(from)}–{formatNumber(to)} of{' '}
+                  <span className="font-semibold text-[#2B2118]">{formatNumber(total)}</span> products
+                </>
+              ) : null}
+            </p>
+            {filtered && (
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="min-h-11 rounded-lg px-3 text-sm font-semibold text-[#B5532E] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2"
+              >
+                Reset filters
+              </button>
+            )}
+          </div>
+          {filtered && (
+            <div className="mt-2">
+              <ActiveFilterChips filters={filters} categories={categories} onRemove={removeFilter} />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Below md: unchanged summary + chips row. */}
+      {(filtered || showMeta) && (
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between md:hidden">
           <p className="text-sm text-[#6F6358]" aria-live="polite">
             {showMeta ? (
               <>
@@ -238,7 +279,7 @@ function ProductManagement() {
       )}
 
       {/* Paging moves focus here so keyboard and screen reader users land at the top of the list. */}
-      <div ref={resultsRef} tabIndex={-1} aria-label="Products list" className="mt-4 scroll-mt-6 focus:outline-none">
+      <div ref={resultsRef} tabIndex={-1} aria-label="Products list" className="mt-4 scroll-mt-6 focus:outline-none md:mt-3">
         <ProductTable
           items={result.items}
           initialLoading={loading && result.items.length === 0}

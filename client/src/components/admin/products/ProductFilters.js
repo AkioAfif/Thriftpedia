@@ -17,8 +17,8 @@ function FunnelIcon() {
 }
 
 // Search commits on Enter right away, or by itself after a short pause (handled by the page).
-// From md: search + Sort on one row, Category/Size/Condition below. Under md: search, then
-// a Filters button (bottom sheet) next to Sort. Both layouts are rendered; CSS picks one.
+// From md: one toolbar card (see below). Under md: search, then a Filters button (bottom
+// sheet) next to Sort. Both layouts are rendered; CSS picks one.
 export default function ProductFilters({
   searchValue,
   onSearchChange,
@@ -28,6 +28,7 @@ export default function ProductFilters({
   onChange,
   showReset,
   onReset,
+  statusSlot = null, // md and up: rendered at the left of row 2 (the page passes the status tabs)
 }) {
   const categoryOptions = categories.map((cat) => ({ value: cat.slug, label: cat.name }));
   const filtersButtonRef = useRef(null);
@@ -66,7 +67,8 @@ export default function ProductFilters({
 
   return (
     <div>
-      <div className="flex flex-col gap-3 md:flex-row md:items-end">
+      {/* Below md: unchanged (search, then Filters + Sort). */}
+      <div className="flex flex-col gap-3 md:hidden">
         <form
           role="search"
           onSubmit={(e) => {
@@ -128,63 +130,104 @@ export default function ProductFilters({
         </div>
       </div>
 
-      {/* md and up: one bar (#F5F0E8) with Category, Size and Condition, each labelled inside
-          its 40px trigger, a 24px divider, then Sort pushed to the right. */}
-      <div className="mt-4 hidden flex-wrap items-center gap-2 rounded-2xl border border-[#E5DCCD] bg-[#F5F0E8] p-2 md:flex">
-        <div className="min-w-[160px]">
-          <FilterSelect
-            id="filter-category"
-            label="Category"
-            inlineLabel="Category"
-            compact
-            emptyLabel="All"
-            value={filters.category}
-            onChange={(category) => onChange({ category })}
-            options={categoryOptions}
-          />
+      {/* md and up: one white toolbar card. Row 1: borderless search | Sort. Row 2: status tabs
+          (statusSlot, from the page) | Category, Size, Condition as light, box-less triggers.
+          FilterSelect is restyled from here through descendant selectors, not changed. */}
+      <div className="hidden rounded-[20px] border border-[#E5DCCD] bg-white md:block">
+        <div className="flex h-16 items-center gap-3 px-4 py-2">
+          <form
+            role="search"
+            onSubmit={(e) => {
+              e.preventDefault();
+              onSearchSubmit();
+            }}
+            className="relative flex min-w-0 flex-1 items-center"
+          >
+            <label htmlFor="product-search-desktop" className="sr-only">
+              Search products by name or brand
+            </label>
+            <span aria-hidden="true" className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 text-[#6F6358]">
+              <SearchIcon width={20} height={20} />
+            </span>
+            <input
+              id="product-search-desktop"
+              type="search"
+              value={searchValue}
+              maxLength={100}
+              enterKeyHint="search"
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="Search by name or brand"
+              className="h-10 w-full border-0 border-b-2 border-transparent bg-transparent pl-8 pr-11 text-[15px] text-[#2B2118] outline-none placeholder:text-[#6F6358] focus:border-[#B5532E] [&::-webkit-search-cancel-button]:hidden"
+            />
+            {searchValue && (
+              <button
+                type="button"
+                onClick={() => onSearchChange('')}
+                aria-label="Clear search"
+                className={`absolute right-0 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-lg text-[#6F6358] hover:bg-[#F5F0E8] ${focusRing}`}
+              >
+                <CloseIcon width={16} height={16} />
+              </button>
+            )}
+          </form>
+          <span aria-hidden="true" className="h-7 w-px shrink-0 bg-[#E5DCCD]" />
+          <div className="w-[220px] shrink-0 [&_button[aria-haspopup]]:rounded-xl [&_button[aria-haspopup]]:border [&_button[aria-haspopup]]:border-[#E5DCCD]">
+            <FilterSelect
+              id="filter-sort"
+              label="Sort by"
+              inlineLabel="Sort"
+              compact
+              value={filters.sort}
+              defaultValue="newest"
+              align="right"
+              onChange={(sort) => onChange({ sort })}
+              options={SORT_OPTIONS}
+            />
+          </div>
         </div>
-        <div className="min-w-[120px]">
-          <FilterSelect
-            id="filter-size"
-            label="Size"
-            inlineLabel="Size"
-            compact
-            emptyLabel="All"
-            value={filters.size}
-            onChange={(size) => onChange({ size })}
-            options={SIZE_OPTIONS}
-          />
-        </div>
-        <div className="min-w-[170px]">
-          <FilterSelect
-            id="filter-condition"
-            label="Condition"
-            inlineLabel="Condition"
-            compact
-            emptyLabel="All"
-            value={filters.condition}
-            onChange={(condition) => onChange({ condition })}
-            options={CONDITION_OPTIONS}
-          />
-        </div>
-        <span aria-hidden="true" className="mx-1 h-6 w-px bg-[#D9CFC1]" />
-        <div className="ml-auto min-w-[200px]">
-          <FilterSelect
-            id="filter-sort"
-            label="Sort by"
-            inlineLabel="Sort"
-            compact
-            value={filters.sort}
-            defaultValue="newest"
-            align="right"
-            onChange={(sort) => onChange({ sort })}
-            options={SORT_OPTIONS}
-          />
+
+        <div aria-hidden="true" className="h-px bg-[#EFE7DA]" />
+
+        <div className="flex h-14 items-stretch justify-between gap-4 px-4">
+          <div className="flex min-w-0 items-stretch">{statusSlot}</div>
+          <div className="flex items-center gap-1 [&_button[aria-haspopup]]:rounded-[10px] [&_button[aria-haspopup]]:border-transparent [&_button[aria-haspopup]:hover]:bg-[#F5F0E8]">
+            <FilterSelect
+              id="filter-category"
+              label="Category"
+              inlineLabel="Category"
+              compact
+              emptyLabel="All"
+              value={filters.category}
+              onChange={(category) => onChange({ category })}
+              options={categoryOptions}
+            />
+            <FilterSelect
+              id="filter-size"
+              label="Size"
+              inlineLabel="Size"
+              compact
+              emptyLabel="All"
+              value={filters.size}
+              onChange={(size) => onChange({ size })}
+              options={SIZE_OPTIONS}
+            />
+            <FilterSelect
+              id="filter-condition"
+              label="Condition"
+              inlineLabel="Condition"
+              compact
+              emptyLabel="All"
+              align="right"
+              value={filters.condition}
+              onChange={(condition) => onChange({ condition })}
+              options={CONDITION_OPTIONS}
+            />
+          </div>
         </div>
       </div>
 
       {showReset && (
-        <div className="mt-2 flex justify-end">
+        <div className="mt-2 flex justify-end md:hidden">
           <button
             type="button"
             onClick={onReset}
