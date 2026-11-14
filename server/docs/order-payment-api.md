@@ -124,7 +124,9 @@ Di FE, pakai `token` dengan Snap.js (`window.snap.pay(token)`), atau arahkan ke 
 
 `POST /api/payments/notification`. **Dipanggil Midtrans, bukan FE.**
 
-Tanpa JWT. Keaslian dicek lewat `signature_key = SHA512(order_id + status_code + gross_amount + ServerKey)`.
+Tanpa JWT. Keaslian dicek lewat `signature_key = SHA512(order_id + status_code + gross_amount + SignatureKey)`.
+`SignatureKey` = `MIDTRANS_SIGNATURE_KEY` (akun Midtrans baru, "Signature Secret Key" di Access Keys),
+atau `MIDTRANS_SERVER_KEY` bila variabel itu kosong (akun lama).
 `order_id` di Midtrans = `_id` order.
 
 Respons:
@@ -163,24 +165,35 @@ Setelah bayar, jangan anggap order lunas hanya dari callback Snap di browser. Am
 
 ## Tes di sandbox
 
-1. Daftar di <https://dashboard.sandbox.midtrans.com>, buka **Settings → Access Keys**.
-2. Isi `server/.env` (jangan di-commit):
+1. Daftar di <https://dashboard.midtrans.com>, pilih environment **Sandbox**, buka
+   **Settings → Access Keys**.
+2. Klik **Generate server key** dengan izin **Snap Checkout: Write** dan
+   **Cancel transaction: Write** (yang lain None).
+3. Isi `server/.env` (jangan di-commit):
    ```
-   MIDTRANS_SERVER_KEY=SB-Mid-server-xxxx
-   MIDTRANS_CLIENT_KEY=SB-Mid-client-xxxx
+   MIDTRANS_SERVER_KEY=SB-Mid-server-xxxx      # server key yang di-generate
+   MIDTRANS_SIGNATURE_KEY=Mid-server-xxxx      # "Signature Secret Key" di Access Keys
+   MIDTRANS_CLIENT_KEY=Mid-client-xxxx         # "Client Key", untuk Snap.js di FE
    MIDTRANS_IS_PRODUCTION=false
    ```
-3. Jalankan server (`npm run dev`, port 5000), lalu `ngrok http 5000`.
-4. Di dashboard: **Settings → Payment → Notification URL** =
-   `https://<id-ngrok>.ngrok-free.app/api/payments/notification`.
-   URL ngrok gratis berubah setiap restart, jadi perbarui setiap kali.
-5. FE memuat `https://app.sandbox.midtrans.com/snap/snap.js` dengan atribut
+   Tanpa `MIDTRANS_SIGNATURE_KEY` yang benar, semua webhook ditolak `403` dan di riwayat
+   notifikasi Midtrans terlihat "In progress / Resending".
+4. Jalankan server (`npm run dev`, port 5000), lalu buka tunnel publik:
+   `cloudflared tunnel --url http://localhost:5000` (tanpa akun) atau `ngrok http 5000`.
+5. Di dashboard: **Settings → Payment → Notification URL** =
+   `https://<url-tunnel>/api/payments/notification`.
+   URL tunnel gratis berubah setiap restart, jadi perbarui setiap kali.
+6. FE memuat `https://app.sandbox.midtrans.com/snap/snap.js` dengan atribut
    `data-client-key` = client key.
-6. Bayar dengan data uji sandbox Midtrans:
-   - Kartu sukses: `4811 1111 1111 1114`, CVV `123`, expiry bulan/tahun di masa depan, OTP `112233`
+7. Bayar dengan data uji sandbox Midtrans:
+   - Kartu sukses: `4811 1111 1111 1114`, CVV `123`, expiry format **MM/YY** di masa depan
+     (mis. `12/30`), OTP `112233`
    - VA / QRIS: bayar lewat simulator di <https://simulator.sandbox.midtrans.com>
-7. Cek notifikasi masuk di inspector ngrok (`http://127.0.0.1:4040`), lalu cek order lewat
-   `GET /api/orders/:orderId`.
+8. Cek status pengiriman webhook di **Settings → Payment → Notification URL → View
+   notification history** (harus "Completed"), lalu cek order lewat `GET /api/orders/:orderId`.
+
+Catatan status: pembayaran kartu tampil **Success** (`capture`), VA/QRIS tampil
+**Settlement**. Keduanya dianggap lunas oleh server.
 
 Untuk menguji expire tanpa menunggu 24 jam: pilih VA, jangan dibayar, lalu dari
 **Transactions** di dashboard lakukan **Expire** pada transaksi tersebut.
@@ -190,3 +203,4 @@ Untuk menguji expire tanpa menunggu 24 jam: pilih VA, jangan dibayar, lalu dari
 | Tanggal | Perubahan |
 |---|---|
 | 2026-11-14 | Versi pertama: field pembayaran + alamat, `POST /api/payments/:orderId`, webhook, `PATCH /api/orders/:orderId/cancel`. |
+| 2026-11-14 | Webhook diverifikasi dengan `MIDTRANS_SIGNATURE_KEY` (Signature Secret Key). Tidak ada perubahan untuk FE. |
