@@ -2,7 +2,12 @@
 
 import Link from 'next/link';
 import { useEffect, useId, useState } from 'react';
-import { CloseIcon } from '../icons';
+import FilterSelect from '@/components/ui/FilterSelect';
+import MobileBackBar from '../MobileBackBar';
+import FormSection from './FormSection';
+import PhotoDropZone from './PhotoDropZone';
+import PhotoGallery, { toPhotoItem } from './PhotoGallery';
+import ProductPreview from './ProductPreview';
 import {
   ALLOWED_IMAGE_TYPES,
   CONDITION_OPTIONS,
@@ -16,15 +21,18 @@ import {
 const MAX_DESCRIPTION = 1000;
 
 const focusRing =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary';
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2';
 
-const card = 'rounded-2xl border border-[#e6ddd2] bg-white p-5 sm:p-6';
+// 44px fields: #D9CFC1 border; focus = 2px terracotta edge (1px border + 1px inset shadow) and a #FBE6DC ring.
+const focusField =
+  'outline-none focus:border-[#B5532E] focus:shadow-[0_0_0_1px_#B5532E,0_0_0_4px_#FBE6DC]';
 
 const inputBase =
-  'h-11 w-full rounded-xl border bg-white px-3 text-sm text-text placeholder:text-[#8C7E72] disabled:cursor-not-allowed disabled:bg-[#F1EBE1] disabled:text-[#6E5D4F]';
+  'h-11 w-full rounded-xl border bg-white px-3 text-sm text-[#2B2118] placeholder:text-[#7A6D61] disabled:cursor-not-allowed disabled:bg-[#F5F0E8] disabled:text-[#6F6358]';
 
-const inputClass = (error) =>
-  `${inputBase} ${error ? 'border-error' : 'border-[#CFBEAE]'} ${focusRing}`;
+const inputClass = (error) => `${inputBase} ${error ? 'border-[#B3402A]' : 'border-[#D9CFC1]'} ${focusField}`;
+
+const errorText = 'mt-1.5 text-[13px] font-medium text-[#B3402A]';
 
 function initialValues(product) {
   return {
@@ -60,52 +68,17 @@ function validate(values, photos) {
   return errors;
 }
 
-// A photo that no longer loads (e.g. an old local /uploads URL) shows a clear placeholder,
-// so the admin knows to remove it and upload a new one.
-function PhotoPreview({ src, alt }) {
-  const [failed, setFailed] = useState(false);
-  if (failed) {
-    return (
-      <div
-        role="img"
-        aria-label={`${alt} could not be loaded`}
-        className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[#CFBEAE] bg-[#EFEBE4] px-3 text-center"
-      >
-        <span className="text-xs font-semibold text-[#5C4D40]">Image unavailable</span>
-        <span className="text-[11px] text-[#6E5D4F]">Remove it and upload again</span>
-      </div>
-    );
-  }
-  return (
-    /* eslint-disable-next-line @next/next/no-img-element */
-    <img
-      src={src}
-      alt={alt}
-      onError={() => setFailed(true)}
-      className="aspect-[4/5] w-full rounded-xl border border-[#e6ddd2] bg-[#EFEBE4] object-cover"
-    />
-  );
-}
-
-function UploadIcon() {
-  return (
-    <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 16V4M7 9l5-5 5 5M5 20h14" />
-    </svg>
-  );
-}
-
 function Field({ id, label, required, error, hint, children }) {
   return (
     <div>
-      <label htmlFor={id} className="text-sm font-semibold text-text">
+      <label htmlFor={id} className="text-sm font-semibold text-[#2B2118]">
         {label}
-        {required && <span className="text-error"> *</span>}
+        {required && <span className="text-[#B3402A]"> *</span>}
       </label>
       <div className="mt-1.5">{children}</div>
-      {hint && !error && <p className="mt-1.5 text-xs text-[#6E5D4F]">{hint}</p>}
+      {hint && !error && <p className="mt-1.5 text-[13px] text-[#6F6358]">{hint}</p>}
       {error && (
-        <p id={`${id}-error`} role="alert" className="mt-1.5 text-xs font-medium text-error">
+        <p id={`${id}-error`} role="alert" className={errorText}>
           {error}
         </p>
       )}
@@ -115,15 +88,17 @@ function Field({ id, label, required, error, hint, children }) {
 
 export function FormPageLayout({ title, children }) {
   return (
-    <div className="mx-auto max-w-6xl">
-      <nav aria-label="Breadcrumb" className="text-sm text-[#6E5D4F]">
-        <Link href="/admin/products" className={`rounded hover:text-text ${focusRing}`}>
+    <div className="mx-auto w-full max-w-[1152px]">
+      {/* Below lg the top bar shows "Back to Products" + the title, so the breadcrumb is desktop-only. */}
+      <MobileBackBar href="/admin/products" label="Products" title={`${title.charAt(0)}${title.slice(1).toLowerCase()}`} />
+      <nav aria-label="Breadcrumb" className="hidden text-sm text-[#6F6358] lg:block">
+        <Link href="/admin/products" className={`rounded hover:text-[#2B2118] ${focusRing}`}>
           Product Management
         </Link>
         <span aria-hidden="true"> › </span>
-        <span aria-current="page" className="text-text">{title}</span>
+        <span aria-current="page" className="text-[#2B2118]">{title}</span>
       </nav>
-      <h1 className="mb-6 mt-2 text-3xl font-semibold sm:text-4xl">{title}</h1>
+      <h1 className="mb-6 text-[32px] font-semibold leading-tight text-[#2B2118] sm:text-[40px] lg:mt-2">{title}</h1>
       {children}
     </div>
   );
@@ -131,31 +106,34 @@ export function FormPageLayout({ title, children }) {
 
 export function FormLoading() {
   return (
-    <div className="grid gap-6 lg:grid-cols-5" aria-busy="true">
-      <div className="h-80 animate-pulse rounded-2xl bg-[#efe9e0] lg:col-span-2" />
-      <div className="h-[32rem] animate-pulse rounded-2xl bg-[#efe9e0] lg:col-span-3" />
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]" aria-busy="true">
+      <div className="flex flex-col gap-6">
+        <div className="h-80 animate-pulse rounded-2xl bg-[#efe9e0]" />
+        <div className="h-96 animate-pulse rounded-2xl bg-[#efe9e0]" />
+      </div>
+      <div className="hidden h-[26rem] animate-pulse rounded-2xl bg-[#efe9e0] lg:block" />
     </div>
   );
 }
 
 export function FormError({ message, onRetry }) {
   return (
-    <div className="max-w-xl rounded-2xl border border-[#e6b8a2] bg-[#fdefe6] p-6">
+    <div className="max-w-[576px] rounded-2xl border border-[#e6b8a2] bg-[#fdefe6] p-6">
       <h2 className="text-xl font-semibold">Something went wrong</h2>
-      <p className="mt-2 text-sm text-[#6E5D4F]">{message}</p>
+      <p className="mt-2 text-sm text-[#6F6358]">{message}</p>
       <div className="mt-5 flex gap-3">
         {onRetry && (
           <button
             type="button"
             onClick={onRetry}
-            className={`min-h-[40px] rounded-xl bg-[#a3452a] px-5 text-sm font-semibold text-white hover:bg-[#8f3b23] ${focusRing}`}
+            className={`min-h-11 rounded-xl bg-[#B5532E] px-5 text-sm font-semibold text-white hover:bg-[#9C4425] ${focusRing}`}
           >
             Try again
           </button>
         )}
         <Link
           href="/admin/products"
-          className={`flex min-h-[40px] items-center rounded-xl border border-[#CFBEAE] bg-white px-5 text-sm font-semibold text-text ${focusRing}`}
+          className={`flex min-h-11 items-center rounded-xl border border-[#D9CFC1] bg-white px-5 text-sm font-semibold text-[#2B2118] hover:bg-[#F5F0E8] ${focusRing}`}
         >
           Back to products
         </Link>
@@ -169,7 +147,9 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
   const sold = product?.status === 'SOLD';
 
   const [values, setValues] = useState(() => initialValues(product));
-  const [photos, setPhotos] = useState(() => initialPhotos(product));
+  // Ordered list of { id, url }; index 0 is the cover. `photoUrls` is what the server gets.
+  const [photos, setPhotos] = useState(() => initialPhotos(product).map(toPhotoItem));
+  const photoUrls = photos.map((p) => p.url);
   const [snapshot] = useState(() =>
     JSON.stringify({ values: initialValues(product), photos: initialPhotos(product) })
   );
@@ -180,7 +160,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
   const [uploading, setUploading] = useState(false);
 
   const busy = submitting || uploading;
-  const dirty = JSON.stringify({ values, photos }) !== snapshot;
+  const dirty = JSON.stringify({ values, photos: photoUrls }) !== snapshot;
 
   useEffect(() => {
     if (!dirty || submitting) return undefined;
@@ -198,7 +178,8 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
   }
 
   async function processFiles(files) {
-    if (files.length === 0 || sold) return;
+    // One upload at a time: a second drop while uploading would race and scramble the order.
+    if (files.length === 0 || sold || busy) return;
     setPhotoError('');
 
     const room = MAX_PHOTOS - photos.length;
@@ -212,7 +193,8 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
     setUploading(true);
     try {
       const urls = await uploadPhotos(files);
-      setPhotos((prev) => [...prev, ...urls]);
+      // Appended in the order the server returned them; the first photo of an empty list is the cover.
+      setPhotos((prev) => [...prev, ...urls.map(toPhotoItem)]);
       setErrors((prev) => ({ ...prev, photos: undefined }));
     } catch (err) {
       if (!onAuthError(err)) setPhotoError(err.message);
@@ -221,26 +203,12 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
     }
   }
 
-  function handleFileInput(e) {
-    const files = Array.from(e.target.files ?? []);
-    e.target.value = '';
-    processFiles(files);
-  }
-
-  function removePhoto(index) {
-    setPhotos((prev) => prev.filter((_, i) => i !== index));
-  }
-
-  function makeCover(index) {
-    setPhotos((prev) => [prev[index], ...prev.filter((_, i) => i !== index)]);
-  }
-
   async function handleSubmit(e) {
     e.preventDefault();
     if (sold || busy) return;
     setFormError('');
 
-    const found = validate(values, photos);
+    const found = validate(values, photoUrls);
     setErrors(found);
     if (Object.keys(found).length > 0) return;
 
@@ -254,7 +222,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
         size: values.size,
         condition: values.condition,
         price: Number(values.price),
-        photos,
+        photos: photoUrls, // array order = display order, index 0 = cover
       });
     } catch (err) {
       if (!onAuthError(err)) setFormError(err.message);
@@ -267,118 +235,55 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
   }
 
   const locked = sold || submitting;
+  const noChanges = mode === 'edit' && !dirty && !sold;
+  const fieldError = (key) => (errors[key] ? `${uid}-${key}-error` : undefined);
 
   return (
     <form onSubmit={handleSubmit} noValidate>
       {sold && (
-        <div role="status" className="mb-6 rounded-2xl border border-[#CFBEAE] bg-[#F1EBE1] p-4 text-sm text-text">
+        <div role="status" className="mb-6 rounded-2xl border border-[#D9CFC1] bg-[#F5F0E8] p-4 text-sm text-[#2B2118]">
           <strong className="font-semibold">This item is sold.</strong> Sold products can&apos;t be edited.
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-5">
-        <div className="flex flex-col gap-6 lg:col-span-2">
-          <section className={card} aria-labelledby={`${uid}-photos`}>
-            <h2 id={`${uid}-photos`} className="text-lg font-semibold">
-              Photos <span className="text-sm font-normal text-[#6E5D4F]">({photos.length}/{MAX_PHOTOS})</span>
-            </h2>
-
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="flex min-w-0 flex-col gap-6">
+          <FormSection
+            step={1}
+            title="Photos"
+            titleId={`${uid}-photos`}
+            tone="bg-[#FBE6DC]"
+            aside={<span className="text-[13px] font-medium tabular-nums text-[#2B2118]">{photos.length}/{MAX_PHOTOS}</span>}
+          >
             {!sold && (
-              <label
-                className="relative mt-4 block cursor-pointer"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  processFiles(Array.from(e.dataTransfer.files ?? []));
-                }}
-              >
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  multiple
-                  onChange={handleFileInput}
-                  disabled={busy || photos.length >= MAX_PHOTOS}
-                  className="peer sr-only"
-                />
-                <span className="flex flex-col items-center gap-1 rounded-xl border-2 border-dashed border-[#CFBEAE] bg-canvas px-4 py-6 text-center text-[#4A3F35] peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-disabled:cursor-not-allowed peer-disabled:opacity-60">
-                  <UploadIcon />
-                  <span className="text-sm font-semibold">
-                    {uploading ? 'Uploading...' : 'Drag photos here or browse'}
-                  </span>
-                  <span className="text-xs text-[#6E5D4F]">JPG, PNG or WebP · max 5 MB each</span>
-                </span>
-              </label>
+              <PhotoDropZone disabled={busy || photos.length >= MAX_PHOTOS} uploading={uploading} onFiles={processFiles} />
             )}
 
             {(photoError || errors.photos) && (
-              <p role="alert" className="mt-2 text-xs font-medium text-error">
+              <p role="alert" className={errorText}>
                 {photoError || errors.photos}
               </p>
             )}
 
             {photos.length > 0 && (
-              <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3">
-                {photos.map((src, index) => (
-                  <li key={src} className="relative">
-                    <PhotoPreview src={src} alt={`Product photo ${index + 1}`} />
-                    {index === 0 ? (
-                      <span className="absolute bottom-2 left-2 rounded-full bg-text px-2.5 py-1 text-xs font-semibold text-white">
-                        Cover
-                      </span>
-                    ) : (
-                      !sold && (
-                        <button
-                          type="button"
-                          onClick={() => makeCover(index)}
-                          className={`absolute bottom-2 left-2 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-text ${focusRing}`}
-                        >
-                          Make cover
-                        </button>
-                      )
-                    )}
-                    {!sold && (
-                      <button
-                        type="button"
-                        onClick={() => removePhoto(index)}
-                        aria-label={`Remove photo ${index + 1}`}
-                        className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-text shadow-sm ${focusRing}`}
-                      >
-                        <CloseIcon width={14} height={14} />
-                      </button>
-                    )}
-                  </li>
-                ))}
-              </ul>
+              <>
+                {!sold && photos.length > 1 && (
+                  <p className="mt-3 text-[13px] text-[#6F6358]">The first photo is the cover. Drag photos or use the arrows to reorder.</p>
+                )}
+                <PhotoGallery
+                  photos={photos}
+                  readOnly={sold}
+                  onChange={(next) => {
+                    setPhotos(next);
+                    setErrors((prev) => (prev.photos && next.length > 0 ? { ...prev, photos: undefined } : prev));
+                  }}
+                />
+              </>
             )}
-          </section>
+          </FormSection>
 
-          <section className={card}>
-            <Field
-              id={`${uid}-description`}
-              label="Description"
-              hint="Optional. Mention flaws, measurements, or fit."
-            >
-              <textarea
-                id={`${uid}-description`}
-                value={values.description}
-                onChange={(e) => setField('description', e.target.value)}
-                maxLength={MAX_DESCRIPTION}
-                rows={5}
-                disabled={locked}
-                className={`w-full rounded-xl border border-[#CFBEAE] bg-white px-3 py-2.5 text-sm text-text disabled:bg-[#F1EBE1] ${focusRing}`}
-              />
-            </Field>
-            <p className="mt-1 text-right text-xs text-[#6E5D4F]">
-              {values.description.length}/{MAX_DESCRIPTION}
-            </p>
-          </section>
-        </div>
-
-        <div className="flex flex-col gap-6 lg:col-span-3">
-          <section className={card} aria-labelledby={`${uid}-basic`}>
-            <h2 id={`${uid}-basic`} className="text-lg font-semibold">Basic info</h2>
-
-            <div className="mt-4 space-y-5">
+          <FormSection step={2} title="Basic info" titleId={`${uid}-basic`} tone="bg-[#F5F0E8]">
+            <div className="space-y-5">
               <div className="grid gap-5 sm:grid-cols-2">
                 <Field id={`${uid}-name`} label="Name" required error={errors.name}>
                   <input
@@ -388,7 +293,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                     maxLength={120}
                     disabled={locked}
                     aria-invalid={Boolean(errors.name)}
-                    aria-describedby={errors.name ? `${uid}-name-error` : undefined}
+                    aria-describedby={fieldError('name')}
                     className={inputClass(errors.name)}
                   />
                 </Field>
@@ -400,32 +305,31 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                     maxLength={100}
                     disabled={locked}
                     aria-invalid={Boolean(errors.brand)}
-                    aria-describedby={errors.brand ? `${uid}-brand-error` : undefined}
+                    aria-describedby={fieldError('brand')}
                     className={inputClass(errors.brand)}
                   />
                 </Field>
               </div>
 
               <Field id={`${uid}-category`} label="Category" required error={errors.category}>
-                <select
+                <FilterSelect
                   id={`${uid}-category`}
+                  label="Category"
+                  variant="field"
+                  includeEmpty={false}
+                  emptyLabel="Choose category"
                   value={values.category}
-                  onChange={(e) => setField('category', e.target.value)}
+                  onChange={(category) => setField('category', category)}
+                  options={categories.map((c) => ({ value: c._id, label: c.name }))}
                   disabled={locked}
-                  aria-invalid={Boolean(errors.category)}
-                  aria-describedby={errors.category ? `${uid}-category-error` : undefined}
-                  className={inputClass(errors.category)}
-                >
-                  <option value="">Choose category</option>
-                  {categories.map((c) => (
-                    <option key={c._id} value={c._id}>{c.name}</option>
-                  ))}
-                </select>
+                  invalid={Boolean(errors.category)}
+                  describedBy={fieldError('category')}
+                />
               </Field>
 
               <fieldset disabled={locked}>
-                <legend className="text-sm font-semibold text-text">
-                  Size <span className="text-error">*</span>
+                <legend className="text-sm font-semibold text-[#2B2118]">
+                  Size <span className="text-[#B3402A]">*</span>
                 </legend>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {SIZE_OPTIONS.map((s) => (
@@ -438,20 +342,20 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                         onChange={() => setField('size', s.value)}
                         className="peer sr-only"
                       />
-                      <span className="flex min-h-[40px] min-w-[48px] items-center justify-center rounded-xl border border-[#CFBEAE] bg-white px-4 text-sm font-semibold text-[#4A3F35] peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2 peer-disabled:opacity-60">
+                      <span className="flex min-h-11 min-w-[52px] items-center justify-center rounded-xl border border-[#D9CFC1] bg-white px-4 text-sm font-semibold text-[#2B2118] hover:border-[#B5532E] peer-checked:border-[#B5532E] peer-checked:bg-[#B5532E] peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-[#B5532E] peer-focus-visible:ring-offset-2 peer-disabled:cursor-not-allowed peer-disabled:bg-[#F5F0E8] peer-disabled:text-[#6F6358] peer-disabled:peer-checked:bg-[#6F6358] peer-disabled:peer-checked:text-white">
                         {s.label}
                       </span>
                     </label>
                   ))}
                 </div>
                 {errors.size && (
-                  <p role="alert" className="mt-1.5 text-xs font-medium text-error">{errors.size}</p>
+                  <p role="alert" className={errorText}>{errors.size}</p>
                 )}
               </fieldset>
 
               <fieldset disabled={locked}>
-                <legend className="text-sm font-semibold text-text">
-                  Condition <span className="text-error">*</span>
+                <legend className="text-sm font-semibold text-[#2B2118]">
+                  Condition <span className="text-[#B3402A]">*</span>
                 </legend>
                 <div className="mt-2 grid gap-3 sm:grid-cols-2">
                   {CONDITION_OPTIONS.map((c) => (
@@ -464,58 +368,83 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                         onChange={() => setField('condition', c.value)}
                         className="peer sr-only"
                       />
-                      <span className="block rounded-xl border border-[#CFBEAE] bg-white p-3 pr-10 peer-checked:border-primary peer-checked:bg-[#FBEDE6] peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-disabled:opacity-60">
-                        <span className="block text-sm font-semibold text-text">{c.label}</span>
-                        <span className="mt-0.5 block text-xs text-[#6E5D4F]">{c.hint}</span>
+                      <span className="block h-full rounded-xl border-2 border-[#D9CFC1] bg-white p-3 pr-10 hover:border-[#B5532E] peer-checked:border-[#B5532E] peer-checked:bg-[#FBE6DC] peer-focus-visible:ring-2 peer-focus-visible:ring-[#B5532E] peer-focus-visible:ring-offset-2 peer-disabled:cursor-not-allowed peer-disabled:hover:border-[#D9CFC1]">
+                        <span className="block text-sm font-semibold text-[#2B2118]">{c.label}</span>
+                        <span className="mt-0.5 block text-[13px] text-[#6F6358]">{c.hint}</span>
                       </span>
                       <span
                         aria-hidden="true"
-                        className="pointer-events-none absolute right-3 top-3 h-4 w-4 rounded-full border-2 border-[#CFBEAE] bg-white peer-checked:border-primary peer-checked:bg-primary peer-checked:shadow-[inset_0_0_0_2px_white]"
+                        className="pointer-events-none absolute right-3 top-3.5 size-[18px] rounded-full border-2 border-[#B5A595] bg-white peer-checked:border-[#B5532E] peer-checked:bg-[#B5532E] peer-checked:shadow-[inset_0_0_0_3px_white]"
                       />
                     </label>
                   ))}
                 </div>
                 {errors.condition && (
-                  <p role="alert" className="mt-1.5 text-xs font-medium text-error">{errors.condition}</p>
+                  <p role="alert" className={errorText}>{errors.condition}</p>
                 )}
               </fieldset>
             </div>
-          </section>
+          </FormSection>
 
-          <section className={card} aria-labelledby={`${uid}-pricing`}>
-            <h2 id={`${uid}-pricing`} className="text-lg font-semibold">Pricing</h2>
-            <div className="mt-4">
-              <Field
-                id={`${uid}-price`}
-                label="Price"
-                required
-                error={errors.price}
-                hint={values.price ? `Shown to buyers as ${formatRupiah(values.price)}` : 'Whole rupiah, numbers only.'}
+          <FormSection step={3} title="Description" titleId={`${uid}-description-title`} tone="bg-[#E4EEE2]">
+            <Field id={`${uid}-description`} label="Description" hint="Optional. Mention flaws, measurements, or fit.">
+              <textarea
+                id={`${uid}-description`}
+                value={values.description}
+                onChange={(e) => setField('description', e.target.value)}
+                maxLength={MAX_DESCRIPTION}
+                rows={5}
+                disabled={locked}
+                className={`${inputBase} h-auto border-[#D9CFC1] py-2.5 ${focusField}`}
+              />
+            </Field>
+            <p className="mt-1 text-right text-[13px] tabular-nums text-[#6F6358]">
+              {values.description.length}/{MAX_DESCRIPTION}
+            </p>
+          </FormSection>
+
+          <FormSection step={4} title="Pricing" titleId={`${uid}-pricing`} tone="bg-[#FBF1D4]">
+            <Field
+              id={`${uid}-price`}
+              label="Price"
+              required
+              error={errors.price}
+              hint={values.price ? `Shown to buyers as ${formatRupiah(values.price)}` : 'Whole rupiah, numbers only.'}
+            >
+              <div
+                className={`flex h-11 overflow-hidden rounded-xl border bg-white focus-within:border-[#B5532E] focus-within:shadow-[0_0_0_1px_#B5532E,0_0_0_4px_#FBE6DC] ${
+                  errors.price ? 'border-[#B3402A]' : 'border-[#D9CFC1]'
+                }`}
               >
-                <div className="relative">
-                  <span aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-[#6E5D4F]">
-                    Rp
-                  </span>
-                  <input
-                    id={`${uid}-price`}
-                    inputMode="numeric"
-                    value={values.price}
-                    onChange={(e) => setField('price', e.target.value.replace(/\D/g, ''))}
-                    placeholder="680000"
-                    disabled={locked}
-                    aria-invalid={Boolean(errors.price)}
-                    aria-describedby={errors.price ? `${uid}-price-error` : undefined}
-                    className={`${inputClass(errors.price)} pl-10 font-mono`}
-                  />
-                </div>
-              </Field>
-            </div>
-          </section>
-
-          <p className="px-1 text-sm text-[#6E5D4F]">
-            Stock: 1. Status is set automatically when a buyer orders.
-          </p>
+                <span aria-hidden="true" className="flex items-center border-r border-[#D9CFC1] bg-[#F5F0E8] px-3 text-sm font-semibold text-[#4A3F35]">
+                  Rp
+                </span>
+                <input
+                  id={`${uid}-price`}
+                  inputMode="numeric"
+                  value={values.price}
+                  onChange={(e) => setField('price', e.target.value.replace(/\D/g, ''))}
+                  placeholder="680000"
+                  disabled={locked}
+                  aria-invalid={Boolean(errors.price)}
+                  aria-describedby={fieldError('price')}
+                  className="min-w-0 flex-1 bg-white px-3 text-sm tabular-nums text-[#2B2118] outline-none placeholder:text-[#7A6D61] disabled:cursor-not-allowed disabled:bg-[#F5F0E8] disabled:text-[#6F6358]"
+                />
+              </div>
+            </Field>
+            <p className="mt-4 text-[13px] text-[#6F6358]">Stock: 1. Status is set automatically when a buyer orders.</p>
+          </FormSection>
         </div>
+
+        <aside className="min-w-0 lg:sticky lg:top-6">
+          <ProductPreview
+            coverUrl={photos[0]?.url ?? ''}
+            name={values.name}
+            brand={values.brand}
+            size={values.size}
+            price={values.price}
+          />
+        </aside>
       </div>
 
       {formError && (
@@ -524,14 +453,18 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
         </p>
       )}
 
-      <div className="sticky bottom-0 z-10 mt-8 flex flex-wrap items-center justify-end gap-3 border-t border-[#e6ddd2] bg-canvas/95 py-4 backdrop-blur">
-        {dirty && !sold && (
-          <span className="mr-auto text-sm text-[#6E5D4F]">You have unsaved changes.</span>
+      {/* Below lg: one 64px row (8 + 48 + 8) plus the safe-area inset, Cancel 2/5 and Save 3/5;
+          the status text moves into the disabled button. From lg: unchanged. */}
+      <div className="sticky bottom-0 z-10 -mx-6 mt-8 flex flex-nowrap items-center justify-end gap-3 border-t border-[#D9CFC1] bg-white px-6 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 lg:-mx-10 lg:flex-wrap lg:px-10 lg:pb-4 lg:pt-4">
+        {!sold && (dirty || noChanges) && (
+          <span className="mr-auto hidden text-[13px] text-[#6F6358] lg:inline" aria-live="polite">
+            {noChanges ? 'No changes to save' : 'You have unsaved changes.'}
+          </span>
         )}
         <Link
           href="/admin/products"
           onClick={handleCancelClick}
-          className={`flex min-h-[44px] items-center rounded-xl border border-[#CFBEAE] bg-white px-5 text-sm font-semibold text-text hover:bg-[#F1EBE1] ${focusRing}`}
+          className={`flex min-h-12 items-center justify-center rounded-xl border border-[#D9CFC1] bg-white px-5 text-sm font-semibold text-[#2B2118] hover:bg-[#F5F0E8] lg:min-h-11 lg:justify-start ${sold ? 'flex-1' : 'flex-[2]'} lg:flex-none ${focusRing}`}
         >
           {sold ? 'Back to products' : 'Cancel'}
         </Link>
@@ -539,9 +472,22 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
           <button
             type="submit"
             disabled={busy || (mode === 'edit' && !dirty)}
-            className={`min-h-[44px] rounded-xl bg-[#a3452a] px-6 text-sm font-semibold text-white hover:bg-[#8f3b23] disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`}
+            className={`min-h-12 flex-[3] rounded-xl bg-[#B5532E] px-6 text-sm font-semibold text-white hover:bg-[#9C4425] disabled:cursor-not-allowed disabled:bg-[#E5DCCD] disabled:text-[#5C4D40] lg:min-h-11 lg:flex-none ${focusRing}`}
           >
-            {submitting ? 'Saving...' : mode === 'edit' ? 'Save changes' : 'Add product'}
+            {submitting ? (
+              'Saving...'
+            ) : mode === 'edit' ? (
+              noChanges ? (
+                <>
+                  <span className="lg:hidden">No changes</span>
+                  <span className="hidden lg:inline">Save changes</span>
+                </>
+              ) : (
+                'Save changes'
+              )
+            ) : (
+              'Add product'
+            )}
           </button>
         )}
       </div>

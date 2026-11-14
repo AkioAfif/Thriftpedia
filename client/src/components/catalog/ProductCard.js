@@ -68,8 +68,9 @@ export function ProductCard({ product, wishlist = false }) {
             <div className="absolute inset-0 bg-text/20 pointer-events-none" />
           )}
 
-          {/* Top-left badge: Sold or Condition badge */}
-          <div className="absolute top-3 left-3 z-10">
+          {/* Top-left badge: Sold or Condition badge. Below md it stops 8px short of the 44px
+              heart (12 + 44 + 8 + 12 = 76px) and truncates instead of running under it. */}
+          <div className="absolute top-3 left-3 z-10 max-md:max-w-[calc(100%-76px)] max-md:[&>span]:block max-md:[&>span]:truncate">
             {isSold ? (
               <Badge variant="sold" />
             ) : (
@@ -108,7 +109,7 @@ export function ProductCard({ product, wishlist = false }) {
               {product.brand || 'VINTAGE'}
             </span>
             <span
-              className={`font-mono font-bold uppercase shrink-0 ${
+              className={`font-mono font-bold uppercase shrink-0 max-md:font-sans ${
                 isSold ? 'text-[#6E5D4F]' : 'text-[#4A3F35]'
               }`}
             >
@@ -118,7 +119,7 @@ export function ProductCard({ product, wishlist = false }) {
 
           <div className="pt-1.5 flex items-baseline">
             <span
-              className={`text-base sm:text-lg font-bold font-mono leading-none ${
+              className={`text-base sm:text-lg font-bold font-mono leading-none max-md:font-sans ${
                 isSold
                   ? 'text-[#6E5D4F] line-through'
                   : 'text-text'

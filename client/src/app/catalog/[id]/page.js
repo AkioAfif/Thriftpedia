@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import { ErrorOutlineIcon, SearchOffIcon } from '@/components/ui/Icons';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { LoadingDots } from '@/components/ui/LoadingDots';
 import { ProductGallery } from '@/components/product/ProductGallery';
 import { PurchasePanel } from '@/components/product/PurchasePanel';
 import AuthDialog from '@/components/auth/AuthDialog';
@@ -15,6 +16,8 @@ import { RelatedProducts } from '@/components/product/RelatedProducts';
 import { getProductById, getProductReviews, getRelatedProducts } from '@/lib/services/productService';
 import { addToWishlist, getWishlist, isInWishlist, removeFromWishlist } from '@/lib/services/wishlistService';
 import { useCatalogHref } from '@/lib/catalogReturn';
+import BackToCatalog from '@/components/product/BackToCatalog';
+import { resolveBack } from '@/lib/navigation';
 import { conditionLabel, sizeLabel } from '@/lib/adminProducts';
 
 const ACTIONS = ['buy', 'wishlist'];
@@ -23,41 +26,6 @@ const outlineBtn =
   'inline-flex min-h-[44px] items-center justify-center rounded-md border border-border bg-surface px-5 text-body-md font-semibold text-text transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
 const primaryBtn =
   'inline-flex min-h-[44px] items-center justify-center rounded-md bg-primary px-5 text-body-md font-semibold text-on-primary transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
-
-function Breadcrumb({ catalogHref, category, name }) {
-  const link = 'rounded-sm hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary';
-  return (
-    <nav aria-label="Breadcrumb" className="text-body-sm text-text-secondary">
-      <ol className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1">
-        <li>
-          <Link href="/" className={link}>Home</Link>
-        </li>
-        <li aria-hidden="true">›</li>
-        <li>
-          <Link href={catalogHref} className={link}>Catalog</Link>
-        </li>
-        {category?.slug && (
-          <>
-            <li aria-hidden="true">›</li>
-            <li>
-              <Link href={`/catalog?category=${encodeURIComponent(category.slug)}`} className={link}>
-                {category.name}
-              </Link>
-            </li>
-          </>
-        )}
-        {name && (
-          <>
-            <li aria-hidden="true">›</li>
-            <li aria-current="page" className="min-w-0 max-w-full truncate font-medium text-text">
-              {name}
-            </li>
-          </>
-        )}
-      </ol>
-    </nav>
-  );
-}
 
 function DetailSkeleton() {
   return (
@@ -77,7 +45,15 @@ function DetailSkeleton() {
           <Skeleton className="h-8 w-24 rounded-full" />
         </div>
         <Skeleton className="h-12 w-full rounded-lg" />
-        <Skeleton className="h-12 w-full rounded-md" />
+        {/* Same 48px slot as Buy Now: never an active Buy button before the status is known. */}
+        <button
+          type="button"
+          disabled
+          className="inline-flex min-h-[48px] w-full cursor-not-allowed items-center justify-center gap-2 rounded-md bg-[#E5DCCD] px-5 text-body-md font-semibold text-[#5C4D40]"
+        >
+          <LoadingDots />
+          Checking availability
+        </button>
         <Skeleton className="h-12 w-full rounded-md" />
       </div>
     </div>
@@ -134,6 +110,8 @@ function ProductDetail() {
   const searchParams = useSearchParams();
   const { token, user, isLoggedIn, ready, logout } = useAuth();
   const catalogHref = useCatalogHref();
+  // ?from= (validated in resolveBack) decides where Back goes; otherwise the last catalog URL.
+  const back = resolveBack(searchParams.get('from'), catalogHref);
 
   const role = String(user?.role ?? '').toUpperCase();
   const isAdmin = role === 'ADMIN';
@@ -147,6 +125,16 @@ function ProductDetail() {
 
   const [justSold, setJustSold] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [checkError, setCheckError] = useState('');
+  // One availability check at a time; no state updates after the page is gone.
+  const checkInFlight = useRef(false);
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
   const [loginAction, setLoginAction] = useState(null);
   const [loginDone, setLoginDone] = useState(0);
   const pendingAfterLogin = useRef(null);
@@ -232,20 +220,31 @@ function ProductDetail() {
     setJustSold(true);
   }, []);
 
+  // Fresh GET /products/:id (no-store) right before checkout, also for the buy resumed after login.
+  // AVAILABLE -> checkout. SOLD / 404 / 409 -> the existing "taken" view. Network or server
+  // error -> button back on with an inline alert.
   const goToCheckout = useCallback(async () => {
+    if (checkInFlight.current) return;
+    checkInFlight.current = true;
+    setCheckError('');
     setChecking(true);
     try {
       const fresh = await getProductById(id);
+      if (!mounted.current) return;
       if (fresh?.status === 'AVAILABLE') {
+        setResult((r) => (r.product ? { ...r, product: fresh } : r)); // keep the shown data current
         router.push(`/checkout/${id}`);
-        return;
+        return; // stays "checking" while the next page loads
       }
       markSold(fresh);
     } catch (err) {
+      if (!mounted.current) return;
       if (err.status === 404 || err.status === 409) markSold(null);
-      else toast.error(err.message || 'Couldn’t check availability. Please try again.');
+      else setCheckError('Couldn’t check availability. Try again.');
+    } finally {
+      checkInFlight.current = false;
     }
-    setChecking(false);
+    if (mounted.current) setChecking(false);
   }, [id, router, markSold]);
 
   const saveToWishlist = useCallback(async () => {
@@ -333,9 +332,14 @@ function ProductDetail() {
   }, [loginDone, isBuyer, token, productReady, wishReady, saved, result.product, goToCheckout, saveToWishlist]);
 
   return (
-    <main className="w-full flex-1 pb-16 pt-6 md:pt-8">
-      <div className={pageWrap}>
-        <Breadcrumb catalogHref={catalogHref} category={product?.category} name={product?.name} />
+    <main className="w-full flex-1 pb-16 lg:pt-8">
+      {/* Below lg: sticky "Catalog" bar under the site header (first in Tab order). */}
+      <BackToCatalog variant="bar" href={back.href} label={back.label} name={product?.name ?? ''} />
+      <div className={`${pageWrap} max-lg:pt-4`}>
+        {/* lg and up: the Back button is the only way back (no breadcrumb). Hidden below lg. */}
+        <div className="hidden lg:flex">
+          <BackToCatalog href={back.href} label={back.label} />
+        </div>
 
         {loading ? (
           <DetailSkeleton />
@@ -371,6 +375,7 @@ function ProductDetail() {
                   product={product}
                   view={view}
                   checking={checking}
+                  checkError={checkError}
                   isAdmin={isAdmin}
                   onBuy={handleBuy}
                   catalogHref={catalogHref}

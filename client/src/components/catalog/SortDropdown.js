@@ -1,32 +1,30 @@
 'use client';
 
 import { useCatalogFilters } from '@/hooks/useCatalogFilters';
-import { SORT_OPTIONS } from '@/lib/constants';
+import { DEFAULT_SORT, SORT_OPTIONS } from '@/lib/constants';
+import FilterSelect from '@/components/ui/FilterSelect';
 
+// Same Sort as Product Management / Order Management: the shared FilterSelect (filter
+// variant; peach when not "Newest"), a visible 13px "Sort by" label from sm, 220px wide
+// from md and full width below. The value, options and setSort are unchanged.
 export function SortDropdown() {
   const { sort, setSort } = useCatalogFilters();
 
   return (
-    <div className="flex items-center gap-2 text-xs text-[#5C4D40]">
-      <label htmlFor="sort-select" className="hidden sm:inline font-medium">
-        Sort:
-      </label>
-      <div className="relative bg-white border border-[#E6DDD2] rounded-xl px-3 py-1.5 shadow-xs focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all">
-        <select
-          id="sort-select"
-          name="sort"
-          data-layer="Toolbar/Sort"
-          value={sort}
-          onChange={(e) => setSort(e.target.value)}
-          className="bg-transparent text-xs font-semibold text-text pr-6 py-0.5 border-0 focus:ring-0 focus:outline-none cursor-pointer"
-        >
-          {SORT_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-      </div>
+    <div className="min-w-0 flex-1 md:w-[220px] md:flex-none">
+      <span aria-hidden="true" className="mb-1.5 hidden text-[13px] font-medium text-[#6F6358] sm:block">
+        Sort by
+      </span>
+      <FilterSelect
+        id="sort-select"
+        label="Sort by"
+        value={sort}
+        defaultValue={DEFAULT_SORT}
+        includeEmpty={false}
+        align="right"
+        onChange={setSort}
+        options={SORT_OPTIONS}
+      />
     </div>
   );
 }

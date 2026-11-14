@@ -75,7 +75,7 @@ function WishlistProvider({ children }) {
     toggle: (product) => change(product, savedIds.has(product._id)), requestLogin: () => setIntent({}) }}>
     {children}
     {intent && <AuthDialog open onClose={closeIntent}
-      context={intent.product ? 'wishlist' : 'general'} initialTab="login" hideForgotPassword
+      context={intent.product ? 'wishlist' : 'general'} initialTab="login"
       onSuccess={(newUser) => {
         // AuthDialog has already logged in; never save to the wishlist of a non-buyer (admin) account.
         if (!intent.product) return;
