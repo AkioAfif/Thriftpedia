@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useId, useState } from 'react';
-import { CloseIcon } from '../icons';
+import PhotoGallery, { toPhotoItem } from './PhotoGallery';
 import {
   ALLOWED_IMAGE_TYPES,
   CONDITION_OPTIONS,
@@ -58,33 +58,6 @@ function validate(values, photos) {
   }
   if (photos.length === 0) errors.photos = 'Add at least one photo.';
   return errors;
-}
-
-// A photo that no longer loads (e.g. an old local /uploads URL) shows a clear placeholder,
-// so the admin knows to remove it and upload a new one.
-function PhotoPreview({ src, alt }) {
-  const [failed, setFailed] = useState(false);
-  if (failed) {
-    return (
-      <div
-        role="img"
-        aria-label={`${alt} could not be loaded`}
-        className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[#CFBEAE] bg-[#EFEBE4] px-3 text-center"
-      >
-        <span className="text-xs font-semibold text-[#5C4D40]">Image unavailable</span>
-        <span className="text-[11px] text-[#6E5D4F]">Remove it and upload again</span>
-      </div>
-    );
-  }
-  return (
-    /* eslint-disable-next-line @next/next/no-img-element */
-    <img
-      src={src}
-      alt={alt}
-      onError={() => setFailed(true)}
-      className="aspect-[4/5] w-full rounded-xl border border-[#e6ddd2] bg-[#EFEBE4] object-cover"
-    />
-  );
 }
 
 function UploadIcon() {
@@ -169,7 +142,9 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
   const sold = product?.status === 'SOLD';
 
   const [values, setValues] = useState(() => initialValues(product));
-  const [photos, setPhotos] = useState(() => initialPhotos(product));
+  // Ordered list of { id, url }; index 0 is the cover. `photoUrls` is what the server gets.
+  const [photos, setPhotos] = useState(() => initialPhotos(product).map(toPhotoItem));
+  const photoUrls = photos.map((p) => p.url);
   const [snapshot] = useState(() =>
     JSON.stringify({ values: initialValues(product), photos: initialPhotos(product) })
   );
@@ -180,7 +155,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
   const [uploading, setUploading] = useState(false);
 
   const busy = submitting || uploading;
-  const dirty = JSON.stringify({ values, photos }) !== snapshot;
+  const dirty = JSON.stringify({ values, photos: photoUrls }) !== snapshot;
 
   useEffect(() => {
     if (!dirty || submitting) return undefined;
@@ -198,7 +173,8 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
   }
 
   async function processFiles(files) {
-    if (files.length === 0 || sold) return;
+    // One upload at a time: a second drop while uploading would race and scramble the order.
+    if (files.length === 0 || sold || busy) return;
     setPhotoError('');
 
     const room = MAX_PHOTOS - photos.length;
@@ -212,7 +188,8 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
     setUploading(true);
     try {
       const urls = await uploadPhotos(files);
-      setPhotos((prev) => [...prev, ...urls]);
+      // Appended in the order the server returned them; the first photo of an empty list is the cover.
+      setPhotos((prev) => [...prev, ...urls.map(toPhotoItem)]);
       setErrors((prev) => ({ ...prev, photos: undefined }));
     } catch (err) {
       if (!onAuthError(err)) setPhotoError(err.message);
@@ -227,20 +204,12 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
     processFiles(files);
   }
 
-  function removePhoto(index) {
-    setPhotos((prev) => prev.filter((_, i) => i !== index));
-  }
-
-  function makeCover(index) {
-    setPhotos((prev) => [prev[index], ...prev.filter((_, i) => i !== index)]);
-  }
-
   async function handleSubmit(e) {
     e.preventDefault();
     if (sold || busy) return;
     setFormError('');
 
-    const found = validate(values, photos);
+    const found = validate(values, photoUrls);
     setErrors(found);
     if (Object.keys(found).length > 0) return;
 
@@ -254,7 +223,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
         size: values.size,
         condition: values.condition,
         price: Number(values.price),
-        photos,
+        photos: photoUrls, // array order = display order, index 0 = cover
       });
     } catch (err) {
       if (!onAuthError(err)) setFormError(err.message);
@@ -317,38 +286,19 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
             )}
 
             {photos.length > 0 && (
-              <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3">
-                {photos.map((src, index) => (
-                  <li key={src} className="relative">
-                    <PhotoPreview src={src} alt={`Product photo ${index + 1}`} />
-                    {index === 0 ? (
-                      <span className="absolute bottom-2 left-2 rounded-full bg-[#2B2118] px-2.5 py-1 text-xs font-semibold text-white">
-                        Cover
-                      </span>
-                    ) : (
-                      !sold && (
-                        <button
-                          type="button"
-                          onClick={() => makeCover(index)}
-                          className={`absolute bottom-2 left-2 rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-[#2B2118] ${focusRing}`}
-                        >
-                          Make cover
-                        </button>
-                      )
-                    )}
-                    {!sold && (
-                      <button
-                        type="button"
-                        onClick={() => removePhoto(index)}
-                        aria-label={`Remove photo ${index + 1}`}
-                        className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[#2B2118] shadow-sm ${focusRing}`}
-                      >
-                        <CloseIcon width={14} height={14} />
-                      </button>
-                    )}
-                  </li>
-                ))}
-              </ul>
+              <>
+                {!sold && photos.length > 1 && (
+                  <p className="mt-3 text-xs text-[#6F6358]">The first photo is the cover. Drag photos or use the arrows to reorder.</p>
+                )}
+                <PhotoGallery
+                  photos={photos}
+                  readOnly={sold}
+                  onChange={(next) => {
+                    setPhotos(next);
+                    setErrors((prev) => (prev.photos && next.length > 0 ? { ...prev, photos: undefined } : prev));
+                  }}
+                />
+              </>
             )}
           </section>
 
