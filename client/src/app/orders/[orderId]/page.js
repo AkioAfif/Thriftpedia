@@ -21,10 +21,8 @@ import { OrderThumb } from '@/components/orders/OrderThumb';
 import { ProductReviews } from '@/components/reviews/ProductReviews';
 import { ActionDialog } from '@/components/ui/ActionDialog';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { CheckIcon, ErrorOutlineIcon } from '@/components/ui/Icons';
-
-// TODO: remove this flag (and keep the cancel UI) once PATCH /api/orders/:id/cancel is merged into main.
-const BUYER_CANCEL_ENABLED = process.env.NEXT_PUBLIC_BUYER_CANCEL === 'true';
+import { CheckIcon, CloseIcon, ErrorOutlineIcon } from '@/components/ui/Icons';
+import { LoadingDots } from '@/components/ui/LoadingDots';
 
 const PAGE = 'mx-auto w-full max-w-[1120px] flex-1 px-margin-mobile py-lg md:px-margin-tablet lg:py-xl';
 const CARD = 'rounded-2xl border border-border bg-surface p-md sm:p-lg';
@@ -142,7 +140,7 @@ function PlacedView({ order }) {
 function OrderDetail({ order, queryKey, onReload }) {
   const item = orderItem(order);
   const history = Array.isArray(order.statusHistory) ? order.statusHistory : [];
-  const canCancel = BUYER_CANCEL_ENABLED && order.status === 'PENDING';
+  const canCancel = order.status === 'PENDING';
   // Lives here, not in CancelOrder: after a 403/404/409 reload the order may no longer be PENDING.
   const [cancelNotice, setCancelNotice] = useState('');
   const backHref = useOrdersHref();
@@ -154,8 +152,10 @@ function OrderDetail({ order, queryKey, onReload }) {
   // Cancelled orders have no stepper; below lg the progress card then only appears for a notice.
   const progressHiddenOnMobile = cancelled && !cancelNotice && !order.trackingNumber;
 
+  // Scrolling to a focused control (or the ribbon) keeps it clear of the sticky site header
+  // (73px) and, below md, the sticky "My orders" bar (48px) under it.
   return (
-    <div className="flex flex-col gap-5 md:gap-lg">
+    <div className="flex flex-col gap-5 md:gap-lg max-md:[&_*]:scroll-mt-[137px] md:[&_*]:scroll-mt-[89px]">
       <OrderBackBar href={backHref} label={numbered ? label : ''} />
 
       {/* md and up: the Back button is the only way back (no breadcrumb). */}
@@ -175,12 +175,18 @@ function OrderDetail({ order, queryKey, onReload }) {
         </p>
       </header>
 
-      <OrderStatusRibbon order={order} total={total} canCancel={canCancel} />
+      <OrderStatusRibbon
+        order={order}
+        total={total}
+        canCancel={canCancel}
+        action={canCancel ? <CancelOrder order={order} queryKey={queryKey} onReload={onReload} onNotice={setCancelNotice} /> : null}
+      />
 
-      {/* DOM order = mobile order: progress, item, history, review. From lg: item and review on
-          the left (7/12), the progress card on the right (5/12), sticky. */}
+      {/* DOM order = mobile order: progress, item, history, review. From lg: item and review stacked
+          on the left (7/12, own column so no gap opens between them), progress on the right (5/12),
+          sticky; its wrapper stretches to the row height so the sticky card can travel. */}
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-12 lg:gap-6">
-        <div className={`lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1 lg:self-stretch ${progressHiddenOnMobile ? 'max-lg:hidden' : ''}`}>
+        <div className={`lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:self-stretch ${progressHiddenOnMobile ? 'max-lg:hidden' : ''}`}>
           <section aria-labelledby="progress-title" className="rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-5 lg:sticky lg:top-24">
             <h2 id="progress-title" className="text-[18px] font-semibold text-[#2B2118]">Order progress</h2>
             {!cancelled && (
@@ -206,29 +212,30 @@ function OrderDetail({ order, queryKey, onReload }) {
                 {cancelNotice}
               </p>
             )}
-            {canCancel && <CancelOrder order={order} queryKey={queryKey} onReload={onReload} onNotice={setCancelNotice} />}
           </section>
         </div>
 
-        <div className="min-w-0 lg:col-span-7 lg:col-start-1 lg:row-start-1">
-          <BuyerOrderItem item={item} productId={productId} fromPath={`/orders/${order._id}`} />
-        </div>
-
-        {/* Below lg the history is its own card after the item (from lg it is in the progress card). */}
-        <section aria-labelledby="history-title" className="rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-5 lg:hidden">
-          <h2 id="history-title" className="text-[18px] font-semibold text-[#2B2118]">Status history</h2>
-          <div className="mt-3">
-            <OrderTimeline history={history} />
+        <div className="flex min-w-0 flex-col gap-5 lg:col-span-7 lg:col-start-1 lg:row-start-1 lg:gap-6">
+          <div className="min-w-0">
+            <BuyerOrderItem item={item} productId={productId} fromPath={`/orders/${order._id}`} />
           </div>
-        </section>
 
-        <section aria-label="Review" className="min-w-0 rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-5 lg:col-span-7 lg:col-start-1 lg:row-start-2">
-          {order.product?._id ? (
-            <ProductReviews product={order.product} order={order} />
-          ) : (
-            <p className="text-body-md text-text-secondary">This product was removed, so it can’t be reviewed.</p>
-          )}
-        </section>
+          {/* Below lg the history is its own card after the item (from lg it is in the progress card). */}
+          <section aria-labelledby="history-title" className="rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-5 lg:hidden">
+            <h2 id="history-title" className="text-[18px] font-semibold text-[#2B2118]">Status history</h2>
+            <div className="mt-3">
+              <OrderTimeline history={history} />
+            </div>
+          </section>
+
+          <section aria-label="Review" className="min-w-0 rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-5">
+            {order.product?._id ? (
+              <ProductReviews product={order.product} order={order} />
+            ) : (
+              <p className="text-body-md text-text-secondary">This product was removed, so it can’t be reviewed.</p>
+            )}
+          </section>
+        </div>
       </div>
     </div>
   );
@@ -240,6 +247,13 @@ function CancelOrder({ order, queryKey, onReload, onNotice }) {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [dialogError, setDialogError] = useState('');
+  const keepRef = useRef(null);
+  const title = order.orderNumber ? `Cancel order ${orderLabel(order)}?` : 'Cancel this order?';
+
+  // ActionDialog (a child) runs showModal in its own effect first, so the safe choice can take focus here.
+  useEffect(() => {
+    if (open) keepRef.current?.focus();
+  }, [open]);
 
   async function confirm() {
     setBusy(true);
@@ -265,29 +279,33 @@ function CancelOrder({ order, queryKey, onReload, onNotice }) {
   }
 
   return (
-    <div className="mt-md border-t border-border pt-md">
+    <>
       <button
         type="button"
         onClick={() => { setDialogError(''); onNotice(''); setOpen(true); }}
-        className="buyer-control -mx-1 inline-flex min-h-11 items-center rounded-md px-1 text-body-md font-semibold text-error underline-offset-4 hover:underline"
+        className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border-[1.5px] border-[#B3402A] bg-transparent px-4 text-sm font-semibold text-[#B3402A] transition-colors duration-150 hover:bg-[#FBE9E5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B3402A] focus-visible:ring-offset-2 motion-reduce:transition-none sm:w-auto"
       >
+        <CloseIcon className="size-4 shrink-0" />
         Cancel order
       </button>
-      <p className="text-[13px] text-text-secondary">You can cancel while your order is Pending.</p>
 
       {open && (
-        <ActionDialog title="Cancel this order?" busy={busy} onRequestClose={() => setOpen(false)}>
-          <p className="text-body-md text-text-secondary">
-            {orderItem(order).name} goes back on sale and another buyer can buy it. This can’t be undone.
-          </p>
+        <ActionDialog title={title} busy={busy} onRequestClose={() => setOpen(false)}>
+          <p className="text-sm text-[#5C4D40]">The piece goes back on sale for other buyers. This can’t be undone.</p>
           {dialogError && (
-            <p role="alert" className="mt-md flex gap-sm text-body-md text-error">
-              <ErrorOutlineIcon className="mt-0.5 h-4 w-4 shrink-0 text-error" />
+            <p role="alert" className="mt-4 flex gap-2 text-sm text-[#B3402A]">
+              <ErrorOutlineIcon className="mt-0.5 size-4 shrink-0 text-[#B3402A]" />
               {dialogError}
             </p>
           )}
-          <div className="mt-lg flex flex-col-reverse gap-sm sm:flex-row sm:justify-end">
-            <button type="button" className="buyer-secondary" disabled={busy} onClick={() => setOpen(false)}>
+          <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button
+              ref={keepRef}
+              type="button"
+              disabled={busy}
+              onClick={() => setOpen(false)}
+              className="inline-flex h-11 items-center justify-center rounded-xl border-[1.5px] border-[#D9CFC1] bg-white px-5 text-sm font-semibold text-[#2B2118] transition-colors duration-150 hover:bg-[#F5F0E8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
+            >
               Keep order
             </button>
             <button
@@ -295,14 +313,16 @@ function CancelOrder({ order, queryKey, onReload, onNotice }) {
               onClick={confirm}
               disabled={busy}
               aria-busy={busy}
-              className="buyer-control flex min-h-12 items-center justify-center rounded-md bg-error px-md py-3 text-body-md font-semibold text-white hover:opacity-90 disabled:cursor-wait disabled:opacity-60"
+              className="relative inline-flex h-11 items-center justify-center rounded-xl bg-[#B3402A] px-5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-[#9A3522] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B3402A] focus-visible:ring-offset-2 disabled:cursor-wait motion-reduce:transition-none"
             >
-              {busy ? 'Cancelling…' : 'Cancel order'}
+              {/* The label keeps the button width while the dots show. */}
+              <span className={busy ? 'invisible' : undefined}>Yes, cancel order</span>
+              {busy && <LoadingDots className="absolute inset-0 justify-center" />}
             </button>
           </div>
         </ActionDialog>
       )}
-    </div>
+    </>
   );
 }
 

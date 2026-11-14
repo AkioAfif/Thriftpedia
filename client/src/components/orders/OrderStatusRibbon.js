@@ -31,12 +31,13 @@ function sentenceFor(order, canCancel) {
 }
 
 // Full-width "where is my order" block: status and one plain sentence left, total right.
-export function OrderStatusRibbon({ order, total, canCancel }) {
+// `action` (e.g. the cancel button) sits under the total: right-aligned from sm, full width below.
+export function OrderStatusRibbon({ order, total, canCancel, action = null }) {
   const meta = statusMeta(order.status);
   return (
     <section
       aria-label="Current status"
-      className={`flex flex-col gap-4 rounded-[20px] border-2 p-5 sm:flex-row sm:items-center sm:justify-between ${TONE[order.status] ?? 'bg-[#F5F0E8] border-[#8A7A6B]'}`}
+      className={`grid grid-cols-1 gap-4 rounded-[20px] border-2 p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-6 ${TONE[order.status] ?? 'bg-[#F5F0E8] border-[#8A7A6B]'}`}
     >
       <div className="min-w-0">
         <p className="text-[13px] font-medium text-[#5C4D40]">Current status</p>
@@ -47,6 +48,7 @@ export function OrderStatusRibbon({ order, total, canCancel }) {
         <p className="text-[13px] font-medium text-[#5C4D40]">Total</p>
         <p className="text-[28px] font-semibold leading-tight tabular-nums text-[#2B2118]">{formatRupiah(total)}</p>
       </div>
+      {action && <div className="min-w-0 sm:col-start-2 sm:justify-self-end">{action}</div>}
     </section>
   );
 }
