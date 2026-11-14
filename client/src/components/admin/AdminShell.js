@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from './Sidebar';
 import { apiFetch } from '../../lib/adminApi';
-import { clearToken, extractUser, getToken } from '../../lib/adminAuth';
+import { extractUser, getToken } from '../../lib/adminAuth';
+import { useAuth } from '@/context/AuthContext';
 
 function FullScreenMessage({ title, message, children }) {
   return (
@@ -24,10 +25,12 @@ export default function AdminShell({ children }) {
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
 
+  // useAuth().logout clears token, user and thriftpedia_token together (and updates the Navbar).
+  const { logout: endSession } = useAuth();
   const logout = useCallback(() => {
-    clearToken();
+    endSession();
     router.replace('/login');
-  }, [router]);
+  }, [endSession, router]);
 
   useEffect(() => {
     let active = true;
@@ -46,7 +49,7 @@ export default function AdminShell({ children }) {
       } catch (err) {
         if (!active) return;
         if (err.status === 401) {
-          clearToken();
+          endSession();
           router.replace('/login');
           return;
         }
@@ -59,7 +62,7 @@ export default function AdminShell({ children }) {
     return () => {
       active = false;
     };
-  }, [router]);
+  }, [endSession, router]);
 
   if (status === 'checking') {
     return (

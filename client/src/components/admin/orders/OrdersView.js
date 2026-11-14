@@ -6,7 +6,7 @@ import OrderStatusTabs from './OrderStatusTabs';
 import OrderToolbar from './OrderToolbar';
 import OrderTable from './OrderTable';
 import ProductPagination from '../products/ProductPagination';
-import { clearToken } from '@/lib/adminAuth';
+import { useAuth } from '@/context/AuthContext';
 import { EMPTY_ORDER_META, fetchOrders, orderQueryToSearch, parseOrderQuery } from '@/lib/adminOrders';
 import { formatNumber } from '@/lib/adminProducts';
 
@@ -14,6 +14,8 @@ const PANEL_ID = 'orders-panel';
 
 export default function OrdersView() {
   const router = useRouter();
+  // Clears token, user and thriftpedia_token together, so the Navbar is logged out too.
+  const { logout } = useAuth();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const rawSearch = searchParams.toString();
@@ -56,11 +58,11 @@ export default function OrdersView() {
   const handleAuthError = useCallback(
     (err) => {
       if (err?.status !== 401) return false;
-      clearToken();
+      logout();
       router.replace('/login');
       return true;
     },
-    [router]
+    [router, logout]
   );
 
   useEffect(() => {

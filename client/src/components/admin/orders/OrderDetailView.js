@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import OrderStatusPanel from './OrderStatusPanel';
-import { clearToken } from '@/lib/adminAuth';
+import { useAuth } from '@/context/AuthContext';
 import {
   fetchOrder,
   formatOrderDateTime,
@@ -90,6 +90,8 @@ function ItemPhoto({ src, alt }) {
 export default function OrderDetailView() {
   const { id } = useParams();
   const router = useRouter();
+  // Clears token, user and thriftpedia_token together, so the Navbar is logged out too.
+  const { logout } = useAuth();
   const searchParams = useSearchParams();
   const [state, setState] = useState({ status: 'loading', order: null, error: null });
   const [attempt, setAttempt] = useState(0);
@@ -101,11 +103,11 @@ export default function OrderDetailView() {
   const handleAuthError = useCallback(
     (err) => {
       if (err?.status !== 401) return false;
-      clearToken();
+      logout();
       router.replace('/login');
       return true;
     },
-    [router]
+    [router, logout]
   );
 
   useEffect(() => {

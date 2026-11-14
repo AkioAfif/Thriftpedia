@@ -251,3 +251,21 @@
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   .landing-reveal[data-reveal="pending"] { opacity: 0; transform: translateY(24px); }
 }
+
+/* LoadingDots: sequential pulse; without motion the dots simply stay visible. */
+@keyframes loading-dot {
+  0%, 80%, 100% { opacity: 0.35; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-3px); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .loading-dot { animation: loading-dot 900ms ease-in-out infinite both; }
+}
+
+input[type='password']::-ms-reveal,
+input[type='password']::-ms-clear {
+  display: none;
+}
+input[type='password']::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  pointer-events: none;
+}

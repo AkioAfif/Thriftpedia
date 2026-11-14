@@ -82,6 +82,15 @@ export function Navbar() {
   const closeProfile = useCallback(() => setProfileOpen(false), []);
   const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
   const closeAuth = useCallback(() => setAuthTab(null), []);
+  // Navbar dialog only: after login/register go to the admin dashboard or the catalog.
+  // AuthDialog sends the API user { id, name, email, role } and closes itself afterwards.
+  const handleAuthSuccess = useCallback(
+    (authUser) => {
+      setAuthTab(null);
+      router.push(String(authUser?.role ?? '').toUpperCase() === 'ADMIN' ? '/admin/dashboard' : '/catalog');
+    },
+    [router]
+  );
   const openAuth = useCallback((tab) => {
     setMobileMenuOpen(false);
     setAuthTab(tab);
@@ -157,7 +166,7 @@ export function Navbar() {
                 <button
                   type="button"
                   onClick={() => openAuth('register')}
-                  className={`min-h-[44px] px-5 flex items-center text-sm font-semibold rounded-xl border border-[#B5532E] text-[#B5532E] hover:bg-[#FBEDE6] transition-colors ${focusRing}`}
+                  className={`min-h-[44px] px-5 flex items-center justify-center text-sm font-semibold leading-none rounded-xl border border-[#B5532E] text-[#B5532E] hover:bg-[#FBEDE6] transition-colors ${focusRing}`}
                 >
                   Register
                 </button>
@@ -242,7 +251,7 @@ export function Navbar() {
       />
 
       {/* key remounts the dialog so initialTab applies each time it opens. onSuccess makes
-          Register log in straight away; AuthDialog closes itself after a successful login. */}
+          Register log in straight away and then redirects; AuthDialog closes itself after login. */}
       {authTab && (
         <AuthDialog
           key={authTab}
@@ -250,7 +259,7 @@ export function Navbar() {
           onClose={closeAuth}
           initialTab={authTab}
           hideForgotPassword
-          onSuccess={closeAuth}
+          onSuccess={handleAuthSuccess}
         />
       )}
     </>

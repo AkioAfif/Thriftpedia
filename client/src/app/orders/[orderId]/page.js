@@ -39,11 +39,17 @@ function OrderView({ orderId }) {
   const searchParams = useSearchParams();
   // Read once: the flag is stripped from the URL right away so a refresh shows the detail page.
   const [placed] = useState(() => searchParams.get('placed') === '1');
-  const { token, user, ready } = useAuth();
+  const { token, user, ready, logout } = useAuth();
   const { requestLogin } = useWishlist();
   const buyer = Boolean(token) && user?.role?.toUpperCase() === 'BUYER';
   const queryKey = ['order', orderId, token];
   const query = useQuery({ queryKey, queryFn: () => getOrder(token, orderId), enabled: ready && buyer, retry: false });
+  // Expired/invalid session: clear it once; the new (null) token disables the query, so this runs once.
+  const unauthorized = query.isError && query.error?.status === 401;
+
+  useEffect(() => {
+    if (unauthorized) logout();
+  }, [unauthorized, logout]);
 
   useEffect(() => {
     if (searchParams.has('placed')) router.replace(pathname, { scroll: false });
@@ -51,7 +57,7 @@ function OrderView({ orderId }) {
 
   let body;
   if (!ready || (buyer && query.isPending)) body = <DetailSkeleton />;
-  else if (!token) {
+  else if (!token || unauthorized) {
     body = (
       <Notice title="Log in to view this order">
         <button type="button" className="buyer-primary w-full sm:w-auto" onClick={requestLogin}>Log in</button>
@@ -132,6 +138,8 @@ function OrderDetail({ order, queryKey, onReload }) {
   const item = orderItem(order);
   const history = Array.isArray(order.statusHistory) ? order.statusHistory : [];
   const canCancel = BUYER_CANCEL_ENABLED && order.status === 'PENDING';
+  // Lives here, not in CancelOrder: after a 403/404/409 reload the order may no longer be PENDING.
+  const [cancelNotice, setCancelNotice] = useState('');
 
   return (
     <div className="flex flex-col gap-lg">
@@ -207,7 +215,13 @@ function OrderDetail({ order, queryKey, onReload }) {
               <StatusHistory history={history} />
             </div>
 
-            {canCancel && <CancelOrder order={order} queryKey={queryKey} onReload={onReload} />}
+            {cancelNotice && (
+              <p role="alert" className="mt-md flex gap-sm rounded-md bg-error-tint px-md py-sm text-body-md text-text">
+                <ErrorOutlineIcon className="mt-0.5 h-4 w-4 shrink-0 text-error" />
+                {cancelNotice}
+              </p>
+            )}
+            {canCancel && <CancelOrder order={order} queryKey={queryKey} onReload={onReload} onNotice={setCancelNotice} />}
           </section>
 
           <section aria-label="Review" className={CARD}>
@@ -244,13 +258,12 @@ function StatusHistory({ history }) {
   );
 }
 
-function CancelOrder({ order, queryKey, onReload }) {
+function CancelOrder({ order, queryKey, onReload, onNotice }) {
   const { token } = useAuth();
   const client = useQueryClient();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [dialogError, setDialogError] = useState('');
-  const [notice, setNotice] = useState('');
 
   async function confirm() {
     setBusy(true);
@@ -265,7 +278,7 @@ function CancelOrder({ order, queryKey, onReload }) {
       if ([403, 404, 409].includes(err.status)) {
         // The order changed under us (already processed or cancelled): show why and reload it.
         setOpen(false);
-        setNotice(err.message);
+        onNotice(err.message || 'This order can no longer be cancelled.');
         onReload();
       } else {
         setDialogError(err.message || 'Couldn’t cancel this order. Please try again.');
@@ -277,15 +290,9 @@ function CancelOrder({ order, queryKey, onReload }) {
 
   return (
     <div className="mt-md border-t border-border pt-md">
-      {notice && (
-        <p role="alert" className="mb-sm flex gap-sm rounded-md bg-error-tint px-md py-sm text-body-md text-text">
-          <ErrorOutlineIcon className="mt-0.5 h-4 w-4 shrink-0 text-error" />
-          {notice}
-        </p>
-      )}
       <button
         type="button"
-        onClick={() => { setDialogError(''); setOpen(true); }}
+        onClick={() => { setDialogError(''); onNotice(''); setOpen(true); }}
         className="buyer-control -mx-1 inline-flex min-h-11 items-center rounded-md px-1 text-body-md font-semibold text-error underline-offset-4 hover:underline"
       >
         Cancel order

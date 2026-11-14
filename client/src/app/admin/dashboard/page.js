@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import StatCard from '../../../components/admin/StatCard';
 import { BagIcon, BoxIcon } from '../../../components/admin/icons';
 import { apiFetch } from '../../../lib/adminApi';
-import { clearToken } from '../../../lib/adminAuth';
+import { useAuth } from '@/context/AuthContext';
 
 const formatNumber = (n) => new Intl.NumberFormat('id-ID').format(Number(n) || 0);
 
@@ -15,6 +15,8 @@ function CardSkeleton() {
 
 export default function DashboardPage() {
   const router = useRouter();
+  // Clears token, user and thriftpedia_token together, so the Navbar is logged out too.
+  const { logout } = useAuth();
   const [state, setState] = useState({ status: 'loading', summary: null, errorMessage: '' });
   const [attempt, setAttempt] = useState(0);
 
@@ -29,7 +31,7 @@ export default function DashboardPage() {
       .catch((err) => {
         if (!active) return;
         if (err?.status === 401) {
-          clearToken();
+          logout();
           router.replace('/login');
           return;
         }
@@ -39,7 +41,7 @@ export default function DashboardPage() {
     return () => {
       active = false;
     };
-  }, [attempt, router]);
+  }, [attempt, router, logout]);
 
   function retry() {
     setState({ status: 'loading', summary: null, errorMessage: '' });
