@@ -28,7 +28,6 @@ import { LoadingDots } from '@/components/ui/LoadingDots';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { CheckIcon, CloseIcon, ErrorOutlineIcon } from '@/components/ui/Icons';
 import { canPay, hasAddress } from '@/lib/payment';
-import { DemoPaymentChip, useDemoPayment } from '@/lib/demoPayment'; // DEMO-PAYMENT (hapus sebelum rilis)
 
 const PAGE = 'mx-auto w-full max-w-[1120px] flex-1 px-margin-mobile py-lg md:px-margin-tablet lg:px-8 lg:py-xl';
 const CARD = 'rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-6';
@@ -74,7 +73,6 @@ function OrderView({ orderId }) {
   });
   let order = query.data;
   let payment = realPayment;
-  ({ order, payment } = useDemoPayment(order, payment)); // DEMO-PAYMENT (hapus sebelum rilis)
 
   function showDetail() {
     setPlaced(false);
@@ -124,7 +122,6 @@ function OrderView({ orderId }) {
   return (
     <main className={PAGE}>
       {body}
-      {/* DEMO-PAYMENT (hapus sebelum rilis) */}<DemoPaymentChip order={order} />
     </main>
   );
 }
@@ -332,7 +329,6 @@ function CancelOrder({ order, queryKey, onReload, onNotice }) {
   const [dialogError, setDialogError] = useState('');
 
   async function confirm() {
-    if (order.__demo) { setOpen(false); toast('Preview: nothing was sent to the server.'); return; } // DEMO-PAYMENT (hapus sebelum rilis)
     setBusy(true);
     setDialogError('');
     try {
