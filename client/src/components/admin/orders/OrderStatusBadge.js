@@ -1,9 +1,9 @@
 import { statusMeta } from '@/lib/orderView';
 
 const SIZES = {
-  md: 'min-w-[6.5rem] px-3 py-1.5 text-xs',
+  md: 'min-w-[6.5rem] px-3 py-1 text-[13px]',
   // Header of the admin order detail page.
-  lg: 'min-h-9 px-4 py-1.5 text-xs',
+  lg: 'min-h-9 px-4 py-1.5 text-[13px]',
 };
 
 export default function OrderStatusBadge({ status, size = 'md', className = '' }) {

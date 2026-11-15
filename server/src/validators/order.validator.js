@@ -43,6 +43,23 @@ function validateCreateOrder(req, res, next) {
   next();
 }
 
+// PATCH /api/orders/:orderId/address: { shippingAddress } is required, with the same rules
+// (and the same trimming) as on checkout.
+function validateUpdateAddress(req, res, next) {
+  const body = req.body ?? {};
+  if (typeof body !== 'object' || Array.isArray(body)) {
+    return next(new AppError(400, 'Request body must be a JSON object'));
+  }
+  const unknown = Object.keys(body).filter((key) => key !== 'shippingAddress');
+  if (unknown.length > 0) return next(new AppError(400, `Unknown field: ${unknown.join(', ')}`));
+  if (body.shippingAddress === undefined || body.shippingAddress === null) {
+    return next(new AppError(400, 'shippingAddress is required'));
+  }
+  const error = checkShippingAddress(body.shippingAddress);
+  if (error) return next(new AppError(400, error));
+  next();
+}
+
 function validateOrderIdParam(req, res, next) {
   if (!isObjectIdString(req.params.orderId)) {
     return next(new AppError(400, 'orderId must be a valid id'));
@@ -143,4 +160,10 @@ function validateUpdateStatus(req, res, next) {
   next();
 }
 
-module.exports = { validateCreateOrder, validateOrderIdParam, validateListQuery, validateUpdateStatus };
+module.exports = {
+  validateCreateOrder,
+  validateUpdateAddress,
+  validateOrderIdParam,
+  validateListQuery,
+  validateUpdateStatus,
+};
