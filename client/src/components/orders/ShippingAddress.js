@@ -42,38 +42,75 @@ export function AddressDetails({ address }) {
   );
 }
 
-function BuyerHeader() {
+function BuyerHeader({ action = null }) {
   return (
     <div className="flex items-start gap-3">
       <span className="mt-0.5 shrink-0 text-[#B5532E]">
         <PinIcon className="size-5" />
       </span>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <h2 id="shipping-title" className="text-[18px] font-semibold leading-tight text-[#2B2118]">Delivery address</h2>
         <p className="mt-1 text-[13px] text-[#6F6358]">Where your piece will be sent</p>
       </div>
+      {action}
     </div>
   );
 }
 
-// Buyer order page: white card with the address, or a dashed note when none was added.
-export function BuyerShippingAddress({ address }) {
-  if (!address) {
+const OUTLINE_BTN =
+  'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border-[1.5px] border-[#B5532E] bg-white px-4 text-sm font-semibold text-[#B5532E] transition-colors duration-150 hover:bg-[#FBE6DC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 motion-reduce:transition-none';
+
+// Buyer order page. `canEdit` (PENDING, unpaid, no payment token yet) offers Add / Edit, which
+// call `onEdit` (the page opens the address dialog). Otherwise the address is read-only.
+export function BuyerShippingAddress({ address, canEdit = false, onEdit }) {
+  const editable = canEdit && typeof onEdit === 'function';
+
+  if (!address && editable) {
     return (
       <section
         aria-labelledby="shipping-title"
-        className="rounded-[20px] border-[1.5px] border-dashed border-[#D9CFC1] p-4 sm:p-6"
+        className="rounded-[20px] border-[1.5px] border-dashed border-[#EBD596] bg-[#FBF1D4] p-4 sm:p-6"
       >
-        <BuyerHeader />
-        <p className="mt-3 break-words text-sm text-[#5C4D40]">
-          No delivery address was added, so online payment isn’t available for this order.
-        </p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#FBE6DC] text-[#B5532E]">
+            <PinIcon className="size-5" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h2 id="shipping-title" className="text-[18px] font-semibold leading-tight text-[#2B2118]">No delivery address</h2>
+            <p className="mt-1 break-words text-sm text-[#5C4D40]">Add one to pay online.</p>
+          </div>
+          <button type="button" onClick={onEdit} className={`${OUTLINE_BTN} w-full sm:w-auto`}>
+            Add address
+          </button>
+        </div>
       </section>
     );
   }
+
+  if (!address) {
+    return (
+      <section aria-labelledby="shipping-title" className="rounded-[20px] border-[1.5px] border-dashed border-[#D9CFC1] p-4 sm:p-6">
+        <BuyerHeader />
+        <p className="mt-3 break-words text-sm text-[#5C4D40]">No delivery address was added.</p>
+      </section>
+    );
+  }
+
   return (
     <section aria-labelledby="shipping-title" className="rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-6">
-      <BuyerHeader />
+      <BuyerHeader
+        action={
+          editable ? (
+            <button
+              type="button"
+              onClick={onEdit}
+              className="-mr-2 -mt-2 inline-flex min-h-11 shrink-0 items-center rounded-lg px-2 text-sm font-semibold text-[#B5532E] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E]"
+            >
+              Edit address
+            </button>
+          ) : null
+        }
+      />
       <div className="mt-4">
         <AddressDetails address={address} />
       </div>

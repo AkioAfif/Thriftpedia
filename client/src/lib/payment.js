@@ -9,6 +9,11 @@ export const canPay = (order) => order?.status === 'PENDING' && paymentStatusOf(
 // The API refuses to create a payment for an order without a delivery address.
 export const hasAddress = (order) => Boolean(order?.shippingAddress);
 
+// PATCH /orders/:id/address is accepted only before payment starts: once a Snap token exists,
+// Midtrans already has the address, so it becomes read-only (the server answers 409).
+export const canEditAddress = (order) =>
+  order?.status === 'PENDING' && paymentStatusOf(order) === 'UNPAID' && !order?.paymentToken;
+
 // Solid tint + 1px edge so the badge still reads on a ribbon of the same tint.
 const PAYMENT_META = {
   UNPAID: { label: 'Unpaid', className: 'bg-[#FBF1D4] text-[#7A5A10] border-[#E2C67A]' },
