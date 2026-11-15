@@ -91,10 +91,14 @@ async function createSnapToken(buyerId, orderId) {
   throw new AppError(409, 'Order can no longer be paid');
 }
 
+// Newer Midtrans accounts sign notifications with a separate "Signature Secret Key";
+// older ones sign with the server key itself.
+const signatureKey = () => process.env.MIDTRANS_SIGNATURE_KEY || serverKey();
+
 function isValidSignature({ order_id, status_code, gross_amount, signature_key }) {
   const expected = crypto
     .createHash('sha512')
-    .update(`${order_id}${status_code}${gross_amount}${serverKey()}`)
+    .update(`${order_id}${status_code}${gross_amount}${signatureKey()}`)
     .digest('hex');
   const given = Buffer.from(signature_key, 'utf8');
   const wanted = Buffer.from(expected, 'utf8');
