@@ -125,8 +125,10 @@ export function AuthProvider({ children }) {
 
     // Jika token sudah expired atau formatnya tidak valid
     if (!isTokenValid(token)) {
-      logout();
-      return;
+      const timeout = setTimeout(() => {
+        logout();
+      }, 0);
+      return () => clearTimeout(timeout);
     }
 
     const payload = JSON.parse(
