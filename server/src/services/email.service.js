@@ -4,8 +4,8 @@ const RESEND_API_URL = 'https://api.resend.com/emails';
 
 const sendPasswordResetEmail = async (email, resetToken) => {
   const clientUrl = process.env.CLIENT_URL;
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM;
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const from = process.env.EMAIL_FROM?.trim();
 
   if (!clientUrl) {
     throw new Error('CLIENT_URL is not configured');
