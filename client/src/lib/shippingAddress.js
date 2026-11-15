@@ -21,10 +21,11 @@ const addressSchema = z.object({
   postalCode: z.string().trim().regex(/^\d{5}$/, 'Enter a 5-digit postal code.'),
 });
 
-// All blank -> { address: null } (the order is placed without one).
+// All blank -> { address: null } (the order is placed without one), unless `required` (saving an
+// address on an existing order), where blank fields are errors like any other.
 // Anything typed -> every field must pass; errors are keyed by field name.
-export function validateAddress(values) {
-  if (ADDRESS_FIELDS.every((key) => !values[key]?.trim())) return { address: null, errors: {} };
+export function validateAddress(values, { required = false } = {}) {
+  if (!required && ADDRESS_FIELDS.every((key) => !values[key]?.trim())) return { address: null, errors: {} };
   const result = addressSchema.safeParse(values);
   if (result.success) return { address: result.data, errors: {} };
   const errors = {};
