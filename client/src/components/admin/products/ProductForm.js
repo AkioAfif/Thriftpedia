@@ -8,6 +8,8 @@ import FormSection from './FormSection';
 import PhotoDropZone from './PhotoDropZone';
 import PhotoGallery, { toPhotoItem } from './PhotoGallery';
 import ProductPreview from './ProductPreview';
+import { useAuth } from '@/context/AuthContext';
+import { draftKey, usePersistedForm } from '@/hooks/usePersistedForm';
 import {
   ALLOWED_IMAGE_TYPES,
   CONDITION_OPTIONS,
@@ -160,6 +162,30 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
   const [uploading, setUploading] = useState(false);
 
   const busy = submitting || uploading;
+
+  // Unsaved changes survive a refresh (per account; one draft for "new", one per edited product).
+  // New: restored right after mount. Edit: the server data stays; a different draft is offered
+  // in a banner (Restore / Discard). Sold products can't be edited, so they keep no draft.
+  const { user } = useAuth();
+  const baseline = { values: initialValues(product), photos: initialPhotos(product) };
+  const draft = usePersistedForm({
+    key: mode === 'edit' ? draftKey(user, 'product-edit', product?._id) : draftKey(user, 'product-new'),
+    value: { values, photos: photoUrls },
+    baseline,
+    autoRestore: mode !== 'edit',
+    enabled: !sold,
+    onRestore: (saved) => {
+      const restored = { ...baseline.values };
+      for (const field of Object.keys(restored)) {
+        if (typeof saved.values?.[field] === 'string') restored[field] = saved.values[field];
+      }
+      setValues(restored);
+      if (Array.isArray(saved.photos)) {
+        const urls = saved.photos.filter((url) => typeof url === 'string' && url.trim()).slice(0, MAX_PHOTOS);
+        setPhotos(urls.map(toPhotoItem));
+      }
+    },
+  });
   const dirty = JSON.stringify({ values, photos: photoUrls }) !== snapshot;
 
   useEffect(() => {
@@ -224,6 +250,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
         price: Number(values.price),
         photos: photoUrls, // array order = display order, index 0 = cover
       });
+      draft.clear();
     } catch (err) {
       if (!onAuthError(err)) setFormError(err.message);
       setSubmitting(false);
@@ -231,7 +258,11 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
   }
 
   function handleCancelClick(e) {
-    if (dirty && !window.confirm('Discard your unsaved changes?')) e.preventDefault();
+    if (dirty && !window.confirm('Discard your unsaved changes?')) {
+      e.preventDefault();
+      return;
+    }
+    draft.clear();
   }
 
   const locked = sold || submitting;
@@ -240,6 +271,34 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
 
   return (
     <form onSubmit={handleSubmit} noValidate>
+      {draft.pending && (
+        <div
+          role="region"
+          aria-label="Unsaved changes"
+          className="mb-6 flex flex-col gap-3 rounded-2xl border border-[#D9CFC1] bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <p className="min-w-0 break-words text-sm text-[#2B2118]">
+            <strong className="font-semibold">Restore unsaved changes?</strong>{' '}
+            <span className="text-[#5C4D40]">You edited this product earlier without saving.</span>
+          </p>
+          <div className="flex shrink-0 gap-2">
+            <button
+              type="button"
+              onClick={draft.discard}
+              className={`min-h-11 flex-1 rounded-xl border border-[#D9CFC1] bg-white px-4 text-sm font-semibold text-[#2B2118] hover:bg-[#F5F0E8] sm:flex-none ${focusRing}`}
+            >
+              Discard
+            </button>
+            <button
+              type="button"
+              onClick={draft.restore}
+              className={`min-h-11 flex-1 rounded-xl bg-[#B5532E] px-4 text-sm font-semibold text-white hover:bg-[#9C4425] sm:flex-none ${focusRing}`}
+            >
+              Restore
+            </button>
+          </div>
+        </div>
+      )}
       {sold && (
         <div role="status" className="mb-6 rounded-2xl border border-[#D9CFC1] bg-[#F5F0E8] p-4 text-sm text-[#2B2118]">
           <strong className="font-semibold">This item is sold.</strong> Sold products can&apos;t be edited.
