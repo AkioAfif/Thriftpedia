@@ -12,15 +12,15 @@ export function HowItWorks() {
     <section
       id="how-it-works"
       aria-labelledby="how-it-works-title"
-      className="relative scroll-mt-20 overflow-hidden bg-primary py-20 text-white md:py-24"
+      className="relative scroll-mt-20 overflow-hidden bg-primary py-20 text-on-primary md:py-24"
     >
       <div className="relative z-20 mx-auto w-full max-w-[1152px] px-6 py-8">
         <Reveal className="mx-auto mb-16 max-w-[576px] text-center">
-          <p className="label-md text-white">Simple process</p>
-          <h2 id="how-it-works-title" className="mb-3 mt-2 text-3xl font-bold tracking-tight text-white">
+          <p className="label-md text-on-primary">Simple process</p>
+          <h2 id="how-it-works-title" className="mb-3 mt-2 text-3xl font-bold tracking-tight text-on-primary">
             How it works
           </h2>
-          <div aria-hidden="true" className="mx-auto h-1 w-12 rounded-full bg-white/40" />
+          <div aria-hidden="true" className="mx-auto h-1 w-12 rounded-full bg-surface/40" />
         </Reveal>
 
         <div className="relative">
@@ -31,12 +31,12 @@ export function HowItWorks() {
           <ol className="relative z-10 grid grid-cols-1 items-start gap-10 md:grid-cols-4 md:gap-8">
             {STEPS.map((step, i) => (
               <Reveal as="li" key={step.title} index={i} className="flex gap-5 md:flex-col md:items-center md:gap-0 md:text-center">
-                <span className="relative z-10 flex size-12 shrink-0 items-center justify-center rounded-full bg-white text-lg font-bold text-primary shadow-level-1 md:mb-4">
+                <span className="relative z-10 flex size-12 shrink-0 items-center justify-center rounded-full bg-surface text-lg font-bold text-primary shadow-level-1 md:mb-4">
                   {i + 1}
                 </span>
                 <div className="pt-2.5 md:pt-0">
-                  <h3 className="mb-2 text-xl font-bold text-white">{step.title}</h3>
-                  <p className="text-sm leading-relaxed text-white md:mx-auto md:max-w-[220px]">{step.text}</p>
+                  <h3 className="mb-2 text-xl font-bold text-on-primary">{step.title}</h3>
+                  <p className="text-sm leading-relaxed text-on-primary md:mx-auto md:max-w-[220px]">{step.text}</p>
                 </div>
               </Reveal>
             ))}

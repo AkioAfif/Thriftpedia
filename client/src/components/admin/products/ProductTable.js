@@ -7,16 +7,16 @@ import { SearchIcon, TrashIcon } from '../icons';
 import { conditionLabel, formatRupiah, getPhotoSrc, sizeLabel } from '../../../lib/adminProducts';
 
 const CONDITION_STYLES = {
-  NEW_WITH_TAGS: 'bg-[#dff0e0] text-[#1F5A2B]',
-  LIKE_NEW: 'bg-[#dce9f2] text-[#1F4B66]',
-  GOOD_VINTAGE: 'bg-[#f7e9c4] text-[#6B4C0C]',
-  FAIR_DISTRESSED: 'bg-[#f6dfd2] text-[#7A3416]',
+  NEW_WITH_TAGS: 'bg-badge-success text-text',
+  LIKE_NEW: 'bg-badge-info text-text',
+  GOOD_VINTAGE: 'bg-badge-warning text-text',
+  FAIR_DISTRESSED: 'bg-primary-tint text-primary',
 };
 
 const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1';
-const primaryBtn = `inline-flex min-h-[44px] items-center justify-center rounded-xl bg-primary px-6 text-sm font-semibold text-white transition-colors hover:bg-primary-hover ${focusRing}`;
+const primaryBtn = `inline-flex min-h-[44px] items-center justify-center rounded-xl bg-primary px-6 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-hover ${focusRing}`;
 // Outline terracotta: Add Product stays the only filled button on the page.
-const outlineBtn = `inline-flex min-h-[44px] items-center justify-center rounded-xl border-[1.5px] border-primary bg-white px-6 text-sm font-semibold text-primary transition-colors hover:bg-[#FBE6DC] ${focusRing}`;
+const outlineBtn = `inline-flex min-h-[44px] items-center justify-center rounded-xl border-[1.5px] border-primary bg-surface px-6 text-sm font-semibold text-primary transition-colors hover:bg-primary-tint ${focusRing}`;
 const SOLD_DELETE_HINT = 'Sold products have an order and can’t be deleted.';
 
 const COLUMNS = [
@@ -44,7 +44,7 @@ function ProductThumb({ product, className }) {
   const src = getPhotoSrc(product);
   const [failedSrc, setFailedSrc] = useState(null);
   if (!src || failedSrc === src) {
-    return <span aria-hidden="true" className={`block shrink-0 rounded-lg bg-[#efe9e0] ${className}`} />;
+    return <span aria-hidden="true" className={`block shrink-0 rounded-lg bg-surface-muted ${className}`} />;
   }
   return (
     /* eslint-disable-next-line @next/next/no-img-element */
@@ -53,7 +53,7 @@ function ProductThumb({ product, className }) {
       alt=""
       loading="lazy"
       onError={() => setFailedSrc(src)}
-      className={`shrink-0 rounded-lg bg-[#efe9e0] object-cover ${className}`}
+      className={`shrink-0 rounded-lg bg-surface-muted object-cover ${className}`}
     />
   );
 }
@@ -68,7 +68,7 @@ function Badge({ className, children }) {
 
 function StatusBadge({ status }) {
   const sold = status === 'SOLD';
-  return <Badge className={sold ? 'bg-[#E8E1D8] text-[#5C4D40]' : 'bg-[#dff0e0] text-[#1F5A2B]'}>{sold ? 'Sold' : 'Available'}</Badge>;
+  return <Badge className={sold ? 'bg-border text-text-secondary' : 'bg-badge-success text-text'}>{sold ? 'Sold' : 'Available'}</Badge>;
 }
 
 // Server rule: sold products cannot be edited or deleted, and neither can products with orders.
@@ -82,8 +82,8 @@ function RowActions({ product, onDelete }) {
         aria-label={`${sold ? 'View' : 'Edit'} ${product.name}`}
         className={`inline-flex min-h-[44px] items-center rounded-xl px-4 text-sm font-semibold transition-colors ${focusRing} ${
           sold
-            ? 'border border-[#D9CFC1] bg-white text-text hover:bg-surface-muted'
-            : 'border-[1.5px] border-primary bg-white text-primary hover:bg-[#FBE6DC]'
+            ? 'border border-border bg-surface text-text hover:bg-surface-muted'
+            : 'border-[1.5px] border-primary bg-surface text-primary hover:bg-primary-tint'
         }`}
       >
         {sold ? 'View' : 'Edit'}
@@ -97,10 +97,10 @@ function RowActions({ product, onDelete }) {
         aria-label={`Delete ${product.name}`}
         aria-describedby={sold ? hintId : undefined}
         title={sold ? SOLD_DELETE_HINT : undefined}
-        className={`flex size-11 items-center justify-center rounded-xl border bg-white transition-colors ${focusRing} ${
+        className={`flex size-11 items-center justify-center rounded-xl border bg-surface transition-colors ${focusRing} ${
           sold
-            ? 'cursor-not-allowed border-[#E8E1D8] text-[#A89B8E]'
-            : 'border-[#D9CFC1] text-text-secondary hover:border-[#EBC3AE] hover:bg-[#FCEDEA] hover:text-error'
+            ? 'cursor-not-allowed border-border text-text-muted'
+            : 'border-border text-text-secondary hover:border-primary-tint hover:bg-error-tint hover:text-error'
         }`}
       >
         <TrashIcon width={18} height={18} />
@@ -117,7 +117,7 @@ function RowActions({ product, onDelete }) {
 function TableHead() {
   return (
     <thead>
-      <tr className="bg-[#EFE7DA] text-left text-[#4A3F35]">
+      <tr className="bg-surface-muted text-left text-text">
         {COLUMNS.map((col) => (
           <th key={col.label} scope="col" className={`px-4 py-3.5 text-sm font-semibold ${col.className ?? ''}`}>
             {col.label}
@@ -128,7 +128,7 @@ function TableHead() {
   );
 }
 
-const bar = 'block h-3.5 animate-pulse rounded-full bg-[#efe9e0]';
+const bar = 'block h-3.5 animate-pulse rounded-full bg-surface-muted';
 
 function LoadingRows() {
   return (
@@ -138,10 +138,10 @@ function LoadingRows() {
         <TableHead />
         <tbody>
           {Array.from({ length: 5 }, (_, i) => (
-            <tr key={i} className="border-t border-[#efe9e0]">
+            <tr key={i} className="border-t border-surface-muted">
               <td className="px-4 py-4">
                 <div className="flex items-center gap-3">
-                  <span className="block h-[50px] w-10 animate-pulse rounded-lg bg-[#efe9e0]" />
+                  <span className="block h-[50px] w-10 animate-pulse rounded-lg bg-surface-muted" />
                   <span className={`${bar} w-48`} />
                 </div>
               </td>
@@ -158,7 +158,7 @@ function LoadingRows() {
       <ul className="divide-y divide-border md:hidden" aria-hidden="true">
         {Array.from({ length: 4 }, (_, i) => (
           <li key={i} className="flex gap-3 p-4">
-            <span className="block h-20 w-16 animate-pulse rounded-lg bg-[#efe9e0]" />
+            <span className="block h-20 w-16 animate-pulse rounded-lg bg-surface-muted" />
             <span className="flex flex-1 flex-col gap-2.5 pt-1">
               <span className={`${bar} w-3/4`} />
               <span className={`${bar} w-1/3`} />
@@ -248,7 +248,7 @@ export default function ProductTable({
               {items.map((product) => (
                 <tr
                   key={product._id}
-                  className={`border-t border-border hover:bg-surface-muted ${product.status === 'SOLD' ? 'bg-[#F7F2EA]' : 'even:bg-[#FBF8F3]'}`}
+                  className={`border-t border-border hover:bg-surface-muted ${product.status === 'SOLD' ? 'bg-canvas' : 'even:bg-canvas'}`}
                 >
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-3">
@@ -264,7 +264,7 @@ export default function ProductTable({
                   <td className="px-4 py-3.5 text-text">{product.category?.name ?? '—'}</td>
                   <td className="px-4 py-3.5 text-text">{sizeLabel(product.size)}</td>
                   <td className="px-4 py-3.5">
-                    <Badge className={CONDITION_STYLES[product.condition] ?? 'bg-[#efe9e0] text-[#4A3F35]'}>
+                    <Badge className={CONDITION_STYLES[product.condition] ?? 'bg-surface-muted text-text'}>
                       {conditionLabel(product.condition)}
                     </Badge>
                   </td>
@@ -287,7 +287,7 @@ export default function ProductTable({
           {items.map((product) => (
             <li
               key={product._id}
-              className={`flex gap-3 p-4 ${product.status === 'SOLD' ? 'bg-[#F7F2EA]' : 'even:bg-[#FBF8F3]'}`}
+              className={`flex gap-3 p-4 ${product.status === 'SOLD' ? 'bg-canvas' : 'even:bg-canvas'}`}
             >
               <ProductThumb product={product} className="h-20 w-16" />
               <div className="min-w-0 flex-1">
@@ -310,5 +310,5 @@ export default function ProductTable({
     );
   }
 
-  return <div className="overflow-hidden rounded-[20px] border border-[#D9CFC1] bg-white">{body}</div>;
+  return <div className="overflow-hidden rounded-[20px] border border-border bg-surface">{body}</div>;
 }

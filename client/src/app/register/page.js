@@ -34,7 +34,7 @@ export default function RegisterPage() {
     <main className="mx-auto w-full max-w-md p-8">
       <h1 className="mb-6 text-2xl font-bold">Create account</h1>
       <AuthForm mode="register" formId="register-form" onValidSubmit={submit} />
-      {error && <p role="alert" className="mb-4 text-red-700">{error}</p>}
+      {error && <p role="alert" className="mb-4 text-error">{error}</p>}
       <button type="submit" form="register-form" disabled={pending} className="w-full rounded-lg bg-primary p-3 text-on-primary disabled:opacity-50">
         {pending ? 'Creating account...' : 'Create account'}
       </button>

@@ -13,9 +13,9 @@ function HeroDecor() {
     <div aria-hidden="true">
       {/* Left blob uses the badge-warning token at 45%. */}
       <div className={cn(decor, '-bottom-16 -left-36 size-[280px] rounded-full bg-badge-warning opacity-45 blur-[35px] md:size-[374px]')} />
-      {/* Right blob #F4D9CC @ 45%, edges fade out through a large blur, no stroke */}
+      {/* Right blob var(--primary-tint) @ 45%, edges fade out through a large blur, no stroke */}
       <div
-        className={cn(decor, 'left-[78%] top-[54%] h-[330px] w-[380px] -translate-x-1/2 -translate-y-1/2 bg-[#F4D9CC] opacity-45 blur-[80px] sm:h-[480px] sm:w-[540px] lg:h-[560px] lg:w-[640px]')}
+        className={cn(decor, 'left-[78%] top-[54%] h-[330px] w-[380px] -translate-x-1/2 -translate-y-1/2 bg-primary-tint opacity-45 blur-[80px] sm:h-[480px] sm:w-[540px] lg:h-[560px] lg:w-[640px]')}
         style={{ borderRadius: '58% 42% 64% 36% / 45% 62% 38% 55%' }}
       />
       <div className={cn(decor, 'left-[7%] top-14 hidden size-3 rounded-full bg-primary/20 md:block')} />

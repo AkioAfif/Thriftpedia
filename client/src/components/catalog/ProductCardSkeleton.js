@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 
 export function ProductCardSkeleton() {
   return (
-    <div className="flex flex-col justify-between h-full bg-white border border-[#E6DDD2] rounded-2xl p-4 shadow-card">
+    <div className="flex flex-col justify-between h-full bg-surface border border-border rounded-2xl p-4 shadow-card">
       <div className="flex flex-col gap-3">
         {/* Photo area */}
         <Skeleton className="w-full aspect-[4/5] rounded-xl" />
@@ -23,7 +23,7 @@ export function ProductCardSkeleton() {
       </div>
 
       {/* Button */}
-      <div className="pt-3 mt-3 border-t border-[#E6DDD2]/60">
+      <div className="pt-3 mt-3 border-t border-border/60">
         <Skeleton className="w-full h-[38px] rounded-xl" />
       </div>
     </div>

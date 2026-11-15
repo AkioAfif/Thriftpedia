@@ -16,14 +16,14 @@ export const canEditAddress = (order) =>
 
 // Solid tint + 1px edge so the badge still reads on a ribbon of the same tint.
 const PAYMENT_META = {
-  UNPAID: { label: 'Unpaid', className: 'bg-[#FBF1D4] text-[#7A5A10] border-[#E2C67A]' },
-  PAID: { label: 'Paid', className: 'bg-[#E4EEE2] text-[#24502A] border-[#B5CFB0]' },
-  EXPIRED: { label: 'Expired', className: 'bg-[#EDE6DC] text-[#4A3F35] border-[#D3C7B8]' },
-  FAILED: { label: 'Failed', className: 'bg-[#F7DDD6] text-[#8A2E1B] border-[#E6B5A8]' },
+  UNPAID: { label: 'Unpaid', className: 'bg-badge-warning text-text border-badge-warning' },
+  PAID: { label: 'Paid', className: 'bg-badge-success text-text border-badge-success' },
+  EXPIRED: { label: 'Expired', className: 'bg-badge-neutral text-text border-border' },
+  FAILED: { label: 'Failed', className: 'bg-badge-danger text-text border-badge-danger' },
 };
 
 export const paymentMeta = (status) =>
-  PAYMENT_META[status] ?? { label: status ?? 'Unknown', className: 'bg-[#EDE6DC] text-[#4A3F35] border-[#D3C7B8]' };
+  PAYMENT_META[status] ?? { label: status ?? 'Unknown', className: 'bg-surface-muted text-text border-border' };
 
 // Sandbox Snap.js. The client key is public by design, but it is still never logged.
 const SNAP_URL = 'https://app.sandbox.midtrans.com/snap/snap.js';

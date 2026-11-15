@@ -27,7 +27,7 @@ async function ProductResultsArea({ searchParams }) {
 function ResultsAreaFallback() {
   return (
     <>
-      <div className="w-full flex flex-col gap-3 pb-3 border-b border-[#E6DDD2]">
+      <div className="w-full flex flex-col gap-3 pb-3 border-b border-border">
         <div className="flex items-center justify-between min-h-[40px]">
           <Skeleton className="w-48 h-5 rounded" />
           <Skeleton className="w-32 h-8 rounded-xl" />
@@ -58,7 +58,7 @@ export default async function CatalogPage({ searchParams }) {
               <h1 className="font-display font-bold text-3xl sm:text-4xl text-text tracking-tight leading-tight">
                 Find Your Favorite Items
               </h1>
-              <p className="text-sm sm:text-base text-[#5C4D40]">
+              <p className="text-sm sm:text-base text-text-secondary">
                 Every piece is curated, one-of-one, and 100% original.
               </p>
             </div>

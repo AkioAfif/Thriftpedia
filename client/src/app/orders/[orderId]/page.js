@@ -31,15 +31,15 @@ import { CheckIcon, CloseIcon, ErrorOutlineIcon } from '@/components/ui/Icons';
 import { canEditAddress, canPay, hasAddress } from '@/lib/payment';
 
 const PAGE = 'mx-auto w-full max-w-[1120px] flex-1 px-margin-mobile py-lg md:px-margin-tablet lg:px-8 lg:py-xl';
-const CARD = 'rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-6';
+const CARD = 'rounded-[20px] border border-border bg-surface p-4 sm:p-6';
 // Same frame for every card on this page: Item, Delivery address, Progress, History, Review.
-const ORDER_CARD = 'min-w-0 rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-6';
-const CARD_TITLE = 'text-[18px] font-semibold leading-tight text-[#2B2118]';
+const ORDER_CARD = 'min-w-0 rounded-[20px] border border-border bg-surface p-4 sm:p-6';
+const CARD_TITLE = 'text-[18px] font-semibold leading-tight text-text';
 // 48px buttons shared by "Order placed" and the ribbon.
 const BTN = 'inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl px-6 text-[15px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 motion-reduce:transition-none sm:w-auto';
-const BTN_PRIMARY = `${BTN} bg-[#B5532E] text-white hover:bg-[#9C4425] focus-visible:ring-[#B5532E]`;
-const BTN_SECONDARY = `${BTN} border-[1.5px] border-[#D9CFC1] bg-white text-[#2B2118] hover:bg-[#F5F0E8] focus-visible:ring-[#B5532E]`;
-const TEXT_LINK = 'inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-semibold text-[#B5532E] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E]';
+const BTN_PRIMARY = `${BTN} bg-primary text-on-primary hover:bg-primary-hover focus-visible:ring-primary`;
+const BTN_SECONDARY = `${BTN} border-[1.5px] border-border bg-surface text-text hover:bg-surface-muted focus-visible:ring-primary`;
+const TEXT_LINK = 'inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary';
 
 export default function OrderPage({ params }) {
   const { orderId } = use(params);
@@ -170,19 +170,19 @@ function PlacedView({ order, payment, onEditAddress, onViewOrder, onPay }) {
 
   return (
     <div className="mx-auto flex w-full max-w-[640px] flex-col items-center gap-6 py-2 text-center sm:py-4">
-      <span className="flex size-16 items-center justify-center rounded-full bg-[#E4EEE2] text-[#24502A]">
+      <span className="flex size-16 items-center justify-center rounded-full bg-secondary-tint text-text">
         <CheckIcon className="size-7" />
       </span>
       <div className="flex min-w-0 flex-col items-center gap-2">
-        <h1 ref={heading} tabIndex={-1} className="text-[28px] font-semibold leading-tight text-[#2B2118] outline-none md:text-[32px]">
+        <h1 ref={heading} tabIndex={-1} className="text-[28px] font-semibold leading-tight text-text outline-none md:text-[32px]">
           Order placed
         </h1>
         <div className="flex flex-wrap items-center justify-center gap-2">
-          <span className="text-base font-semibold tabular-nums text-[#2B2118]">{orderLabel(order)}</span>
+          <span className="text-base font-semibold tabular-nums text-text">{orderLabel(order)}</span>
           <OrderStatusBadge status={order.status} />
           <PaymentBadge order={order} />
         </div>
-        <p className="text-sm tabular-nums text-[#5C4D40]">
+        <p className="text-sm tabular-nums text-text-secondary">
           <time dateTime={order.createdAt}>{formatOrderDateTime(order.createdAt)}</time>
         </p>
       </div>
@@ -191,14 +191,14 @@ function PlacedView({ order, payment, onEditAddress, onViewOrder, onPay }) {
         <div className="flex items-center gap-4">
           <OrderThumb src={item.photo} alt={item.name} sizes="80px" className="size-20 shrink-0 rounded-2xl" />
           <div className="min-w-0">
-            <p className="break-words text-base font-semibold text-[#2B2118]">{item.name}</p>
-            {item.size && <p className="mt-1 text-sm text-[#5C4D40]">Size {sizeLabel(item.size)}</p>}
-            <p className="mt-1 text-sm font-semibold tabular-nums text-[#2B2118]">{formatRupiah(item.price)}</p>
+            <p className="break-words text-base font-semibold text-text">{item.name}</p>
+            {item.size && <p className="mt-1 text-sm text-text-secondary">Size {sizeLabel(item.size)}</p>}
+            <p className="mt-1 text-sm font-semibold tabular-nums text-text">{formatRupiah(item.price)}</p>
           </div>
         </div>
-        <div className="mt-4 flex items-center justify-between gap-4 border-t border-[#EAE4DA] pt-4">
-          <span className="text-base text-[#2B2118]">Total</span>
-          <span className="text-[22px] font-semibold tabular-nums text-[#2B2118]">{formatRupiah(order.total ?? item.price)}</span>
+        <div className="mt-4 flex items-center justify-between gap-4 border-t border-border pt-4">
+          <span className="text-base text-text">Total</span>
+          <span className="text-[22px] font-semibold tabular-nums text-text">{formatRupiah(order.total ?? item.price)}</span>
         </div>
       </section>
 
@@ -218,7 +218,7 @@ function PlacedView({ order, payment, onEditAddress, onViewOrder, onPay }) {
 
       <nav aria-label="More" className="-mt-2 flex flex-wrap items-center justify-center gap-x-2">
         <Link href="/orders" className={TEXT_LINK}>My orders</Link>
-        <span aria-hidden="true" className="text-[#D9CFC1]">|</span>
+        <span aria-hidden="true" className="text-border">|</span>
         <Link href="/catalog" className={TEXT_LINK}>Continue shopping</Link>
       </nav>
     </div>
@@ -257,12 +257,12 @@ function OrderDetail({ order, payment, queryKey, onReload, onEditAddress }) {
 
       <header className="-mt-2 md:mt-0">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="break-words text-[28px] font-semibold leading-tight tabular-nums text-[#2B2118] md:text-[32px]">
+          <h1 className="break-words text-[28px] font-semibold leading-tight tabular-nums text-text md:text-[32px]">
             {numbered ? `Order ${label}` : 'Order'}
           </h1>
           <OrderStatusBadge status={order.status} />
         </div>
-        <p className="mt-1.5 text-sm tabular-nums text-[#5C4D40]">
+        <p className="mt-1.5 text-sm tabular-nums text-text-secondary">
           Placed <time dateTime={order.createdAt}>{formatOrderDateTime(order.createdAt)}</time>
         </p>
       </header>
@@ -300,8 +300,8 @@ function OrderDetail({ order, payment, queryKey, onReload, onEditAddress }) {
                 <TrackingBox trackingNumber={order.trackingNumber} courier={order.courier} />
               </div>
             )}
-            <div className="mt-5 hidden border-t border-[#EAE4DA] pt-4 lg:block">
-              <h3 className="text-base font-semibold text-[#2B2118]">Status history</h3>
+            <div className="mt-5 hidden border-t border-border pt-4 lg:block">
+              <h3 className="text-base font-semibold text-text">Status history</h3>
               <div className="mt-3">
                 <OrderTimeline history={history} />
               </div>
@@ -333,7 +333,7 @@ function OrderDetail({ order, payment, queryKey, onReload, onEditAddress }) {
             {order.product?._id ? (
               <ProductReviews product={order.product} order={order} />
             ) : (
-              <p className="text-sm text-[#5C4D40]">This product was removed, so it can’t be reviewed.</p>
+              <p className="text-sm text-text-secondary">This product was removed, so it can’t be reviewed.</p>
             )}
           </section>
         </div>
@@ -377,7 +377,7 @@ function CancelOrder({ order, queryKey, onReload, onNotice }) {
       <button
         type="button"
         onClick={() => { setDialogError(''); onNotice(''); setOpen(true); }}
-        className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border-[1.5px] border-[#B3402A] bg-transparent px-5 text-sm font-semibold text-[#B3402A] transition-colors duration-150 hover:bg-[#FBE9E5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B3402A] focus-visible:ring-offset-2 motion-reduce:transition-none sm:w-auto"
+        className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border-[1.5px] border-error bg-transparent px-5 text-sm font-semibold text-error transition-colors duration-150 hover:bg-error-tint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error focus-visible:ring-offset-2 motion-reduce:transition-none sm:w-auto"
       >
         <CloseIcon className="size-4 shrink-0" />
         Cancel order
@@ -403,7 +403,7 @@ function CancelOrder({ order, queryKey, onReload, onNotice }) {
               onClick={confirm}
               disabled={busy}
               aria-busy={busy}
-              className="buyer-control flex min-h-12 items-center justify-center rounded-md bg-error px-md py-3 text-body-md font-semibold text-white hover:opacity-90 disabled:cursor-wait disabled:opacity-60"
+              className="buyer-control flex min-h-12 items-center justify-center rounded-md bg-error px-md py-3 text-body-md font-semibold text-on-primary hover:opacity-90 disabled:cursor-wait disabled:opacity-60"
             >
               {busy ? 'Cancelling…' : 'Cancel order'}
             </button>
@@ -422,8 +422,8 @@ function PayNowButton({ busy, disabled, onPay }) {
       disabled={busy || disabled}
       aria-busy={busy}
       aria-describedby={disabled ? 'pay-note' : undefined}
-      className={`relative ${BTN} focus-visible:ring-[#B5532E] ${
-        disabled ? 'cursor-not-allowed bg-[#E8E1D8] text-[#5C4D40]' : `bg-[#B5532E] text-white ${busy ? 'cursor-wait' : 'hover:bg-[#9C4425]'}`
+      className={`relative ${BTN} focus-visible:ring-primary ${
+        disabled ? 'cursor-not-allowed bg-border text-text-secondary' : `bg-primary text-on-primary ${busy ? 'cursor-wait' : 'hover:bg-primary-hover'}`
       }`}
     >
       {/* The label keeps the button width while the dots show. */}

@@ -4,7 +4,7 @@ const container = 'mx-auto w-full max-w-[1280px] px-6 sm:px-8';
 
 function ProductSkeleton() {
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-border bg-white p-4">
+    <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4">
       <Skeleton className="aspect-[4/5] w-full" />
       <Skeleton className="h-4 w-4/5 rounded" />
       <Skeleton className="h-3 w-1/2 rounded" />

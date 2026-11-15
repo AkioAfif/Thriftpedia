@@ -25,14 +25,14 @@ export function PaymentNoticeRow({ tone = 'info', title, detail, busy = false, a
   const error = tone === 'error';
   const Icon = error ? AlertIcon : InfoIcon;
   return (
-    <div id={id} className="flex items-start gap-2.5 rounded-xl border border-[#2B2118]/10 bg-white px-3.5 py-3 text-sm text-[#2B2118]">
-      <Icon className={`mt-px size-5 shrink-0 ${error ? 'text-[#B3402A]' : 'text-[#5C4D40]'}`} />
+    <div id={id} className="flex items-start gap-2.5 rounded-xl border border-text/10 bg-surface px-3.5 py-3 text-sm text-text">
+      <Icon className={`mt-px size-5 shrink-0 ${error ? 'text-error' : 'text-text-secondary'}`} />
       <div className="min-w-0 break-words">
-        <p className={`inline-flex flex-wrap items-center gap-2 font-semibold ${error ? 'text-[#B3402A]' : ''}`}>
+        <p className={`inline-flex flex-wrap items-center gap-2 font-semibold ${error ? 'text-error' : ''}`}>
           {title}
-          {busy && <LoadingDots className="text-[#5C4D40]" />}
+          {busy && <LoadingDots className="text-text-secondary" />}
         </p>
-        {detail && <p className="mt-0.5 text-[#5C4D40]">{detail}</p>}
+        {detail && <p className="mt-0.5 text-text-secondary">{detail}</p>}
         {action && <div className="-mb-2 -ml-2 mt-0.5">{action}</div>}
       </div>
     </div>
@@ -72,7 +72,7 @@ export function paymentNotice(order, payment, id = 'pay-note', { onAddAddress } 
             <button
               type="button"
               onClick={onAddAddress}
-              className="inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-semibold text-[#B5532E] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E]"
+              className="inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               Add address
             </button>

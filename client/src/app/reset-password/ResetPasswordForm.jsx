@@ -108,7 +108,7 @@ export default function ResetPasswordForm() {
                   required
                   minLength={8}
                   maxLength={72}
-                  className="mt-2 w-full rounded-lg border border-[var(--border)] bg-white px-4 py-3 text-[var(--text)]"
+                  className="mt-2 w-full rounded-lg border border-[var(--border)] bg-surface px-4 py-3 text-[var(--text)]"
                   placeholder="Enter new password"
                 />
               </div>
@@ -130,13 +130,13 @@ export default function ResetPasswordForm() {
                     setConfirmPassword(event.target.value)
                   }
                   required
-                  className="mt-2 w-full rounded-lg border border-[var(--border)] bg-white px-4 py-3 text-[var(--text)]"
+                  className="mt-2 w-full rounded-lg border border-[var(--border)] bg-surface px-4 py-3 text-[var(--text)]"
                   placeholder="Confirm new password"
                 />
               </div>
 
               {error && (
-                <p role="alert" className="text-sm text-red-600">
+                <p role="alert" className="text-sm text-error">
                   {error}
                 </p>
               )}
@@ -144,7 +144,7 @@ export default function ResetPasswordForm() {
               <button
                 type="submit"
                 disabled={loading || !token}
-                className="w-full rounded-lg bg-[var(--primary)] px-4 py-3 font-semibold text-white disabled:opacity-50"
+                className="w-full rounded-lg bg-[var(--primary)] px-4 py-3 font-semibold text-on-primary disabled:opacity-50"
               >
                 {loading ? 'Resetting...' : 'Reset Password'}
               </button>

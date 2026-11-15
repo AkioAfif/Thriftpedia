@@ -28,10 +28,10 @@ export function Toggle({
         <div
           className={cn(
             'w-11 h-6 rounded-full peer transition-colors shadow-inner flex items-center px-0.5 peer-focus:ring-2 peer-focus:ring-primary',
-            checked ? 'bg-primary justify-end' : 'bg-[#D1C7BD] justify-start'
+            checked ? 'bg-primary justify-end' : 'bg-border justify-start'
           )}
         >
-          <div className="w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200" />
+          <div className="w-5 h-5 bg-surface rounded-full shadow-sm transition-transform duration-200" />
         </div>
       </label>
     </div>

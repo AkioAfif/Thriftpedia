@@ -22,14 +22,14 @@ export default function ProductPagination({ page, totalPages, onChange }) {
         aria-label="Previous page"
         disabled={page <= 1}
         onClick={() => onChange(page - 1)}
-        className={`${box} border-[#e8e1d8] bg-white text-[#2b1d14] hover:bg-canvas disabled:cursor-not-allowed disabled:text-[#c9c0b5] disabled:hover:bg-white`}
+        className={`${box} border-border bg-surface text-text hover:bg-canvas disabled:cursor-not-allowed disabled:text-border disabled:hover:bg-surface`}
       >
         <ChevronLeftIcon width={16} height={16} />
       </button>
 
       {getPageItems(page, totalPages).map((item) =>
         typeof item === 'string' ? (
-          <span key={item} aria-hidden="true" className="px-1 text-sm text-[#6b5d52]">
+          <span key={item} aria-hidden="true" className="px-1 text-sm text-text-secondary">
             …
           </span>
         ) : (
@@ -41,8 +41,8 @@ export default function ProductPagination({ page, totalPages, onChange }) {
             onClick={() => item !== page && onChange(item)}
             className={`${box} ${
               item === page
-                ? 'border-[#a3452a] bg-[#a3452a] font-semibold text-white'
-                : 'border-[#e8e1d8] bg-white text-[#2b1d14] hover:bg-canvas'
+                ? 'border-primary bg-primary font-semibold text-on-primary'
+                : 'border-border bg-surface text-text hover:bg-canvas'
             }`}
           >
             {item}
@@ -55,7 +55,7 @@ export default function ProductPagination({ page, totalPages, onChange }) {
         aria-label="Next page"
         disabled={page >= totalPages}
         onClick={() => onChange(page + 1)}
-        className={`${box} border-[#e8e1d8] bg-white text-[#2b1d14] hover:bg-canvas disabled:cursor-not-allowed disabled:text-[#c9c0b5] disabled:hover:bg-white`}
+        className={`${box} border-border bg-surface text-text hover:bg-canvas disabled:cursor-not-allowed disabled:text-border disabled:hover:bg-surface`}
       >
         <ChevronRightIcon width={16} height={16} />
       </button>

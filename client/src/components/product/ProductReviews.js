@@ -18,7 +18,7 @@ function Stars({ value, className }) {
   return (
     <span className={cn('inline-flex items-center gap-0.5', className)} aria-hidden="true">
       {[1, 2, 3, 4, 5].map((n) => (
-        <StarIcon key={n} className={cn('h-4 w-4', n <= rounded ? 'text-[#C98A1B]' : 'text-[#E3DCD2]')} />
+        <StarIcon key={n} className={cn('h-4 w-4', n <= rounded ? 'text-text' : 'text-border')} />
       ))}
     </span>
   );
