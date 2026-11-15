@@ -10,7 +10,7 @@ export default function OrderDetailPage() {
       fallback={
         <div aria-busy="true">
           <span className="sr-only">Loading order</span>
-          <div className="h-10 w-64 animate-pulse rounded-lg bg-[#efe9e0]" />
+          <div className="h-10 w-64 animate-pulse rounded-lg bg-surface-muted" />
         </div>
       }
     >

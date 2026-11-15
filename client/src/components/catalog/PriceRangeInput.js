@@ -92,11 +92,11 @@ export function PriceRangeInput({
   return (
     <div
       className={cn(
-        'space-y-3 pb-6 border-b border-[#E6DDD2]',
+        'space-y-3 pb-6 border-b border-border',
         isMobile && 'pb-4'
       )}
     >
-      <span className="text-sm font-semibold text-[#2B2118] block font-sans">
+      <span className="text-sm font-semibold text-text block font-sans">
         {isMobile ? 'Price' : 'Price Range'}
       </span>
       <div
@@ -109,13 +109,13 @@ export function PriceRangeInput({
           {!isMobile && (
             <label
               htmlFor="price-min-input"
-              className="text-xs font-medium text-[#5C4D40]"
+              className="text-xs font-medium text-text-secondary"
             >
               Min
             </label>
           )}
-          <div className="h-10 bg-white border border-[#E6DDD2] rounded-xl px-3 flex items-center focus-within:border-[#B5532E] focus-within:ring-2 focus-within:ring-[#B5532E] transition-all shadow-xs">
-            <span className="text-xs text-[#5C4D40] font-sans mr-1.5 shrink-0 font-semibold select-none">
+          <div className="h-10 bg-surface border border-border rounded-xl px-3 flex items-center focus-within:border-primary focus-within:ring-2 focus-within:ring-primary transition-all shadow-xs">
+            <span className="text-xs text-text-secondary font-sans mr-1.5 shrink-0 font-semibold select-none">
               Rp
             </span>
             <input
@@ -128,26 +128,26 @@ export function PriceRangeInput({
               onBlur={!isMobile ? validateAndApply : undefined}
               onKeyDown={handleKeyDown}
               placeholder={isMobile ? 'Min' : '150,000'}
-              className="w-full min-w-0 flex-1 bg-transparent border-0 p-0 text-xs font-sans text-[#2B2118] focus:ring-0 focus:outline-none placeholder:text-[#8C7E72]"
+              className="w-full min-w-0 flex-1 bg-transparent border-0 p-0 text-xs font-sans text-text focus:ring-0 focus:outline-none placeholder:text-text-secondary"
             />
           </div>
         </div>
 
         {isMobile && (
-          <span className="text-xs text-[#5C4D40] font-medium shrink-0">–</span>
+          <span className="text-xs text-text-secondary font-medium shrink-0">–</span>
         )}
 
         <div className="flex flex-col gap-1.5 flex-1 min-w-0">
           {!isMobile && (
             <label
               htmlFor="price-max-input"
-              className="text-xs font-medium text-[#5C4D40]"
+              className="text-xs font-medium text-text-secondary"
             >
               Max
             </label>
           )}
-          <div className="h-10 bg-white border border-[#E6DDD2] rounded-xl px-3 flex items-center focus-within:border-[#B5532E] focus-within:ring-2 focus-within:ring-[#B5532E] transition-all shadow-xs">
-            <span className="text-xs text-[#5C4D40] font-sans mr-1.5 shrink-0 font-semibold select-none">
+          <div className="h-10 bg-surface border border-border rounded-xl px-3 flex items-center focus-within:border-primary focus-within:ring-2 focus-within:ring-primary transition-all shadow-xs">
+            <span className="text-xs text-text-secondary font-sans mr-1.5 shrink-0 font-semibold select-none">
               Rp
             </span>
             <input
@@ -160,13 +160,13 @@ export function PriceRangeInput({
               onBlur={!isMobile ? validateAndApply : undefined}
               onKeyDown={handleKeyDown}
               placeholder={isMobile ? 'Max' : '850,000'}
-              className="w-full min-w-0 flex-1 bg-transparent border-0 p-0 text-xs font-sans text-[#2B2118] focus:ring-0 focus:outline-none placeholder:text-[#8C7E72]"
+              className="w-full min-w-0 flex-1 bg-transparent border-0 p-0 text-xs font-sans text-text focus:ring-0 focus:outline-none placeholder:text-text-secondary"
             />
           </div>
         </div>
       </div>
       {error && (
-        <p className="text-[11px] text-[#BA1A1A] font-medium pt-1">{error}</p>
+        <p className="text-[11px] text-error font-medium pt-1">{error}</p>
       )}
     </div>
   );

@@ -23,8 +23,8 @@ function ViewDetails({ pay }) {
   return (
     <span
       aria-hidden="true"
-      className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border-[1.5px] border-[#B5532E] px-4 text-sm font-semibold transition-colors duration-150 motion-reduce:transition-none ${
-        pay ? 'bg-[#B5532E] text-white group-hover:bg-[#9C4425]' : 'bg-white text-[#B5532E] group-hover:bg-[#FBE6DC]'
+      className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border-[1.5px] border-primary px-4 text-sm font-semibold transition-colors duration-150 motion-reduce:transition-none ${
+        pay ? 'bg-primary text-on-primary group-hover:bg-primary-hover' : 'bg-surface text-primary group-hover:bg-primary-tint'
       }`}
     >
       {pay ? 'Pay now' : 'View details'}
@@ -63,22 +63,22 @@ export function OrderCard({ order }) {
         // Lets the detail page link back to this tab and page.
         onClick={() => rememberOrdersQuery(window.location.search.replace(/^\?/, ''))}
         aria-label={`Order ${label}, ${item.name}, ${statusMeta(order.status).label}, payment ${payment}, total ${total}. ${pay ? 'Pay now' : 'View details'}`}
-        className="group block rounded-2xl border border-[#D9CFC1] bg-white p-4 transition-colors duration-150 hover:border-[#B5532E] hover:bg-[#FBF8F3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 motion-reduce:transition-none md:p-5"
+        className="group block rounded-2xl border border-border bg-surface p-4 transition-colors duration-150 hover:border-primary hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none md:p-5"
       >
         {/* md and up */}
         <span className="hidden grid-cols-[72px_minmax(0,1fr)_auto] items-center gap-5 md:grid">
           <OrderThumb src={item.photo} alt="" sizes="72px" className="size-[72px] rounded-xl" />
           <span className="min-w-0">
-            <span className="block break-words text-base font-semibold text-[#2B2118]">{item.name}</span>
-            {details && <span className="mt-0.5 block text-[13px] text-[#6F6358]">{details}</span>}
-            <span className="mt-1 block text-[13px] tabular-nums text-[#6F6358]">
+            <span className="block break-words text-base font-semibold text-text">{item.name}</span>
+            {details && <span className="mt-0.5 block text-[13px] text-text-secondary">{details}</span>}
+            <span className="mt-1 block text-[13px] tabular-nums text-text-secondary">
               {label} · {placed}
             </span>
           </span>
           <span className="flex items-center gap-5">
             <span className="text-right">
-              <span className="block text-[13px] text-[#6F6358]">Total</span>
-              <span className="block text-[20px] font-semibold leading-tight tabular-nums text-[#2B2118]">{total}</span>
+              <span className="block text-[13px] text-text-secondary">Total</span>
+              <span className="block text-[20px] font-semibold leading-tight tabular-nums text-text">{total}</span>
             </span>
             <Badges order={order} className="max-w-[220px] justify-end" />
             <ViewDetails pay={pay} />
@@ -88,19 +88,19 @@ export function OrderCard({ order }) {
         {/* below md */}
         <span className="block md:hidden">
           <span className="flex items-start justify-between gap-3">
-            <span className="min-w-0 truncate pt-1 text-sm font-semibold tabular-nums text-[#2B2118]">{label}</span>
+            <span className="min-w-0 truncate pt-1 text-sm font-semibold tabular-nums text-text">{label}</span>
             <Badges order={order} className="justify-end" />
           </span>
           <span className="mt-3 flex gap-3">
             <OrderThumb src={item.photo} alt="" sizes="56px" className="size-14 rounded-xl" />
             <span className="min-w-0 flex-1">
-              <span className="block break-words text-[15px] font-semibold text-[#2B2118]">{item.name}</span>
-              {details && <span className="block truncate text-[13px] text-[#6F6358]">{details}</span>}
-              <span className="block text-[13px] tabular-nums text-[#6F6358]">{placed}</span>
+              <span className="block break-words text-[15px] font-semibold text-text">{item.name}</span>
+              {details && <span className="block truncate text-[13px] text-text-secondary">{details}</span>}
+              <span className="block text-[13px] tabular-nums text-text-secondary">{placed}</span>
             </span>
           </span>
-          <span className="mt-3 flex items-center justify-between gap-3 border-t border-[#EAE4DA] pt-3">
-            <span className="min-w-0 text-base font-semibold tabular-nums text-[#2B2118]">{total}</span>
+          <span className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3">
+            <span className="min-w-0 text-base font-semibold tabular-nums text-text">{total}</span>
             <ViewDetails pay={pay} />
           </span>
         </span>

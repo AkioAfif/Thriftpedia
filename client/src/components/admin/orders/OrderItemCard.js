@@ -22,7 +22,7 @@ function ItemPhoto({ src, alt }) {
 
 function Chip({ children }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-[#D9CFC1] bg-surface-muted px-3 py-1 text-[13px] font-medium text-text">
+    <span className="inline-flex items-center rounded-full border border-border bg-surface-muted px-3 py-1 text-[13px] font-medium text-text">
       {children}
     </span>
   );

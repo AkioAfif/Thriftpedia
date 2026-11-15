@@ -38,7 +38,7 @@ export function ProductCard({ product, wishlist = false }) {
       data-layer="ProductCard"
       data-product-id={product._id}
       data-status={product.status?.toLowerCase()}
-      className="group relative flex flex-col justify-between h-full bg-white border border-[#E6DDD2] hover:border-primary/40 rounded-2xl p-4 shadow-card hover:shadow-md transition-all duration-300"
+      className="group relative flex flex-col justify-between h-full bg-surface border border-border hover:border-primary/40 rounded-2xl p-4 shadow-card hover:shadow-md transition-all duration-300"
     >
       <div className="flex flex-col gap-3">
         {/* Photo Container */}
@@ -58,7 +58,7 @@ export function ProductCard({ product, wishlist = false }) {
               onError={() => setImageError(true)}
             />
           ) : (
-            <div className="w-full h-full bg-[#EFEBE4] flex items-center justify-center text-xs font-mono text-[#8C7E72]">
+            <div className="w-full h-full bg-surface-muted flex items-center justify-center text-xs font-mono text-text-secondary">
               No image
             </div>
           )}
@@ -93,7 +93,7 @@ export function ProductCard({ product, wishlist = false }) {
           <h3
             className={`font-semibold text-[15px] sm:text-base truncate transition-colors ${
               isSold
-                ? 'text-[#5C4D40]'
+                ? 'text-text-secondary'
                 : 'text-text group-hover:text-primary'
             }`}
           >
@@ -103,14 +103,14 @@ export function ProductCard({ product, wishlist = false }) {
           <div className="flex items-center justify-between text-xs">
             <span
               className={`font-medium uppercase truncate ${
-                isSold ? 'text-[#6E5D4F]' : 'text-[#4A3F35]'
+                isSold ? 'text-text-secondary' : 'text-text'
               }`}
             >
               {product.brand || 'VINTAGE'}
             </span>
             <span
               className={`font-mono font-bold uppercase shrink-0 max-md:font-sans ${
-                isSold ? 'text-[#6E5D4F]' : 'text-[#4A3F35]'
+                isSold ? 'text-text-secondary' : 'text-text'
               }`}
             >
               Size {product.size}
@@ -121,7 +121,7 @@ export function ProductCard({ product, wishlist = false }) {
             <span
               className={`text-base sm:text-lg font-bold font-mono leading-none max-md:font-sans ${
                 isSold
-                  ? 'text-[#8A7E72]'
+                  ? 'text-text-secondary'
                   : 'text-text'
               }`}
             >
@@ -132,15 +132,15 @@ export function ProductCard({ product, wishlist = false }) {
         </div>
       </div>
       {/* Action Button */}
-      <div className="pt-3 mt-3 border-t border-[#E6DDD2]/60">
+      <div className="pt-3 mt-3 border-t border-border/60">
         {/* The only link in the card; its ::after stretches over the photo and name so they are clickable too. */}
         <Link
           href={`/catalog/${product._id}`}
           aria-label={`View details, ${product.name}${isSold ? ', sold' : ''}`}
           className={`w-full min-h-[44px] px-3 py-1.5 rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none after:absolute after:inset-0 after:rounded-2xl after:content-[''] ${
             isSold
-              ? 'border border-[#E6DDD2] bg-white text-[#5C4D40] hover:border-primary hover:text-primary'
-              : 'bg-canvas hover:bg-primary text-text hover:text-white'
+              ? 'border border-border bg-surface text-text-secondary hover:border-primary hover:text-primary'
+              : 'bg-canvas hover:bg-primary text-text hover:text-on-primary'
           }`}
         >
           <span>View Details</span>

@@ -157,7 +157,7 @@ export default function CheckoutPage() {
         <Link
           href={`/catalog/${encodeURIComponent(productId)}`}
           aria-label="Back to product"
-          className="mb-3 inline-flex size-11 items-center justify-center rounded-full border-[1.5px] border-[#D9CFC1] bg-white text-[#2B2118] transition-colors duration-150 hover:border-[#B5532E] hover:text-[#B5532E] active:border-[#B5532E] active:text-[#B5532E] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 motion-reduce:transition-none md:size-auto md:min-h-11 md:justify-start md:gap-2 md:rounded-md md:border-0 md:bg-transparent md:text-[#6F6358]"
+          className="mb-3 inline-flex size-11 items-center justify-center rounded-full border-[1.5px] border-border bg-surface text-text transition-colors duration-150 hover:border-primary hover:text-primary active:border-primary active:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none md:size-auto md:min-h-11 md:justify-start md:gap-2 md:rounded-md md:border-0 md:bg-transparent md:text-text-secondary"
         >
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-[18px] shrink-0 md:size-4">
             <path d="M19 12H5M11 6l-6 6 6 6" />
@@ -306,23 +306,23 @@ function ProductRow({ product, sold }) {
 function AddressDisclosure({ open, onToggle, values, errors, onChange, disabled, formRef }) {
   const panelId = `${useId()}-panel`;
   return (
-    <section className="mt-lg overflow-hidden rounded-[20px] border border-[#D9CFC1] bg-white">
+    <section className="mt-lg overflow-hidden rounded-[20px] border border-border bg-surface">
       <h2 className="m-0">
         <button
           type="button"
           aria-expanded={open}
           aria-controls={panelId}
           onClick={onToggle}
-          className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-150 hover:bg-[#FBF8F3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#B5532E] motion-reduce:transition-none sm:px-5"
+          className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-150 hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none sm:px-5"
         >
-          <span className="min-w-0 flex-1 text-base font-semibold text-[#2B2118]">Add delivery address</span>
-          <span className="shrink-0 rounded-full bg-[#F5F0E8] px-2.5 py-0.5 text-[13px] font-medium text-[#5C4D40]">Optional</span>
-          <ChevronDownIcon className={`size-4 shrink-0 text-[#5C4D40] transition-transform duration-150 motion-reduce:transition-none ${open ? 'rotate-180' : ''}`} />
+          <span className="min-w-0 flex-1 text-base font-semibold text-text">Add delivery address</span>
+          <span className="shrink-0 rounded-full bg-surface-muted px-2.5 py-0.5 text-[13px] font-medium text-text-secondary">Optional</span>
+          <ChevronDownIcon className={`size-4 shrink-0 text-text-secondary transition-transform duration-150 motion-reduce:transition-none ${open ? 'rotate-180' : ''}`} />
         </button>
       </h2>
       {/* Hidden, not unmounted: closing keeps what was typed. Anything typed is still checked and sent. */}
-      <div id={panelId} ref={formRef} hidden={!open} className="border-t border-[#EAE4DA] px-4 pb-5 pt-4 sm:px-5">
-        <p className="text-[13px] text-[#5C4D40]">Needed only if you want to pay online. Shipping cost is arranged separately.</p>
+      <div id={panelId} ref={formRef} hidden={!open} className="border-t border-border px-4 pb-5 pt-4 sm:px-5">
+        <p className="text-[13px] text-text-secondary">Needed only if you want to pay online. Shipping cost is arranged separately.</p>
         <div className="mt-4">
           <AddressForm values={values} errors={errors} onChange={onChange} disabled={disabled} />
         </div>

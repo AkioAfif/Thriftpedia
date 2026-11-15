@@ -95,7 +95,7 @@ export default function OrdersView() {
     <div>
       <div>
         <h1 className="text-3xl font-semibold sm:text-4xl">Order Management</h1>
-        <p className="mt-2 text-sm text-[#6E5D4F]">
+        <p className="mt-2 text-sm text-text-secondary">
           Move each order from pending to completed. Products are marked sold and released automatically.
         </p>
       </div>
@@ -146,7 +146,7 @@ export default function OrdersView() {
       </div>
 
       <div className="mt-5 flex min-h-10 flex-wrap items-center justify-between gap-4">
-        <p className="text-sm text-[#6E5D4F]" aria-live="polite">
+        <p className="text-sm text-text-secondary" aria-live="polite">
           {showSummary ? `Showing ${from}–${to} of ${formatNumber(total)} orders` : ''}
         </p>
         <ProductPagination page={page} totalPages={totalPages} onChange={(nextPage) => update({ page: nextPage })} />

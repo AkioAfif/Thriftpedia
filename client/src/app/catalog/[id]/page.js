@@ -49,7 +49,7 @@ function DetailSkeleton() {
         <button
           type="button"
           disabled
-          className="inline-flex min-h-[48px] w-full cursor-not-allowed items-center justify-center gap-2 rounded-md bg-[#E5DCCD] px-5 text-body-md font-semibold text-[#5C4D40]"
+          className="inline-flex min-h-[48px] w-full cursor-not-allowed items-center justify-center gap-2 rounded-md bg-border px-5 text-body-md font-semibold text-text-secondary"
         >
           <LoadingDots />
           Checking availability

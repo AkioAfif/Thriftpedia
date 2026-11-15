@@ -25,22 +25,22 @@ import {
   updateOrderStatus,
 } from '@/lib/adminOrders';
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2';
-const cardCls = 'rounded-[20px] border border-[#D9CFC1] bg-white p-5 sm:p-7';
-const pulse = 'animate-pulse rounded-[20px] bg-[#efe9e0]';
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
+const cardCls = 'rounded-[20px] border border-border bg-surface p-5 sm:p-7';
+const pulse = 'animate-pulse rounded-[20px] bg-surface-muted';
 
 function Breadcrumb({ backHref, current }) {
   return (
     // Below lg the mobile top bar carries the way back, so the breadcrumb is desktop-only.
     <nav aria-label="Breadcrumb" className="hidden lg:block">
-      <ol className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-[#6F6358]">
+      <ol className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-text-secondary">
         <li>
-          <Link href={backHref} className={`rounded hover:text-[#2B2118] hover:underline ${focusRing}`}>
+          <Link href={backHref} className={`rounded hover:text-text hover:underline ${focusRing}`}>
             Order Management
           </Link>
         </li>
         <li aria-hidden="true">›</li>
-        <li aria-current="page" className="min-w-0 truncate text-[#2B2118]">
+        <li aria-current="page" className="min-w-0 truncate text-text">
           {current}
         </li>
       </ol>
@@ -51,8 +51,8 @@ function Breadcrumb({ backHref, current }) {
 function StateMessage({ title, children, action }) {
   return (
     <div className={`${cardCls} px-6 py-16 text-center`}>
-      <p className="text-lg font-semibold text-[#2B2118]">{title}</p>
-      <p className="mx-auto mt-2 max-w-[28rem] text-sm text-[#6F6358]">{children}</p>
+      <p className="text-lg font-semibold text-text">{title}</p>
+      <p className="mx-auto mt-2 max-w-[28rem] text-sm text-text-secondary">{children}</p>
       {action}
     </div>
   );
@@ -62,8 +62,8 @@ function DetailSkeleton() {
   return (
     <div aria-busy="true">
       <span className="sr-only">Loading order</span>
-      <div className="h-10 w-72 animate-pulse rounded-lg bg-[#efe9e0]" />
-      <div className="mt-2 h-5 w-56 animate-pulse rounded-md bg-[#efe9e0]" />
+      <div className="h-10 w-72 animate-pulse rounded-lg bg-surface-muted" />
+      <div className="mt-2 h-5 w-56 animate-pulse rounded-md bg-surface-muted" />
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
         {[0, 1, 2].map((i) => (
           <div key={i} className={`h-28 ${pulse}`} />
@@ -176,7 +176,7 @@ export default function OrderDetailView() {
                 <button
                   type="button"
                   onClick={reload}
-                  className={`mt-5 min-h-11 rounded-xl bg-[#B5532E] px-5 text-sm font-semibold text-white hover:bg-[#9C4425] ${focusRing}`}
+                  className={`mt-5 min-h-11 rounded-xl bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-hover ${focusRing}`}
                 >
                   Try again
                 </button>
@@ -203,17 +203,17 @@ export default function OrderDetailView() {
       <header className="flex lg:mt-4 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="break-words text-[32px] font-semibold leading-tight tabular-nums text-[#2B2118]">Order {label}</h1>
+            <h1 className="break-words text-[32px] font-semibold leading-tight tabular-nums text-text">Order {label}</h1>
             <OrderStatusBadge status={order.status} size="lg" />
             <PaymentBadge order={order} size="lg" />
           </div>
-          <p className="mt-1.5 text-sm tabular-nums text-[#6F6358]">
+          <p className="mt-1.5 text-sm tabular-nums text-text-secondary">
             Placed <time dateTime={order.createdAt}>{formatOrderDateTime(order.createdAt)}</time>
           </p>
         </div>
         <Link
           href={backHref}
-          className={`hidden min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl border-[1.5px] border-[#B5532E] bg-white px-5 text-sm font-semibold text-[#B5532E] hover:bg-[#FBE6DC] lg:inline-flex ${focusRing}`}
+          className={`hidden min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl border-[1.5px] border-primary bg-surface px-5 text-sm font-semibold text-primary hover:bg-primary-tint lg:inline-flex ${focusRing}`}
         >
           <span aria-hidden="true">←</span> Back to orders
         </Link>
@@ -229,7 +229,7 @@ export default function OrderDetailView() {
         <div className="min-w-0 lg:col-span-5 lg:col-start-8 lg:row-start-1 lg:self-stretch">
           <div className="space-y-4 lg:sticky lg:top-6">
             {order.status === 'CANCELLED' && (
-              <p className="rounded-2xl border border-[#EBC3AE] bg-[#F7DDD6] px-5 py-4 text-sm font-medium text-[#8A2E1B]">
+              <p className="rounded-2xl border border-primary-tint bg-badge-danger px-5 py-4 text-sm font-medium text-error">
                 This order was cancelled. The steps below show how far it got.
               </p>
             )}

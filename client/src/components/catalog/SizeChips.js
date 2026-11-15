@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 export function SizeChips({ selectedSizes = [], onToggleSize }) {
   return (
-    <div className="space-y-3 pb-6 border-b border-[#E6DDD2]" data-layer="Filter/Size">
+    <div className="space-y-3 pb-6 border-b border-border" data-layer="Filter/Size">
       <div className="flex items-center justify-between">
         <span className="text-sm font-semibold text-text font-sans">
           Size
@@ -32,8 +32,8 @@ export function SizeChips({ selectedSizes = [], onToggleSize }) {
               className={cn(
                 'min-h-[40px] py-1.5 rounded-lg font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none',
                 isSelected
-                  ? 'bg-primary border border-primary text-white font-bold shadow-sm'
-                  : 'bg-canvas border border-[#E6DDD2] text-text hover:bg-[#F1EBE1] shadow-xs'
+                  ? 'bg-primary border border-primary text-on-primary font-bold shadow-sm'
+                  : 'bg-canvas border border-border text-text hover:bg-surface-muted shadow-xs'
               )}
             >
               {size}

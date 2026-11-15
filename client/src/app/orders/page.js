@@ -159,7 +159,7 @@ function ListSkeleton() {
   return (
     <div aria-busy="true" aria-label="Loading orders" className="flex flex-col gap-md">
       {[0, 1, 2].map((i) => (
-        <div key={i} className="rounded-2xl border border-[#D9CFC1] bg-white p-4 md:p-5">
+        <div key={i} className="rounded-2xl border border-border bg-surface p-4 md:p-5">
           <div className="hidden items-center gap-5 md:flex">
             <Skeleton className="size-[72px] rounded-xl" />
             <div className="flex-1 space-y-2">
@@ -183,7 +183,7 @@ function ListSkeleton() {
                 <Skeleton className="h-3.5 w-1/2 rounded" />
               </div>
             </div>
-            <div className="mt-3 flex items-center justify-between border-t border-[#EAE4DA] pt-3">
+            <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
               <Skeleton className="h-5 w-24 rounded" />
               <Skeleton className="h-11 w-32 rounded-xl" />
             </div>

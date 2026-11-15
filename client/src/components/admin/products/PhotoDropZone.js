@@ -49,17 +49,17 @@ export default function PhotoDropZone({ disabled, uploading, onFiles }) {
         className="peer sr-only"
       />
       <span
-        className={`flex h-[120px] flex-col items-center justify-center gap-1.5 rounded-[14px] border-2 px-4 text-center lg:h-auto lg:py-6 text-[#2B2118] peer-focus-visible:ring-2 peer-focus-visible:ring-[#B5532E] peer-focus-visible:ring-offset-2 peer-disabled:cursor-not-allowed peer-disabled:border-dashed peer-disabled:border-[#D9CFC1] peer-disabled:bg-[#F5F0E8] peer-disabled:text-[#5C4D40] ${
-          over ? 'border-solid border-[#B5532E] bg-[#FBE6DC]' : 'border-dashed border-[#B5532E] bg-[#FFF8F4]'
+        className={`flex h-[120px] flex-col items-center justify-center gap-1.5 rounded-[14px] border-2 px-4 text-center lg:h-auto lg:py-6 text-text peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2 peer-disabled:cursor-not-allowed peer-disabled:border-dashed peer-disabled:border-border peer-disabled:bg-surface-muted peer-disabled:text-text-secondary ${
+          over ? 'border-solid border-primary bg-primary-tint' : 'border-dashed border-primary bg-canvas'
         }`}
       >
-        <span className={disabled ? 'text-[#5C4D40]' : 'text-[#B5532E]'}>
+        <span className={disabled ? 'text-text-secondary' : 'text-primary'}>
           <UploadIcon />
         </span>
         {/* Below lg (touch): one short line; from lg the drag hint and file rules, as before. */}
         <span className="text-sm font-semibold lg:hidden">{uploading ? 'Uploading...' : 'Tap to add photos'}</span>
         <span className="hidden text-sm font-semibold lg:inline">{uploading ? 'Uploading...' : 'Drag photos here or browse'}</span>
-        <span className="hidden text-[13px] text-[#6F6358] lg:inline">JPG, PNG or WebP · max 5 MB each</span>
+        <span className="hidden text-[13px] text-text-secondary lg:inline">JPG, PNG or WebP · max 5 MB each</span>
       </span>
     </label>
   );
