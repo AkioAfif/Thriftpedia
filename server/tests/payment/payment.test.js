@@ -287,6 +287,27 @@ test('W8: payment after an admin cancel records PAID but keeps the order cancell
   assert.equal(warn.mock.callCount(), 1);
 });
 
+test('W9: MIDTRANS_SIGNATURE_KEY, when set, is the only key accepted for webhook signatures', async (t) => {
+  process.env.MIDTRANS_SIGNATURE_KEY = 'test-signature-key';
+  t.after(() => delete process.env.MIDTRANS_SIGNATURE_KEY);
+  const buyer = await createUser();
+  const { order: o } = await order(buyer);
+  const signedWith = (key) => {
+    const body = notification(o, { signature_key: 'placeholder' });
+    body.signature_key = crypto
+      .createHash('sha512')
+      .update(`${body.order_id}${body.status_code}${body.gross_amount}${key}`)
+      .digest('hex');
+    return body;
+  };
+
+  assert.equal((await notify(signedWith('test-server-key'))).status, 403, 'server key no longer signs');
+  assert.equal((await reload(o._id)).paymentStatus, PAYMENT_STATUS.UNPAID);
+
+  assert.equal((await notify(signedWith('test-signature-key'))).status, 200);
+  assert.equal((await reload(o._id)).paymentStatus, PAYMENT_STATUS.PAID);
+});
+
 // ---------- Order creation with shippingAddress ----------
 
 test('O1: shippingAddress is stored trimmed; invalid shapes return 400', async () => {

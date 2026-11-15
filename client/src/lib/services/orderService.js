@@ -7,12 +7,13 @@ export async function getProduct(id) {
   return res?.data ?? null;
 }
 
-// 409 = product already sold to another buyer, 404 = product gone
-export async function createOrder(token, productId) {
+// 409 = product already sold to another buyer, 404 = product gone.
+// shippingAddress is optional and only sent when given (it is needed to pay online).
+export async function createOrder(token, productId, shippingAddress) {
   const res = await apiClient('/orders', {
     method: 'POST',
     headers: auth(token),
-    body: JSON.stringify({ productId }),
+    body: JSON.stringify(shippingAddress ? { productId, shippingAddress } : { productId }),
   });
   return res?.data ?? null;
 }

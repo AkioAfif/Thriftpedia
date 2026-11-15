@@ -1,6 +1,7 @@
 'use client';
 
 import { clearToken, setToken } from '@/lib/adminAuth';
+import { clearAllDrafts } from '@/hooks/usePersistedForm';
 import { createContext, useCallback, useContext, useEffect, useMemo, useSyncExternalStore } from 'react';
 
 const TOKEN_KEY = 'token';
@@ -93,6 +94,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('thriftpedia_token');
     localStorage.removeItem(USER_KEY);
     clearToken(); // also end the admin session stored by adminAuth
+    clearAllDrafts(); // unsaved form drafts belong to the account that wrote them
     notify();
   }, []);
 
