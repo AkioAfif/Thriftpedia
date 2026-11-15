@@ -26,7 +26,7 @@ export default function ResetPasswordForm() {
 
     if (
       password.length < 8 ||
-      password.length > 72 ||
+      new TextEncoder().encode(password).length > 72 ||
       !/\d/.test(password)
     ) {
       setError(

@@ -5,6 +5,8 @@ require('../helpers/tokens'); // sets a test JWT_SECRET before src/app loads
 const db = require('../helpers/db');
 const app = require('../../src/app');
 const ROLES = require('../../src/constants/roles');
+const User = require('../../src/models/User');
+const crypto = require('crypto');
 
 before(db.connect);
 after(db.disconnect);
@@ -41,7 +43,9 @@ test('A3: register enforces name and password length', async () => {
   assert.equal((await register({ ...valid, name: 'x'.repeat(101) })).status, 400);
   assert.equal((await register({ ...valid, password: 'short1' })).status, 400);
   assert.equal((await register({ ...valid, password: 'a1'.repeat(37) })).status, 400);
-  assert.equal((await register({ ...valid, password: 'a'.repeat(72) })).status, 201);
+  assert.equal((await register({ ...valid, password: 'a'.repeat(72) })).status, 400);
+  assert.equal((await register({ ...valid, password: 'é'.repeat(36) + '1' })).status, 400);
+  assert.equal((await register({ ...valid, password: 'a'.repeat(71) + '1' })).status, 201);
 });
 
 test('A4: email is trimmed and lower-cased; duplicate stays 400; role is always BUYER', async () => {
@@ -58,4 +62,26 @@ test('A4: email is trimmed and lower-cased; duplicate stays 400; role is always 
   assert.equal(res.status, 200);
   assert.equal(typeof res.body.data.token, 'string');
   assert.equal(res.body.data.user.email, 'maya@test.dev');
+});
+
+test('password reset revokes old JWTs and consumes the reset token only once', async () => {
+  await register(valid);
+  const session = await login(valid);
+  const resetToken = 'a'.repeat(64);
+  await User.updateOne({ email: valid.email }, { $set: {
+    resetPasswordToken: crypto.createHash('sha256').update(resetToken).digest('hex'),
+    resetPasswordExpires: new Date(Date.now() + 60000),
+  } });
+  const body = { token: resetToken, password: 'newsecret123' };
+  const results = await Promise.all([
+    request(app).post('/api/auth/reset-password').send(body),
+    request(app).post('/api/auth/reset-password').send(body),
+  ]);
+  assert.deepEqual(results.map((res) => res.status).sort(), [200, 400]);
+  const me = await request(app).get('/api/auth/me').set('Authorization', `Bearer ${session.body.data.token}`);
+  assert.equal(me.status, 401);
+  assert.equal((await login(valid)).status, 401);
+  const renewed = await login({ ...valid, password: body.password });
+  assert.equal(renewed.status, 200);
+  assert.equal((await request(app).get('/api/auth/me').set('Authorization', `Bearer ${renewed.body.data.token}`)).status, 200);
 });
