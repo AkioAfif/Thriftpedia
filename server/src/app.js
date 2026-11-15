@@ -13,8 +13,15 @@ const { errorHandler } = require('./middleware/error.middleware');
 
 const app = express();
 
+// Exact-match allowlist from CORS_ORIGINS (comma-separated). Unset means no cross-origin
+// browser access; production browsers reach the API through the Vercel /api rewrite anyway.
+const corsOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: corsOrigins.length > 0 ? corsOrigins : false,
 }));
 
 app.use(express.json());

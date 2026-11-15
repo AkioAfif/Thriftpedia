@@ -212,7 +212,6 @@ Setelah bayar, jangan anggap order lunas hanya dari callback Snap di browser. Am
    ```
    MIDTRANS_SERVER_KEY=SB-Mid-server-xxxx      # server key yang di-generate
    MIDTRANS_SIGNATURE_KEY=Mid-server-xxxx      # "Signature Secret Key" di Access Keys
-   MIDTRANS_CLIENT_KEY=Mid-client-xxxx         # "Client Key", untuk Snap.js di FE
    MIDTRANS_IS_PRODUCTION=false
    ```
    Tanpa `MIDTRANS_SIGNATURE_KEY` yang benar, semua webhook ditolak `403` dan di riwayat
