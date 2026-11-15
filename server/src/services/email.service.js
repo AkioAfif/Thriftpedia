@@ -1,32 +1,45 @@
-// Sends mail through Resend's HTTPS API. SMTP is not used because Railway blocks outbound
-// SMTP on its lower plans.
-const RESEND_API_URL = 'https://api.resend.com/emails';
+// Sends mail through Brevo's HTTPS API. SMTP is not used because Railway blocks outbound
+// SMTP on its lower plans. Brevo can send to any recipient once the sender address in
+// EMAIL_FROM is verified (Brevo > Senders), so no custom domain is needed.
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
+
+// "Thriftpedia <me@gmail.com>" -> { name: 'Thriftpedia', email: 'me@gmail.com' }; a bare address also works.
+function parseSender(value) {
+  const match = /^\s*(.*?)\s*<([^<>\s]+@[^<>\s]+)>\s*$/.exec(value);
+  if (match) {
+    const name = match[1].replace(/^"|"$/g, '');
+    return name ? { name, email: match[2] } : { email: match[2] };
+  }
+  if (/^[^<>\s]+@[^<>\s]+$/.test(value)) return { email: value };
+  return null;
+}
 
 const sendPasswordResetEmail = async (email, resetToken) => {
   const clientUrl = process.env.CLIENT_URL;
-  const apiKey = process.env.RESEND_API_KEY?.trim();
-  const from = process.env.EMAIL_FROM?.trim();
+  const apiKey = process.env.BREVO_API_KEY?.trim();
+  const sender = parseSender(process.env.EMAIL_FROM?.trim() ?? '');
 
   if (!clientUrl) {
     throw new Error('CLIENT_URL is not configured');
   }
-  if (!apiKey || !from) {
-    throw new Error('RESEND_API_KEY and EMAIL_FROM must be configured');
+  if (!apiKey || !sender) {
+    throw new Error('BREVO_API_KEY and EMAIL_FROM (e.g. "Thriftpedia <me@gmail.com>") must be configured');
   }
 
   const resetLink = `${clientUrl.replace(/\/$/, '')}/reset-password?token=${encodeURIComponent(resetToken)}`;
 
-  const response = await fetch(RESEND_API_URL, {
+  const response = await fetch(BREVO_API_URL, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${apiKey}`,
+      'api-key': apiKey,
       'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
     body: JSON.stringify({
-      from,
-      to: email,
+      sender,
+      to: [{ email }],
       subject: 'Reset Your Thriftpedia Password',
-      text: [
+      textContent: [
         'Hello!',
         '',
         'We received a request to reset your Thriftpedia password.',
@@ -44,8 +57,8 @@ const sendPasswordResetEmail = async (email, resetToken) => {
 
   if (!response.ok) {
     const detail = await response.text().catch(() => '');
-    throw new Error(`Resend rejected the email (${response.status}): ${detail}`);
+    throw new Error(`Brevo rejected the email (${response.status}): ${detail}`);
   }
 };
 
-module.exports = { sendPasswordResetEmail };
+module.exports = { sendPasswordResetEmail, parseSender };
