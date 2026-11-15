@@ -168,7 +168,8 @@ Setelah bayar, jangan anggap order lunas hanya dari callback Snap di browser. Am
 1. Daftar di <https://dashboard.midtrans.com>, pilih environment **Sandbox**, buka
    **Settings → Access Keys**.
 2. Klik **Generate server key** dengan izin **Snap Checkout: Write** dan
-   **Cancel transaction: Write** (yang lain None).
+   **Cancel transaction: Write** (yang lain None). Tambah **Expire transaction: Write** hanya
+   bila ingin menguji expire secara manual.
 3. Isi `server/.env` (jangan di-commit):
    ```
    MIDTRANS_SERVER_KEY=SB-Mid-server-xxxx      # server key yang di-generate
@@ -195,8 +196,12 @@ Setelah bayar, jangan anggap order lunas hanya dari callback Snap di browser. Am
 Catatan status: pembayaran kartu tampil **Success** (`capture`), VA/QRIS tampil
 **Settlement**. Keduanya dianggap lunas oleh server.
 
-Untuk menguji expire tanpa menunggu 24 jam: pilih VA, jangan dibayar, lalu dari
-**Transactions** di dashboard lakukan **Expire** pada transaksi tersebut.
+Untuk menguji expire tanpa menunggu 24 jam: pilih VA, jangan dibayar, lalu panggil Expire API
+(dashboard hanya punya tombol **Cancel**). Server key butuh izin **Expire transaction: Write**.
+```bash
+curl -X POST https://api.sandbox.midtrans.com/v2/<orderId>/expire \
+  -u "$MIDTRANS_SERVER_KEY:" -H "Accept: application/json"
+```
 
 ## Changelog
 
