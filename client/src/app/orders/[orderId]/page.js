@@ -21,13 +21,14 @@ import { OrderThumb } from '@/components/orders/OrderThumb';
 import { PaymentBadge } from '@/components/orders/PaymentBadge';
 import { paymentNotice, PaymentNoticeRow } from '@/components/orders/PaymentNotice';
 import { BuyerShippingAddress } from '@/components/orders/ShippingAddress';
+import { AddressDialog } from '@/components/orders/AddressDialog';
 import { useOrderPayment } from '@/components/orders/useOrderPayment';
 import { ProductReviews } from '@/components/reviews/ProductReviews';
 import { ActionDialog } from '@/components/ui/ActionDialog';
 import { LoadingDots } from '@/components/ui/LoadingDots';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { CheckIcon, CloseIcon, ErrorOutlineIcon } from '@/components/ui/Icons';
-import { canPay, hasAddress } from '@/lib/payment';
+import { canEditAddress, canPay, hasAddress } from '@/lib/payment';
 
 const PAGE = 'mx-auto w-full max-w-[1120px] flex-1 px-margin-mobile py-lg md:px-margin-tablet lg:px-8 lg:py-xl';
 const CARD = 'rounded-[20px] border border-[#D9CFC1] bg-white p-4 sm:p-6';
@@ -71,8 +72,11 @@ function OrderView({ orderId }) {
       client.invalidateQueries({ queryKey: ['orders-page'] });
     },
   });
-  let order = query.data;
-  let payment = realPayment;
+  const order = query.data;
+  const payment = realPayment;
+  // Add / Edit address dialog, opened from the address card, the ribbon notice or "Order placed".
+  const [addressOpen, setAddressOpen] = useState(false);
+  const openAddress = () => setAddressOpen(true);
 
   function showDetail() {
     setPlaced(false);
@@ -110,6 +114,7 @@ function OrderView({ orderId }) {
       <PlacedView
         order={order}
         payment={payment}
+        onEditAddress={openAddress}
         onViewOrder={showDetail}
         onPay={() => {
           showDetail();
@@ -117,11 +122,27 @@ function OrderView({ orderId }) {
         }}
       />
     );
-  } else body = <OrderDetail order={order} payment={payment} queryKey={queryKey} onReload={() => query.refetch()} />;
+  } else {
+    body = (
+      <OrderDetail order={order} payment={payment} queryKey={queryKey} onReload={() => query.refetch()} onEditAddress={openAddress} />
+    );
+  }
 
   return (
     <main className={PAGE}>
       {body}
+      {addressOpen && buyer && order && (
+        <AddressDialog
+          order={order}
+          onClose={() => setAddressOpen(false)}
+          onSaved={(updated) => {
+            // Same shape as GET /orders/:id, so the page (and Pay now) update at once.
+            if (updated) client.setQueryData(queryKey, updated);
+            client.invalidateQueries({ queryKey: ['orders-page'] });
+          }}
+          onConflict={() => query.refetch()}
+        />
+      )}
     </main>
   );
 }
@@ -137,7 +158,7 @@ function Notice({ title, message, alert = false, children }) {
   );
 }
 
-function PlacedView({ order, payment, onViewOrder, onPay }) {
+function PlacedView({ order, payment, onEditAddress, onViewOrder, onPay }) {
   const item = orderItem(order);
   const heading = useRef(null);
   useEffect(() => heading.current?.focus(), []);
@@ -145,7 +166,7 @@ function PlacedView({ order, payment, onViewOrder, onPay }) {
   const addressed = hasAddress(order);
   const payNow = payable && addressed && !payment.unavailable;
   // Why online payment is off (no address, 503), shown above "View order".
-  const notice = payable && !payNow ? paymentNotice(order, payment, 'placed-pay-note') : null;
+  const notice = payable && !payNow ? paymentNotice(order, payment, 'placed-pay-note', { onAddAddress: onEditAddress }) : null;
 
   return (
     <div className="mx-auto flex w-full max-w-[640px] flex-col items-center gap-6 py-2 text-center sm:py-4">
@@ -204,7 +225,7 @@ function PlacedView({ order, payment, onViewOrder, onPay }) {
   );
 }
 
-function OrderDetail({ order, payment, queryKey, onReload }) {
+function OrderDetail({ order, payment, queryKey, onReload, onEditAddress }) {
   const item = orderItem(order);
   const history = Array.isArray(order.statusHistory) ? order.statusHistory : [];
   const canCancel = order.status === 'PENDING';
@@ -213,7 +234,7 @@ function OrderDetail({ order, payment, queryKey, onReload }) {
   const payable = canPay(order);
   const addressed = hasAddress(order);
   const payBlocked = !addressed || payment.unavailable;
-  const notice = paymentNotice(order, payment);
+  const notice = paymentNotice(order, payment, 'pay-note', { onAddAddress: onEditAddress });
   // Lives here, not in CancelOrder: after a 403/404/409 reload the order may no longer be PENDING.
   const [cancelNotice, setCancelNotice] = useState('');
   const backHref = useOrdersHref();
@@ -298,7 +319,7 @@ function OrderDetail({ order, payment, queryKey, onReload }) {
         <div className={`flex min-w-0 flex-col gap-6 md:col-start-1 md:row-start-1 lg:col-span-7 ${progressHiddenOnMobile ? 'md:col-span-12' : 'md:col-span-7'}`}>
           <BuyerOrderItem item={item} productId={productId} fromPath={`/orders/${order._id}`} />
 
-          <BuyerShippingAddress address={order.shippingAddress} />
+          <BuyerShippingAddress address={order.shippingAddress} canEdit={canEditAddress(order)} onEdit={onEditAddress} />
 
           {/* Below lg the history is its own card (from lg it is in the progress card). */}
           <section aria-labelledby="history-title" className={`${ORDER_CARD} lg:hidden`}>

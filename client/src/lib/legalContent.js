@@ -1,7 +1,7 @@
 // All copy for the Contact, Terms and Privacy pages. `{email}` in a paragraph is
 // rendered as a mailto link to CONTACT_EMAIL (one source for every page).
 
-export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || 'thriftpedia@gmail.com';
+export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || 'thriftpedia.official@gmail.com';
 
 export const LAST_UPDATED = '14 November 2026';
 

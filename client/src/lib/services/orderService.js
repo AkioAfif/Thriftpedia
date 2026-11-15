@@ -18,6 +18,18 @@ export async function createOrder(token, productId, shippingAddress) {
   return res?.data ?? null;
 }
 
+// PATCH /orders/:id/address (buyer, own order, PENDING + UNPAID + no payment token yet).
+// Returns the order in the same shape as getOrder. Errors keep the server's message:
+// 400 invalid address, 403 not the owner, 404 no such order, 409 address can no longer be changed.
+export async function updateOrderAddress(token, orderId, shippingAddress) {
+  const res = await apiClient(`/orders/${encodeURIComponent(orderId)}/address`, {
+    method: 'PATCH',
+    headers: auth(token),
+    body: JSON.stringify({ shippingAddress }),
+  });
+  return res?.data ?? null;
+}
+
 // GET /orders answers { items, meta, counts }; empty values are dropped from the query.
 export async function getOrdersPage(token, params = {}) {
   const query = Object.entries(params).filter(([, value]) => value !== '' && value != null);

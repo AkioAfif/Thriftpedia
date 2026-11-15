@@ -44,7 +44,7 @@ export function NewArrivals({ products = [] }) {
           <EmptyPieces />
         ) : (
           // ProductCard is used as-is; on the landing page a SOLD price is not struck through.
-          <ul className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4 [&_.line-through]:no-underline">
+          <ul className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
             {products.map((product, i) => (
               <Reveal as="li" key={product._id} index={i} className="min-w-0">
                 <ProductCard product={product} />
