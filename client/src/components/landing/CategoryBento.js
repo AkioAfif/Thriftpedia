@@ -26,17 +26,17 @@ const LAYOUTS = {
 };
 
 const CATEGORIES = [
-  { slug: 'jackets', label: 'Jackets', eyebrow: 'Outerwear', layout: 'half', span: 'lg:col-span-2', bg: 'bg-badge-info', fallback: 'bg-[#CFE2EC]', dot: '-bottom-10 -right-10 size-44 bg-white/40' },
-  { slug: 'hats', label: 'Hats', layout: 'bottom', span: 'lg:col-span-1', bg: 'bg-badge-warning', fallback: 'bg-[#EFDBA8]' },
+  { slug: 'jackets', label: 'Jackets', eyebrow: 'Outerwear', layout: 'half', span: 'lg:col-span-2', bg: 'bg-badge-info', fallback: 'bg-badge-info', dot: '-bottom-10 -right-10 size-44 bg-surface/40' },
+  { slug: 'hats', label: 'Hats', layout: 'bottom', span: 'lg:col-span-1', bg: 'bg-badge-warning', fallback: 'bg-badge-warning' },
   { slug: 'accessories', label: 'Accessories', layout: 'bottom', span: 'lg:col-span-1', bg: 'bg-canvas', fallback: 'bg-border' },
   { slug: 'tops', label: 'Tops', eyebrow: 'Everyday wear', eyebrowTone: 'text-primary-hover', layout: 'half', span: 'lg:col-span-2', bg: 'bg-primary-tint', fallback: 'bg-badge-danger', dot: '-right-8 -top-8 size-40 bg-badge-warning/40' },
-  { slug: 'knitwear', label: 'Knitwear', note: 'Cardigans & Sweaters', layout: 'third', span: 'lg:col-span-3', bg: 'bg-badge-success', fallback: 'bg-[#CDE0C7]' },
-  { slug: 'pants', label: 'Pants', note: 'Corduroy, Denim & Chinos', layout: 'third', span: 'lg:col-span-3', bg: 'bg-secondary-tint', fallback: 'bg-[#DCE7DA]' },
+  { slug: 'knitwear', label: 'Knitwear', note: 'Cardigans & Sweaters', layout: 'third', span: 'lg:col-span-3', bg: 'bg-badge-success', fallback: 'bg-badge-success' },
+  { slug: 'pants', label: 'Pants', note: 'Corduroy, Denim & Chinos', layout: 'third', span: 'lg:col-span-3', bg: 'bg-secondary-tint', fallback: 'bg-secondary-tint' },
 ];
 
 function ArrowBadge() {
   return (
-    <span aria-hidden="true" className="relative flex size-10 items-center justify-center rounded-full border border-border bg-white text-primary shadow-level-1 group-hover:text-white">
+    <span aria-hidden="true" className="relative flex size-10 items-center justify-center rounded-full border border-border bg-surface text-primary shadow-level-1 group-hover:text-on-primary">
       <span className="absolute inset-0 rounded-full bg-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       <svg className="relative size-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
         <path d="M5 12h14M12 5l7 7-7 7" />

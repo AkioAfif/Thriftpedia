@@ -23,18 +23,18 @@ import {
 const MAX_DESCRIPTION = 1000;
 
 const focusRing =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2';
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
 
-// 44px fields: #D9CFC1 border; focus = 2px terracotta edge (1px border + 1px inset shadow) and a #FBE6DC ring.
+// 44px fields: var(--border) border; focus = 2px terracotta edge (1px border + 1px inset shadow) and a var(--primary-tint) ring.
 const focusField =
-  'outline-none focus:border-[#B5532E] focus:shadow-[0_0_0_1px_#B5532E,0_0_0_4px_#FBE6DC]';
+  'outline-none focus:border-primary focus:shadow-[0_0_0_1px_var(--primary),0_0_0_4px_var(--primary-tint)]';
 
 const inputBase =
-  'h-11 w-full rounded-xl border bg-white px-3 text-sm text-[#2B2118] placeholder:text-[#7A6D61] disabled:cursor-not-allowed disabled:bg-[#F5F0E8] disabled:text-[#6F6358]';
+  'h-11 w-full rounded-xl border bg-surface px-3 text-sm text-text placeholder:text-text-secondary disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-text-secondary';
 
-const inputClass = (error) => `${inputBase} ${error ? 'border-[#B3402A]' : 'border-[#D9CFC1]'} ${focusField}`;
+const inputClass = (error) => `${inputBase} ${error ? 'border-error' : 'border-border'} ${focusField}`;
 
-const errorText = 'mt-1.5 text-[13px] font-medium text-[#B3402A]';
+const errorText = 'mt-1.5 text-[13px] font-medium text-error';
 
 function initialValues(product) {
   return {
@@ -73,12 +73,12 @@ function validate(values, photos) {
 function Field({ id, label, required, error, hint, children }) {
   return (
     <div>
-      <label htmlFor={id} className="text-sm font-semibold text-[#2B2118]">
+      <label htmlFor={id} className="text-sm font-semibold text-text">
         {label}
-        {required && <span className="text-[#B3402A]"> *</span>}
+        {required && <span className="text-error"> *</span>}
       </label>
       <div className="mt-1.5">{children}</div>
-      {hint && !error && <p className="mt-1.5 text-[13px] text-[#6F6358]">{hint}</p>}
+      {hint && !error && <p className="mt-1.5 text-[13px] text-text-secondary">{hint}</p>}
       {error && (
         <p id={`${id}-error`} role="alert" className={errorText}>
           {error}
@@ -93,14 +93,14 @@ export function FormPageLayout({ title, children }) {
     <div className="mx-auto w-full max-w-[1152px]">
       {/* Below lg the top bar shows "Back to Products" + the title, so the breadcrumb is desktop-only. */}
       <MobileBackBar href="/admin/products" label="Products" title={`${title.charAt(0)}${title.slice(1).toLowerCase()}`} />
-      <nav aria-label="Breadcrumb" className="hidden text-sm text-[#6F6358] lg:block">
-        <Link href="/admin/products" className={`rounded hover:text-[#2B2118] ${focusRing}`}>
+      <nav aria-label="Breadcrumb" className="hidden text-sm text-text-secondary lg:block">
+        <Link href="/admin/products" className={`rounded hover:text-text ${focusRing}`}>
           Product Management
         </Link>
         <span aria-hidden="true"> › </span>
-        <span aria-current="page" className="text-[#2B2118]">{title}</span>
+        <span aria-current="page" className="text-text">{title}</span>
       </nav>
-      <h1 className="mb-6 text-[32px] font-semibold leading-tight text-[#2B2118] sm:text-[40px] lg:mt-2">{title}</h1>
+      <h1 className="mb-6 text-[32px] font-semibold leading-tight text-text sm:text-[40px] lg:mt-2">{title}</h1>
       {children}
     </div>
   );
@@ -110,32 +110,32 @@ export function FormLoading() {
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]" aria-busy="true">
       <div className="flex flex-col gap-6">
-        <div className="h-80 animate-pulse rounded-2xl bg-[#efe9e0]" />
-        <div className="h-96 animate-pulse rounded-2xl bg-[#efe9e0]" />
+        <div className="h-80 animate-pulse rounded-2xl bg-surface-muted" />
+        <div className="h-96 animate-pulse rounded-2xl bg-surface-muted" />
       </div>
-      <div className="hidden h-[26rem] animate-pulse rounded-2xl bg-[#efe9e0] lg:block" />
+      <div className="hidden h-[26rem] animate-pulse rounded-2xl bg-surface-muted lg:block" />
     </div>
   );
 }
 
 export function FormError({ message, onRetry }) {
   return (
-    <div className="max-w-[576px] rounded-2xl border border-[#e6b8a2] bg-[#fdefe6] p-6">
+    <div className="max-w-[576px] rounded-2xl border border-primary-tint bg-primary-tint p-6">
       <h2 className="text-xl font-semibold">Something went wrong</h2>
-      <p className="mt-2 text-sm text-[#6F6358]">{message}</p>
+      <p className="mt-2 text-sm text-text-secondary">{message}</p>
       <div className="mt-5 flex gap-3">
         {onRetry && (
           <button
             type="button"
             onClick={onRetry}
-            className={`min-h-11 rounded-xl bg-[#B5532E] px-5 text-sm font-semibold text-white hover:bg-[#9C4425] ${focusRing}`}
+            className={`min-h-11 rounded-xl bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-hover ${focusRing}`}
           >
             Try again
           </button>
         )}
         <Link
           href="/admin/products"
-          className={`flex min-h-11 items-center rounded-xl border border-[#D9CFC1] bg-white px-5 text-sm font-semibold text-[#2B2118] hover:bg-[#F5F0E8] ${focusRing}`}
+          className={`flex min-h-11 items-center rounded-xl border border-border bg-surface px-5 text-sm font-semibold text-text hover:bg-surface-muted ${focusRing}`}
         >
           Back to products
         </Link>
@@ -275,24 +275,24 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
         <div
           role="region"
           aria-label="Unsaved changes"
-          className="mb-6 flex flex-col gap-3 rounded-2xl border border-[#D9CFC1] bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
+          className="mb-6 flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between"
         >
-          <p className="min-w-0 break-words text-sm text-[#2B2118]">
+          <p className="min-w-0 break-words text-sm text-text">
             <strong className="font-semibold">Restore unsaved changes?</strong>{' '}
-            <span className="text-[#5C4D40]">You edited this product earlier without saving.</span>
+            <span className="text-text-secondary">You edited this product earlier without saving.</span>
           </p>
           <div className="flex shrink-0 gap-2">
             <button
               type="button"
               onClick={draft.discard}
-              className={`min-h-11 flex-1 rounded-xl border border-[#D9CFC1] bg-white px-4 text-sm font-semibold text-[#2B2118] hover:bg-[#F5F0E8] sm:flex-none ${focusRing}`}
+              className={`min-h-11 flex-1 rounded-xl border border-border bg-surface px-4 text-sm font-semibold text-text hover:bg-surface-muted sm:flex-none ${focusRing}`}
             >
               Discard
             </button>
             <button
               type="button"
               onClick={draft.restore}
-              className={`min-h-11 flex-1 rounded-xl bg-[#B5532E] px-4 text-sm font-semibold text-white hover:bg-[#9C4425] sm:flex-none ${focusRing}`}
+              className={`min-h-11 flex-1 rounded-xl bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-hover sm:flex-none ${focusRing}`}
             >
               Restore
             </button>
@@ -300,7 +300,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
         </div>
       )}
       {sold && (
-        <div role="status" className="mb-6 rounded-2xl border border-[#D9CFC1] bg-[#F5F0E8] p-4 text-sm text-[#2B2118]">
+        <div role="status" className="mb-6 rounded-2xl border border-border bg-surface-muted p-4 text-sm text-text">
           <strong className="font-semibold">This item is sold.</strong> Sold products can&apos;t be edited.
         </div>
       )}
@@ -311,8 +311,8 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
             step={1}
             title="Photos"
             titleId={`${uid}-photos`}
-            tone="bg-[#FBE6DC]"
-            aside={<span className="text-[13px] font-medium tabular-nums text-[#2B2118]">{photos.length}/{MAX_PHOTOS}</span>}
+            tone="bg-primary-tint"
+            aside={<span className="text-[13px] font-medium tabular-nums text-text">{photos.length}/{MAX_PHOTOS}</span>}
           >
             {!sold && (
               <PhotoDropZone disabled={busy || photos.length >= MAX_PHOTOS} uploading={uploading} onFiles={processFiles} />
@@ -327,7 +327,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
             {photos.length > 0 && (
               <>
                 {!sold && photos.length > 1 && (
-                  <p className="mt-3 text-[13px] text-[#6F6358]">The first photo is the cover. Drag photos or use the arrows to reorder.</p>
+                  <p className="mt-3 text-[13px] text-text-secondary">The first photo is the cover. Drag photos or use the arrows to reorder.</p>
                 )}
                 <PhotoGallery
                   photos={photos}
@@ -341,7 +341,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
             )}
           </FormSection>
 
-          <FormSection step={2} title="Basic info" titleId={`${uid}-basic`} tone="bg-[#F5F0E8]">
+          <FormSection step={2} title="Basic info" titleId={`${uid}-basic`} tone="bg-surface-muted">
             <div className="space-y-5">
               <div className="grid gap-5 sm:grid-cols-2">
                 <Field id={`${uid}-name`} label="Name" required error={errors.name}>
@@ -387,8 +387,8 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
               </Field>
 
               <fieldset disabled={locked}>
-                <legend className="text-sm font-semibold text-[#2B2118]">
-                  Size <span className="text-[#B3402A]">*</span>
+                <legend className="text-sm font-semibold text-text">
+                  Size <span className="text-error">*</span>
                 </legend>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {SIZE_OPTIONS.map((s) => (
@@ -401,7 +401,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                         onChange={() => setField('size', s.value)}
                         className="peer sr-only"
                       />
-                      <span className="flex min-h-11 min-w-[52px] items-center justify-center rounded-xl border border-[#D9CFC1] bg-white px-4 text-sm font-semibold text-[#2B2118] hover:border-[#B5532E] peer-checked:border-[#B5532E] peer-checked:bg-[#B5532E] peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-[#B5532E] peer-focus-visible:ring-offset-2 peer-disabled:cursor-not-allowed peer-disabled:bg-[#F5F0E8] peer-disabled:text-[#6F6358] peer-disabled:peer-checked:bg-[#6F6358] peer-disabled:peer-checked:text-white">
+                      <span className="flex min-h-11 min-w-[52px] items-center justify-center rounded-xl border border-border bg-surface px-4 text-sm font-semibold text-text hover:border-primary peer-checked:border-primary peer-checked:bg-primary peer-checked:text-on-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2 peer-disabled:cursor-not-allowed peer-disabled:bg-surface-muted peer-disabled:text-text-secondary peer-disabled:peer-checked:bg-text-secondary peer-disabled:peer-checked:text-on-primary">
                         {s.label}
                       </span>
                     </label>
@@ -413,8 +413,8 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
               </fieldset>
 
               <fieldset disabled={locked}>
-                <legend className="text-sm font-semibold text-[#2B2118]">
-                  Condition <span className="text-[#B3402A]">*</span>
+                <legend className="text-sm font-semibold text-text">
+                  Condition <span className="text-error">*</span>
                 </legend>
                 <div className="mt-2 grid gap-3 sm:grid-cols-2">
                   {CONDITION_OPTIONS.map((c) => (
@@ -427,13 +427,13 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                         onChange={() => setField('condition', c.value)}
                         className="peer sr-only"
                       />
-                      <span className="block h-full rounded-xl border-2 border-[#D9CFC1] bg-white p-3 pr-10 hover:border-[#B5532E] peer-checked:border-[#B5532E] peer-checked:bg-[#FBE6DC] peer-focus-visible:ring-2 peer-focus-visible:ring-[#B5532E] peer-focus-visible:ring-offset-2 peer-disabled:cursor-not-allowed peer-disabled:hover:border-[#D9CFC1]">
-                        <span className="block text-sm font-semibold text-[#2B2118]">{c.label}</span>
-                        <span className="mt-0.5 block text-[13px] text-[#6F6358]">{c.hint}</span>
+                      <span className="block h-full rounded-xl border-2 border-border bg-surface p-3 pr-10 hover:border-primary peer-checked:border-primary peer-checked:bg-primary-tint peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2 peer-disabled:cursor-not-allowed peer-disabled:hover:border-border">
+                        <span className="block text-sm font-semibold text-text">{c.label}</span>
+                        <span className="mt-0.5 block text-[13px] text-text-secondary">{c.hint}</span>
                       </span>
                       <span
                         aria-hidden="true"
-                        className="pointer-events-none absolute right-3 top-3.5 size-[18px] rounded-full border-2 border-[#B5A595] bg-white peer-checked:border-[#B5532E] peer-checked:bg-[#B5532E] peer-checked:shadow-[inset_0_0_0_3px_white]"
+                        className="pointer-events-none absolute right-3 top-3.5 size-[18px] rounded-full border-2 border-border bg-surface peer-checked:border-primary peer-checked:bg-primary peer-checked:shadow-[inset_0_0_0_3px_white]"
                       />
                     </label>
                   ))}
@@ -445,7 +445,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
             </div>
           </FormSection>
 
-          <FormSection step={3} title="Description" titleId={`${uid}-description-title`} tone="bg-[#E4EEE2]">
+          <FormSection step={3} title="Description" titleId={`${uid}-description-title`} tone="bg-secondary-tint">
             <Field id={`${uid}-description`} label="Description" hint="Optional. Mention flaws, measurements, or fit.">
               <textarea
                 id={`${uid}-description`}
@@ -454,15 +454,15 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                 maxLength={MAX_DESCRIPTION}
                 rows={5}
                 disabled={locked}
-                className={`${inputBase} h-auto border-[#D9CFC1] py-2.5 ${focusField}`}
+                className={`${inputBase} h-auto border-border py-2.5 ${focusField}`}
               />
             </Field>
-            <p className="mt-1 text-right text-[13px] tabular-nums text-[#6F6358]">
+            <p className="mt-1 text-right text-[13px] tabular-nums text-text-secondary">
               {values.description.length}/{MAX_DESCRIPTION}
             </p>
           </FormSection>
 
-          <FormSection step={4} title="Pricing" titleId={`${uid}-pricing`} tone="bg-[#FBF1D4]">
+          <FormSection step={4} title="Pricing" titleId={`${uid}-pricing`} tone="bg-badge-warning">
             <Field
               id={`${uid}-price`}
               label="Price"
@@ -471,11 +471,11 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
               hint={values.price ? `Shown to buyers as ${formatRupiah(values.price)}` : 'Whole rupiah, numbers only.'}
             >
               <div
-                className={`flex h-11 overflow-hidden rounded-xl border bg-white focus-within:border-[#B5532E] focus-within:shadow-[0_0_0_1px_#B5532E,0_0_0_4px_#FBE6DC] ${
-                  errors.price ? 'border-[#B3402A]' : 'border-[#D9CFC1]'
+                className={`flex h-11 overflow-hidden rounded-xl border bg-surface focus-within:border-primary focus-within:shadow-[0_0_0_1px_var(--primary),0_0_0_4px_var(--primary-tint)] ${
+                  errors.price ? 'border-error' : 'border-border'
                 }`}
               >
-                <span aria-hidden="true" className="flex items-center border-r border-[#D9CFC1] bg-[#F5F0E8] px-3 text-sm font-semibold text-[#4A3F35]">
+                <span aria-hidden="true" className="flex items-center border-r border-border bg-surface-muted px-3 text-sm font-semibold text-text">
                   Rp
                 </span>
                 <input
@@ -487,11 +487,11 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
                   disabled={locked}
                   aria-invalid={Boolean(errors.price)}
                   aria-describedby={fieldError('price')}
-                  className="min-w-0 flex-1 bg-white px-3 text-sm tabular-nums text-[#2B2118] outline-none placeholder:text-[#7A6D61] disabled:cursor-not-allowed disabled:bg-[#F5F0E8] disabled:text-[#6F6358]"
+                  className="min-w-0 flex-1 bg-surface px-3 text-sm tabular-nums text-text outline-none placeholder:text-text-secondary disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-text-secondary"
                 />
               </div>
             </Field>
-            <p className="mt-4 text-[13px] text-[#6F6358]">Stock: 1. Status is set automatically when a buyer orders.</p>
+            <p className="mt-4 text-[13px] text-text-secondary">Stock: 1. Status is set automatically when a buyer orders.</p>
           </FormSection>
         </div>
 
@@ -507,23 +507,23 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
       </div>
 
       {formError && (
-        <p role="alert" className="mt-6 rounded-xl bg-[#FBE9E7] px-4 py-3 text-sm font-medium text-[#8C1D18]">
+        <p role="alert" className="mt-6 rounded-xl bg-error-tint px-4 py-3 text-sm font-medium text-error">
           {formError}
         </p>
       )}
 
       {/* Below lg: one 64px row (8 + 48 + 8) plus the safe-area inset, Cancel 2/5 and Save 3/5;
           the status text moves into the disabled button. From lg: unchanged. */}
-      <div className="sticky bottom-0 z-10 -mx-6 mt-8 flex flex-nowrap items-center justify-end gap-3 border-t border-[#D9CFC1] bg-white px-6 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 lg:-mx-10 lg:flex-wrap lg:px-10 lg:pb-4 lg:pt-4">
+      <div className="sticky bottom-0 z-10 -mx-6 mt-8 flex flex-nowrap items-center justify-end gap-3 border-t border-border bg-surface px-6 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 lg:-mx-10 lg:flex-wrap lg:px-10 lg:pb-4 lg:pt-4">
         {!sold && (dirty || noChanges) && (
-          <span className="mr-auto hidden text-[13px] text-[#6F6358] lg:inline" aria-live="polite">
+          <span className="mr-auto hidden text-[13px] text-text-secondary lg:inline" aria-live="polite">
             {noChanges ? 'No changes to save' : 'You have unsaved changes.'}
           </span>
         )}
         <Link
           href="/admin/products"
           onClick={handleCancelClick}
-          className={`flex min-h-12 items-center justify-center rounded-xl border border-[#D9CFC1] bg-white px-5 text-sm font-semibold text-[#2B2118] hover:bg-[#F5F0E8] lg:min-h-11 lg:justify-start ${sold ? 'flex-1' : 'flex-[2]'} lg:flex-none ${focusRing}`}
+          className={`flex min-h-12 items-center justify-center rounded-xl border border-border bg-surface px-5 text-sm font-semibold text-text hover:bg-surface-muted lg:min-h-11 lg:justify-start ${sold ? 'flex-1' : 'flex-[2]'} lg:flex-none ${focusRing}`}
         >
           {sold ? 'Back to products' : 'Cancel'}
         </Link>
@@ -531,7 +531,7 @@ export default function ProductForm({ mode, product, categories, onSubmit, onAut
           <button
             type="submit"
             disabled={busy || (mode === 'edit' && !dirty)}
-            className={`min-h-12 flex-[3] rounded-xl bg-[#B5532E] px-6 text-sm font-semibold text-white hover:bg-[#9C4425] disabled:cursor-not-allowed disabled:bg-[#E5DCCD] disabled:text-[#5C4D40] lg:min-h-11 lg:flex-none ${focusRing}`}
+            className={`min-h-12 flex-[3] rounded-xl bg-primary px-6 text-sm font-semibold text-on-primary hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-border disabled:text-text-secondary lg:min-h-11 lg:flex-none ${focusRing}`}
           >
             {submitting ? (
               'Saving...'

@@ -4,9 +4,9 @@ import { ORDER_SORT_OPTIONS } from '@/lib/adminOrders';
 import FilterSelect from '@/components/ui/FilterSelect';
 import { CloseIcon, SearchIcon } from '../icons';
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-1';
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1';
 // Same label style as Product Management's filter bar.
-const smallLabel = 'mb-1.5 block text-[13px] font-medium text-[#6F6358]';
+const smallLabel = 'mb-1.5 block text-[13px] font-medium text-text-secondary';
 
 const sortLabel = (value) => ORDER_SORT_OPTIONS.find((o) => o.value === value)?.label ?? value;
 
@@ -43,7 +43,7 @@ export default function OrderToolbar({
             Search by order ID, buyer name or email
           </label>
           <div className="relative">
-            <span aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#6F6358]">
+            <span aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">
               <SearchIcon width={20} height={20} />
             </span>
             <input
@@ -54,7 +54,7 @@ export default function OrderToolbar({
               value={searchInput}
               onChange={(e) => onSearchInputChange(e.target.value)}
               placeholder="Search order ID or buyer"
-              className="h-12 w-full rounded-xl border-[1.5px] border-[#D9CFC1] bg-white pl-12 pr-12 text-[15px] text-[#2B2118] outline-none placeholder:text-[#6F6358] hover:border-[#B5A595] focus:border-[#B5532E] focus:shadow-[0_0_0_4px_#FBE6DC] md:h-[52px] md:rounded-[14px] [&::-webkit-search-cancel-button]:hidden"
+              className="h-12 w-full rounded-xl border-[1.5px] border-border bg-surface pl-12 pr-12 text-[15px] text-text outline-none placeholder:text-text-secondary hover:border-border focus:border-primary focus:shadow-[0_0_0_4px_var(--primary-tint)] md:h-[52px] md:rounded-[14px] [&::-webkit-search-cancel-button]:hidden"
             />
             <div className="absolute right-0.5 top-1/2 flex -translate-y-1/2 items-center gap-1 md:right-1">
               {searchInput && (
@@ -62,7 +62,7 @@ export default function OrderToolbar({
                   type="button"
                   onClick={onSearchClear}
                   aria-label="Clear search"
-                  className={`flex size-11 items-center justify-center rounded-lg text-[#6F6358] hover:bg-[#F5F0E8] ${focusRing}`}
+                  className={`flex size-11 items-center justify-center rounded-lg text-text-secondary hover:bg-surface-muted ${focusRing}`}
                 >
                   <CloseIcon width={16} height={16} />
                 </button>
@@ -86,8 +86,8 @@ export default function OrderToolbar({
         </div>
 
         {/* md and up: same strip as Product Management, Sort labelled inside its trigger at the right. */}
-        <div className="hidden min-h-14 items-center gap-2 rounded-2xl border border-[#E5DCCD] bg-[#F5F0E8] p-2 md:flex">
-          <span aria-hidden="true" className="ml-auto h-6 w-px bg-[#D9CFC1]" />
+        <div className="hidden min-h-14 items-center gap-2 rounded-2xl border border-border bg-surface-muted p-2 md:flex">
+          <span aria-hidden="true" className="ml-auto h-6 w-px bg-border" />
           <div className="min-w-[230px]">
             <FilterSelect
               id="order-sort-desktop"
@@ -109,13 +109,13 @@ export default function OrderToolbar({
           <ul aria-label="Active filters" className="flex min-w-0 flex-wrap gap-2">
             {chips.map((chip) => (
               <li key={chip.key} className="min-w-0 max-w-full">
-                <span className="inline-flex min-h-11 max-w-full items-center gap-1 rounded-full border border-[#EBC3AE] bg-[#FBE6DC] pl-3 text-[13px] font-semibold text-[#B5532E]">
+                <span className="inline-flex min-h-11 max-w-full items-center gap-1 rounded-full border border-primary-tint bg-primary-tint pl-3 text-[13px] font-semibold text-primary">
                   <span className="truncate">{chip.text}</span>
                   <button
                     type="button"
                     onClick={chip.onRemove}
                     aria-label={`Remove filter ${chip.text}`}
-                    className={`flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-[#F7D3C2] ${focusRing}`}
+                    className={`flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-primary-tint ${focusRing}`}
                   >
                     <CloseIcon width={14} height={14} />
                   </button>
@@ -126,7 +126,7 @@ export default function OrderToolbar({
           <button
             type="button"
             onClick={onResetFilters}
-            className={`min-h-11 rounded-lg px-3 text-sm font-semibold text-[#B5532E] underline-offset-4 hover:underline ${focusRing}`}
+            className={`min-h-11 rounded-lg px-3 text-sm font-semibold text-primary underline-offset-4 hover:underline ${focusRing}`}
           >
             Reset filters
           </button>

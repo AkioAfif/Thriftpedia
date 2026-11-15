@@ -11,7 +11,7 @@ import { LoadingDots } from '@/components/ui/LoadingDots';
 import { updateOrderAddress } from '@/lib/services/orderService';
 import { ADDRESS_FIELDS, EMPTY_ADDRESS, validateAddress } from '@/lib/shippingAddress';
 
-const BTN = 'inline-flex h-12 w-full items-center justify-center rounded-xl px-6 text-[15px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 motion-reduce:transition-none sm:w-auto';
+const BTN = 'inline-flex h-12 w-full items-center justify-center rounded-xl px-6 text-[15px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none sm:w-auto';
 
 const pick = (source) => {
   const values = { ...EMPTY_ADDRESS };
@@ -91,7 +91,7 @@ export function AddressDialog({ order, onClose, onSaved, onConflict }) {
   return (
     <ActionDialog title={editing ? 'Edit delivery address' : 'Add delivery address'} busy={busy} onRequestClose={onClose}>
       <form ref={formRef} onSubmit={save} noValidate className="-mt-3">
-        <p className="text-[13px] text-[#5C4D40]">Needed to pay online.</p>
+        <p className="text-[13px] text-text-secondary">Needed to pay online.</p>
         <div className="mt-4">
           <AddressForm values={values} errors={errors} onChange={change} disabled={busy || locked} />
         </div>
@@ -107,7 +107,7 @@ export function AddressDialog({ order, onClose, onSaved, onConflict }) {
             type="button"
             onClick={cancel}
             disabled={busy}
-            className={`${BTN} border-[1.5px] border-[#D9CFC1] bg-white text-[#2B2118] hover:bg-[#F5F0E8] disabled:cursor-not-allowed disabled:opacity-60`}
+            className={`${BTN} border-[1.5px] border-border bg-surface text-text hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-60`}
           >
             {locked ? 'Close' : 'Cancel'}
           </button>
@@ -116,7 +116,7 @@ export function AddressDialog({ order, onClose, onSaved, onConflict }) {
               type="submit"
               disabled={busy}
               aria-busy={busy}
-              className={`relative ${BTN} bg-[#B5532E] text-white hover:bg-[#9C4425] disabled:cursor-wait`}
+              className={`relative ${BTN} bg-primary text-on-primary hover:bg-primary-hover disabled:cursor-wait`}
             >
               {/* The label keeps the button width while the dots show. */}
               <span className={busy ? 'invisible' : undefined}>Save address</span>

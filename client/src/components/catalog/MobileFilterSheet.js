@@ -32,14 +32,14 @@ export function MobileFilterSheet({ isOpen, onClose }) {
       <button
         type="button"
         onClick={handleReset}
-        className="min-h-[44px] px-4 rounded-xl border border-[#E6DDD2] bg-white text-text font-semibold text-xs hover:bg-[#F1EBE1] transition-colors"
+        className="min-h-[44px] px-4 rounded-xl border border-border bg-surface text-text font-semibold text-xs hover:bg-surface-muted transition-colors"
       >
         Reset all
       </button>
       <button
         type="button"
         onClick={onClose}
-        className="flex-1 min-h-[44px] rounded-xl bg-primary hover:bg-primary-hover text-white font-semibold text-sm shadow-sm transition-colors text-center"
+        className="flex-1 min-h-[44px] rounded-xl bg-primary hover:bg-primary-hover text-on-primary font-semibold text-sm shadow-sm transition-colors text-center"
       >
         Show results
       </button>

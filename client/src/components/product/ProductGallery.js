@@ -16,8 +16,8 @@ function Chevron({ direction }) {
 
 function PhotoFallback({ small = false }) {
   return (
-    <div className="flex h-full w-full items-center justify-center bg-[#EFEBE4] text-center">
-      <span className={cn('font-metadata text-[#6E5D4F]', small ? 'text-[10px]' : 'text-sm')}>
+    <div className="flex h-full w-full items-center justify-center bg-surface-muted text-center">
+      <span className={cn('font-metadata text-text-secondary', small ? 'text-[10px]' : 'text-sm')}>
         {small ? 'No photo' : 'Photo unavailable'}
       </span>
     </div>
@@ -62,7 +62,7 @@ export function ProductGallery({ photos = [], name, sold = false }) {
 
   return (
     <section aria-label={`Photos of ${name}`} className="flex min-w-0 flex-col gap-3">
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-[#EFEBE4]">
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-surface-muted">
         {src && !failed.has(index) ? (
           <Image
             key={src}
@@ -81,13 +81,13 @@ export function ProductGallery({ photos = [], name, sold = false }) {
 
         <div className="absolute left-3 top-3 z-10 sm:left-4 sm:top-4">
           {sold ? (
-            <span className="inline-flex items-center gap-2 rounded-full bg-text px-4 py-2 text-sm font-bold text-white shadow-level-2">
+            <span className="inline-flex items-center gap-2 rounded-full bg-text px-4 py-2 text-sm font-bold text-on-primary shadow-level-2">
               <LockIcon className="h-4 w-4" />
               Sold
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-badge-success px-3 py-1.5 text-xs font-semibold text-[#2F5A2C]">
-              <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[#3F7A3A]" />
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-badge-success px-3 py-1.5 text-xs font-semibold text-secondary">
+              <span aria-hidden="true" className="h-2 w-2 rounded-full bg-secondary" />
               Available
             </span>
           )}
@@ -119,7 +119,7 @@ export function ProductGallery({ photos = [], name, sold = false }) {
               tabIndex={i === index ? 0 : -1}
               onClick={() => select(i)}
               className={cn(
-                'relative h-20 w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-[#EFEBE4] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:h-24 sm:w-20',
+                'relative h-20 w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:h-24 sm:w-20',
                 i === index ? 'border-primary' : 'border-transparent hover:border-border'
               )}
             >

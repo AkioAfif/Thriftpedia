@@ -39,13 +39,13 @@ export default function LoginPage() {
   }
 
   const inputClass =
-    'mt-1 w-full rounded-lg border border-[#e8e1d8] bg-white px-3 py-3 text-sm outline-none focus:border-[#b4532a]';
+    'mt-1 w-full rounded-lg border border-border bg-surface px-3 py-3 text-sm outline-none focus:border-primary';
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-canvas px-6 text-[#2b1d14]">
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-6 text-text">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-[24rem] rounded-2xl border border-[#e8e1d8] bg-white p-8"
+        className="w-full max-w-[24rem] rounded-2xl border border-border bg-surface p-8"
       >
         <h1 className="text-2xl font-bold">Log in</h1>
         <p className="mt-3 text-sm">Belum punya akun? <Link href="/register" className="underline">Daftar</Link></p>
@@ -75,7 +75,7 @@ export default function LoginPage() {
         </label>
 
         {error && (
-          <p role="alert" className="mt-4 text-sm text-[#b42318]">
+          <p role="alert" className="mt-4 text-sm text-error">
             {error}
           </p>
         )}
@@ -83,7 +83,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="mt-6 w-full rounded-[10px] bg-[#a3452a] py-3 text-sm font-semibold text-white disabled:opacity-60"
+          className="mt-6 w-full rounded-[10px] bg-primary py-3 text-sm font-semibold text-on-primary disabled:opacity-60"
         >
           {submitting ? 'Signing in...' : 'Log in'}
         </button>

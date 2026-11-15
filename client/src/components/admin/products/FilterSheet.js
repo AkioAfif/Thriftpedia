@@ -5,10 +5,10 @@ import { CONDITION_OPTIONS, SIZE_OPTIONS } from '@/lib/adminProducts';
 import { CloseIcon } from '../icons';
 import FilterSelect from '@/components/ui/FilterSelect';
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2';
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled])';
 const MD_QUERY = '(min-width: 768px)';
-const label = 'mb-1.5 block text-[13px] font-medium text-[#6F6358]';
+const label = 'mb-1.5 block text-[13px] font-medium text-text-secondary';
 
 export const EMPTY_DRAFT = { category: '', size: '', condition: '' };
 
@@ -70,7 +70,7 @@ export default function FilterSheet({ open, draft, onDraftChange, categories, on
       <div
         aria-hidden="true"
         onClick={onClose}
-        className={`fixed inset-0 z-50 bg-[#2B2118]/40 transition-opacity duration-200 motion-reduce:transition-none md:hidden ${
+        className={`fixed inset-0 z-50 bg-text/40 transition-opacity duration-200 motion-reduce:transition-none md:hidden ${
           open ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       />
@@ -81,12 +81,12 @@ export default function FilterSheet({ open, draft, onDraftChange, categories, on
         aria-labelledby="filter-sheet-title"
         inert={!open}
         onKeyDown={onKeyDown}
-        className={`fixed inset-x-0 bottom-0 z-50 flex max-h-[85vh] flex-col rounded-t-[20px] border-t border-[#D9CFC1] bg-white transition-transform duration-200 motion-reduce:transition-none md:hidden ${
+        className={`fixed inset-x-0 bottom-0 z-50 flex max-h-[85vh] flex-col rounded-t-[20px] border-t border-border bg-surface transition-transform duration-200 motion-reduce:transition-none md:hidden ${
           open ? 'translate-y-0' : 'translate-y-full'
         }`}
       >
-        <div className="flex shrink-0 items-center justify-between border-b border-[#EAE4DA] py-2 pl-5 pr-2">
-          <h2 id="filter-sheet-title" className="text-[18px] font-semibold text-[#2B2118]">
+        <div className="flex shrink-0 items-center justify-between border-b border-border py-2 pl-5 pr-2">
+          <h2 id="filter-sheet-title" className="text-[18px] font-semibold text-text">
             Filters
           </h2>
           <button
@@ -94,7 +94,7 @@ export default function FilterSheet({ open, draft, onDraftChange, categories, on
             type="button"
             onClick={onClose}
             aria-label="Close filters"
-            className={`flex size-11 items-center justify-center rounded-xl text-[#2B2118] hover:bg-[#F5F0E8] ${focusRing}`}
+            className={`flex size-11 items-center justify-center rounded-xl text-text hover:bg-surface-muted ${focusRing}`}
           >
             <CloseIcon width={20} height={20} />
           </button>
@@ -125,7 +125,7 @@ export default function FilterSheet({ open, draft, onDraftChange, categories, on
                     aria-pressed={selected}
                     onClick={() => set({ size: opt.value })}
                     className={`min-h-11 min-w-[52px] rounded-xl border px-4 text-sm font-semibold ${focusRing} ${
-                      selected ? 'border-[#B5532E] bg-[#B5532E] text-white' : 'border-[#D9CFC1] bg-white text-[#2B2118] hover:border-[#B5532E]'
+                      selected ? 'border-primary bg-primary text-on-primary' : 'border-border bg-surface text-text hover:border-primary'
                     }`}
                   >
                     {opt.label}
@@ -148,12 +148,12 @@ export default function FilterSheet({ open, draft, onDraftChange, categories, on
           </div>
         </div>
 
-        <div className="flex shrink-0 gap-3 border-t border-[#D9CFC1] bg-white px-5 py-3">
+        <div className="flex shrink-0 gap-3 border-t border-border bg-surface px-5 py-3">
           {hasDraft && (
             <button
               type="button"
               onClick={() => onDraftChange(EMPTY_DRAFT)}
-              className={`min-h-11 flex-1 rounded-xl border border-[#D9CFC1] bg-white px-4 text-sm font-semibold text-[#2B2118] hover:bg-[#F5F0E8] ${focusRing}`}
+              className={`min-h-11 flex-1 rounded-xl border border-border bg-surface px-4 text-sm font-semibold text-text hover:bg-surface-muted ${focusRing}`}
             >
               Reset
             </button>
@@ -161,7 +161,7 @@ export default function FilterSheet({ open, draft, onDraftChange, categories, on
           <button
             type="button"
             onClick={onApply}
-            className={`min-h-11 flex-1 rounded-xl bg-[#B5532E] px-4 text-sm font-semibold text-white hover:bg-[#9C4425] ${focusRing}`}
+            className={`min-h-11 flex-1 rounded-xl bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-hover ${focusRing}`}
           >
             Apply
           </button>

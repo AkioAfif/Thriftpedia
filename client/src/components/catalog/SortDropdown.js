@@ -12,7 +12,7 @@ export function SortDropdown() {
 
   return (
     <div className="min-w-0 flex-1 md:w-[220px] md:flex-none">
-      <span aria-hidden="true" className="mb-1.5 hidden text-[13px] font-medium text-[#6F6358] sm:block">
+      <span aria-hidden="true" className="mb-1.5 hidden text-[13px] font-medium text-text-secondary sm:block">
         Sort by
       </span>
       <FilterSelect

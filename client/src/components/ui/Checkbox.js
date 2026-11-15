@@ -9,7 +9,7 @@ export const Checkbox = forwardRef(function Checkbox(
     <label
       htmlFor={id}
       className={cn(
-        'flex items-center min-h-[40px] px-2.5 rounded-xl hover:bg-white/70 cursor-pointer transition-colors gap-3 focus-within:ring-2 focus-within:ring-primary',
+        'flex items-center min-h-[40px] px-2.5 rounded-xl hover:bg-surface/70 cursor-pointer transition-colors gap-3 focus-within:ring-2 focus-within:ring-primary',
         disabled && 'opacity-50 cursor-not-allowed',
         className
       )}
@@ -21,7 +21,7 @@ export const Checkbox = forwardRef(function Checkbox(
         checked={checked}
         disabled={disabled}
         onChange={(e) => onChange?.(e.target.checked)}
-        className="w-4 h-4 rounded border-[#D1C7BD] text-primary focus:ring-primary cursor-pointer accent-primary"
+        className="w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer accent-primary"
         {...props}
       />
       {label && (

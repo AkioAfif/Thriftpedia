@@ -25,13 +25,13 @@ export default function ActiveFilterChips({ filters, categories = [], onRemove }
     <ul aria-label="Active filters" className="flex flex-wrap gap-2">
       {chips.map((chip) => (
         <li key={chip.key}>
-          <span className="inline-flex min-h-11 max-w-full items-center gap-1 rounded-full border border-[#EBC3AE] bg-[#FBE6DC] pl-3 text-[13px] font-semibold text-primary">
+          <span className="inline-flex min-h-11 max-w-full items-center gap-1 rounded-full border border-primary-tint bg-primary-tint pl-3 text-[13px] font-semibold text-primary">
             <span className="truncate">{chip.text}</span>
             <button
               type="button"
               onClick={() => onRemove(chip.key)}
               aria-label={`Remove filter ${chip.text}`}
-              className={`flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-[#F7D3C2] ${focusRing}`}
+              className={`flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-primary-tint ${focusRing}`}
             >
               <CloseIcon width={14} height={14} />
             </button>

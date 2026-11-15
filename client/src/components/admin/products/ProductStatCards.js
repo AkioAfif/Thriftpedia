@@ -46,7 +46,7 @@ export default function ProductStatCards({ stats, activeStatus, onSelect }) {
       role="radiogroup"
       aria-label="Filter products by status"
       onKeyDown={onKeyDown}
-      className="grid w-full grid-cols-3 gap-1 rounded-[14px] border border-[#E5DCCD] bg-[#F5F0E8] p-1 md:max-w-[480px]"
+      className="grid w-full grid-cols-3 gap-1 rounded-[14px] border border-border bg-surface-muted p-1 md:max-w-[480px]"
     >
       {SEGMENTS.map((segment, i) => {
         const checked = i === selectedIndex;
@@ -64,19 +64,19 @@ export default function ProductStatCards({ stats, activeStatus, onSelect }) {
             aria-label={accessibleName}
             tabIndex={checked ? 0 : -1}
             onClick={() => onSelect(checked && segment.value ? '' : segment.value)}
-            className={`flex h-11 min-w-0 items-center justify-center gap-2 rounded-[10px] px-2 text-sm font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 motion-reduce:transition-none ${
-              checked ? 'bg-[#2B2118] text-white' : 'bg-transparent text-[#4A3F35] hover:bg-[#EDE5D8]'
+            className={`flex h-11 min-w-0 items-center justify-center gap-2 rounded-[10px] px-2 text-sm font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none ${
+              checked ? 'bg-text text-on-primary' : 'bg-transparent text-text hover:bg-surface-muted'
             }`}
           >
             <span className="truncate">{segment.label}</span>
             {/* Hidden under 360px, where three labels plus numbers get tight. */}
             {loading ? (
-              <span aria-hidden="true" className="h-4 w-5 shrink-0 animate-pulse rounded bg-[#E5DCCD] max-[359px]:hidden" />
+              <span aria-hidden="true" className="h-4 w-5 shrink-0 animate-pulse rounded bg-border max-[359px]:hidden" />
             ) : (
               <span
                 aria-hidden="true"
                 className={`shrink-0 rounded-full px-2 py-0.5 text-[13px] font-semibold leading-tight max-[359px]:hidden ${
-                  checked ? 'bg-white/20 text-white' : 'text-[#6F6358]'
+                  checked ? 'bg-surface/20 text-on-primary' : 'text-text-secondary'
                 }`}
               >
                 {number ?? '-'}

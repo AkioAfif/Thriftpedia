@@ -6,8 +6,8 @@ import TrackingBox from './TrackingBox';
 import { COURIER_MAX, NOTE_MAX, TRACKING_MAX, TRANSITION_ACTIONS, statusMeta } from '@/lib/adminOrders';
 
 const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
-const inputBase = `w-full rounded-xl border bg-white px-4 text-sm text-text placeholder:text-[#8C7E72] ${focusRing}`;
-const primaryBtn = `min-h-[48px] w-full rounded-xl bg-primary px-5 text-[15px] font-semibold text-white transition-colors duration-150 hover:bg-primary-hover ${focusRing}`;
+const inputBase = `w-full rounded-xl border bg-surface px-4 text-sm text-text placeholder:text-text-secondary ${focusRing}`;
+const primaryBtn = `min-h-[48px] w-full rounded-xl bg-primary px-5 text-[15px] font-semibold text-on-primary transition-colors duration-150 hover:bg-primary-hover ${focusRing}`;
 
 const TERMINAL_COPY = {
   COMPLETED: 'This order is completed. Its status can no longer change.',
@@ -68,7 +68,7 @@ export default function OrderStatusPanel({ order, onSubmit }) {
   }
 
   return (
-    <section aria-labelledby={`${ids}-title`} className="overflow-hidden rounded-[20px] border border-[#D9CFC1] bg-white">
+    <section aria-labelledby={`${ids}-title`} className="overflow-hidden rounded-[20px] border border-border bg-surface">
       <div className="border-b border-border bg-surface-muted px-5 py-3.5 sm:px-6">
         <h2 id={`${ids}-title`} className="text-[18px] font-semibold text-text">
           Order progress
@@ -125,7 +125,7 @@ export default function OrderStatusPanel({ order, onSubmit }) {
             </p>
 
             {action.destructive && (
-              <p className="rounded-xl bg-[#FBEDE6] px-4 py-3 text-sm text-[#7A3416]">
+              <p className="rounded-xl bg-primary-tint px-4 py-3 text-sm text-primary">
                 The buyer&apos;s order ends here and the product goes back on sale right away. This cannot be undone.
               </p>
             )}
@@ -134,7 +134,7 @@ export default function OrderStatusPanel({ order, onSubmit }) {
               <>
                 <div>
                   <label htmlFor={`${ids}-tracking`} className="text-sm font-medium text-text">
-                    Tracking number <span className="text-[#8F3B23]">(required)</span>
+                    Tracking number <span className="text-primary">(required)</span>
                   </label>
                   <input
                     id={`${ids}-tracking`}
@@ -149,7 +149,7 @@ export default function OrderStatusPanel({ order, onSubmit }) {
                       if (fieldError) setFieldError('');
                     }}
                     placeholder="e.g. JNE0012345678"
-                    className={`mt-1.5 h-11 tabular-nums ${inputBase} ${fieldError ? 'border-error' : 'border-[#CFBEAE]'}`}
+                    className={`mt-1.5 h-11 tabular-nums ${inputBase} ${fieldError ? 'border-error' : 'border-border'}`}
                   />
                   {fieldError && (
                     <p id={`${ids}-tracking-error`} className="mt-1.5 text-sm text-error">
@@ -168,7 +168,7 @@ export default function OrderStatusPanel({ order, onSubmit }) {
                     autoComplete="off"
                     onChange={(e) => setForm((f) => ({ ...f, courier: e.target.value }))}
                     placeholder="e.g. JNE, SiCepat"
-                    className={`mt-1.5 h-11 border-[#CFBEAE] ${inputBase}`}
+                    className={`mt-1.5 h-11 border-border ${inputBase}`}
                   />
                 </div>
               </>
@@ -184,7 +184,7 @@ export default function OrderStatusPanel({ order, onSubmit }) {
                 value={form.note}
                 maxLength={NOTE_MAX}
                 onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
-                className={`mt-1.5 resize-y border-[#CFBEAE] py-2.5 ${inputBase}`}
+                className={`mt-1.5 resize-y border-border py-2.5 ${inputBase}`}
               />
             </div>
 
@@ -193,15 +193,15 @@ export default function OrderStatusPanel({ order, onSubmit }) {
                 type="button"
                 onClick={() => setTarget(null)}
                 disabled={busy}
-                className={`min-h-[44px] rounded-xl border border-[#e8e1d8] bg-white px-5 text-sm font-medium text-text hover:bg-canvas disabled:opacity-60 ${focusRing}`}
+                className={`min-h-[44px] rounded-xl border border-border bg-surface px-5 text-sm font-medium text-text hover:bg-canvas disabled:opacity-60 ${focusRing}`}
               >
                 Back
               </button>
               <button
                 type="submit"
                 disabled={busy}
-                className={`min-h-[44px] rounded-xl px-5 text-sm font-semibold text-white transition-colors disabled:cursor-wait disabled:opacity-70 ${focusRing} ${
-                  action.destructive ? 'bg-error hover:bg-[#93000a]' : 'bg-primary hover:bg-primary-hover'
+                className={`min-h-[44px] rounded-xl px-5 text-sm font-semibold text-on-primary transition-colors disabled:cursor-wait disabled:opacity-70 ${focusRing} ${
+                  action.destructive ? 'bg-error hover:bg-error' : 'bg-primary hover:bg-primary-hover'
                 }`}
               >
                 {busy ? 'Saving…' : action.destructive ? 'Yes, cancel order' : action.label}
