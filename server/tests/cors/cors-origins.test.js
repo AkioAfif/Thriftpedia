@@ -1,6 +1,7 @@
 const { test, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const request = require('supertest');
+require('../helpers/tokens');
 
 const APP_PATH = require.resolve('../../src/app');
 const savedOrigins = process.env.CORS_ORIGINS;
