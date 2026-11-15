@@ -9,24 +9,21 @@ import { ORDER_STATUS_ORDER, statusMeta } from '@/lib/orderView';
 // mode="tabs" (admin): role="tablist", role="tab" with aria-selected / aria-controls, ids
 //                      "order-tab-<STATUS|ALL>", roving tabindex and Arrow/Home/End keys.
 //
-// Active chip: solid status colour. All pairs are >= 5.5:1 —
-//   All #2B2118/white, Pending #F3D98B/#5C4410 (6.6), Processing #F2B9A3/#7A2E18 (5.5),
-//   Shipped #B9D6E6/#1F4B66 (6.1), Completed #BFDDB9/#24502A (6.3), Cancelled #D9CFC1/#4A3F35 (6.6).
-// Inactive: white, 1.5px #D9CFC1, #4A3F35 (9.9:1); a zero count dims to #776B5F (5.2:1).
+// Active chips use the shared status palette; inactive chips use surface and border.
 const ACTIVE = {
-  '': 'border-[#2B2118] bg-[#2B2118] text-white',
-  PENDING: 'border-[#F3D98B] bg-[#F3D98B] text-[#5C4410]',
-  PROCESSING: 'border-[#F2B9A3] bg-[#F2B9A3] text-[#7A2E18]',
-  SHIPPED: 'border-[#B9D6E6] bg-[#B9D6E6] text-[#1F4B66]',
-  COMPLETED: 'border-[#BFDDB9] bg-[#BFDDB9] text-[#24502A]',
-  CANCELLED: 'border-[#D9CFC1] bg-[#D9CFC1] text-[#4A3F35]',
+  '': 'border-text bg-text text-on-primary',
+  PENDING: 'border-badge-warning bg-badge-warning text-text',
+  PROCESSING: 'border-primary-tint bg-primary-tint text-primary',
+  SHIPPED: 'border-badge-info bg-badge-info text-text',
+  COMPLETED: 'border-badge-success bg-badge-success text-text',
+  CANCELLED: 'border-border bg-border text-text',
 };
 
 const CHIPS = [{ value: '', label: 'All', countKey: 'ALL' }, ...ORDER_STATUS_ORDER.map((s) => ({ value: s, label: statusMeta(s).label, countKey: s }))];
 
 // 40px tall chip; ::before adds 2px above and below so the hit area is 44px.
 const chipBase =
-  "relative flex h-10 shrink-0 snap-start items-center gap-1.5 whitespace-nowrap rounded-full border-[1.5px] px-4 text-sm font-semibold transition-colors duration-150 before:absolute before:inset-x-0 before:-inset-y-0.5 before:content-[''] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 motion-reduce:transition-none";
+  "relative flex h-10 shrink-0 snap-start items-center gap-1.5 whitespace-nowrap rounded-full border-[1.5px] px-4 text-sm font-semibold transition-colors duration-150 before:absolute before:inset-x-0 before:-inset-y-0.5 before:content-[''] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none";
 
 export default function StatusChips({
   value = '',
@@ -93,7 +90,7 @@ export default function StatusChips({
         type="button"
         onClick={() => onSelect(chip.value)}
         className={`${chipBase} ${
-          active ? ACTIVE[chip.value] : `border-[#D9CFC1] bg-white hover:bg-[#F5F0E8] ${dim ? 'text-[#776B5F]' : 'text-[#4A3F35]'}`
+          active ? ACTIVE[chip.value] : `border-border bg-surface hover:bg-surface-muted ${dim ? 'text-text-secondary' : 'text-text'}`
         }`}
         {...a11y}
       >

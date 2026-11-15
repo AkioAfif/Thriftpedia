@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 // Chip look is unchanged. Below md: the strip runs edge to edge with 16px side padding,
 // snaps chip by chip, chips are 44px tall, and the right fade is hidden (md and up unchanged).
 const chipBase =
-  'px-4 py-2 min-h-11 md:min-h-[40px] max-md:snap-start rounded-xl font-medium whitespace-nowrap transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:outline-none';
+  'px-4 py-2 min-h-11 md:min-h-[40px] max-md:snap-start rounded-xl font-medium whitespace-nowrap transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none';
 
 export function CategoryTabs({ categories = [] }) {
   const { category, setCategory } = useCatalogFilters();
@@ -26,7 +26,7 @@ export function CategoryTabs({ categories = [] }) {
   }, [currentCategory, categories.length]);
 
   return (
-    <div className="relative w-full border-b border-[#E6DDD2]/60 pb-4">
+    <div className="relative w-full border-b border-border/60 pb-4">
       <div
         ref={stripRef}
         id="categories-scroll-container"
@@ -39,8 +39,8 @@ export function CategoryTabs({ categories = [] }) {
           className={cn(
             chipBase,
             currentCategory === 'all'
-              ? 'bg-[#2B2118] text-white'
-              : 'bg-[#F1EBE1] text-[#4A3F35] hover:bg-[#EAE4DA]'
+              ? 'bg-text text-on-primary'
+              : 'bg-surface-muted text-text hover:bg-border'
           )}
         >
           All
@@ -57,8 +57,8 @@ export function CategoryTabs({ categories = [] }) {
               className={cn(
                 chipBase,
                 isActive
-                  ? 'bg-[#2B2118] text-white'
-                  : 'bg-[#F1EBE1] text-[#4A3F35] hover:bg-[#EAE4DA]'
+                  ? 'bg-text text-on-primary'
+                  : 'bg-surface-muted text-text hover:bg-border'
               )}
             >
               {cat.name}
@@ -67,7 +67,7 @@ export function CategoryTabs({ categories = [] }) {
         })}
       </div>
       {/* Right gradient fade overlay (md and up only; unchanged there) */}
-      <div className="pointer-events-none absolute right-0 top-0 bottom-4 hidden w-10 bg-gradient-to-l from-[#FAF7F2] to-transparent md:block" />
+      <div className="pointer-events-none absolute right-0 top-0 bottom-4 hidden w-10 bg-gradient-to-l from-canvas to-transparent md:block" />
     </div>
   );
 }

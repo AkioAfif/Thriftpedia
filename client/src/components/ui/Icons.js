@@ -1,4 +1,4 @@
-export function HangerLogoIcon({ className = 'w-5 h-5 text-white' }) {
+export function HangerLogoIcon({ className = 'w-5 h-5 text-on-primary' }) {
   return (
     <svg
       className={className}
@@ -15,7 +15,7 @@ export function HangerLogoIcon({ className = 'w-5 h-5 text-white' }) {
   );
 }
 
-export function SearchIcon({ className = 'w-5 h-5 text-[#6E5D4F]' }) {
+export function SearchIcon({ className = 'w-5 h-5 text-text-secondary' }) {
   return (
     <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="11" cy="11" r="7" />
@@ -92,7 +92,7 @@ export function MenuIcon({ className = 'w-6 h-6' }) {
   );
 }
 
-export function StarIcon({ className = 'w-3 h-3 text-[#E0A838]' }) {
+export function StarIcon({ className = 'w-3 h-3 text-text-secondary' }) {
   return (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />

@@ -217,7 +217,7 @@ async function handleAuthSubmit({ mode, values }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-scrim/60 p-margin-mobile"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-scrim/35 p-margin-mobile"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           onClose?.();

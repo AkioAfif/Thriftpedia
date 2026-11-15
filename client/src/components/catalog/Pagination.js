@@ -34,7 +34,7 @@ export function Pagination({ meta }) {
           type="button"
           disabled={currentPage <= 1}
           onClick={() => handlePageClick(currentPage - 1)}
-          className="min-w-[40px] min-h-[40px] px-3.5 rounded-xl border border-[#E6DDD2] text-[#5C4D40] hover:text-text hover:bg-[#F1EBE1] flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+          className="min-w-[40px] min-h-[40px] px-3.5 rounded-xl border border-border text-text-secondary hover:text-text hover:bg-surface-muted flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
         >
           Previous
         </button>
@@ -50,8 +50,8 @@ export function Pagination({ meta }) {
               className={cn(
                 'min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none',
                 isActive
-                  ? 'bg-primary text-white font-bold shadow-xs'
-                  : 'border border-[#E6DDD2] text-text hover:bg-[#F1EBE1]'
+                  ? 'bg-primary text-on-primary font-bold shadow-xs'
+                  : 'border border-border text-text hover:bg-surface-muted'
               )}
             >
               {p}
@@ -64,7 +64,7 @@ export function Pagination({ meta }) {
           type="button"
           disabled={currentPage >= totalPages}
           onClick={() => handlePageClick(currentPage + 1)}
-          className="min-w-[40px] min-h-[40px] px-3.5 rounded-xl border border-[#E6DDD2] text-text hover:bg-[#F1EBE1] flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+          className="min-w-[40px] min-h-[40px] px-3.5 rounded-xl border border-border text-text hover:bg-surface-muted flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
         >
           Next
         </button>

@@ -59,7 +59,7 @@ export default function DeleteProductDialog({ product, busy = false, onConfirm, 
   return (
     <div
       role="presentation"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#2b1d14]/40 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-text/40 p-4"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget && !busy) onCancel();
       }}
@@ -69,9 +69,9 @@ export default function DeleteProductDialog({ product, busy = false, onConfirm, 
         aria-modal="true"
         aria-labelledby={`${uid}-title`}
         aria-describedby={`${uid}-desc`}
-        className="w-full max-w-[504px] rounded-[20px] bg-white p-7 shadow-2xl"
+        className="w-full max-w-[504px] rounded-[20px] bg-surface p-7 shadow-2xl"
       >
-        <h2 id={`${uid}-title`} className="text-[28px] font-semibold leading-tight text-[#2b1d14]">
+        <h2 id={`${uid}-title`} className="text-[28px] font-semibold leading-tight text-text">
           Delete this product?
         </h2>
 
@@ -82,18 +82,18 @@ export default function DeleteProductDialog({ product, busy = false, onConfirm, 
               src={photo}
               alt=""
               onError={() => setImageFailed(true)}
-              className="h-16 w-16 shrink-0 rounded-lg bg-[#efe9e0] object-cover"
+              className="h-16 w-16 shrink-0 rounded-lg bg-surface-muted object-cover"
             />
           ) : (
-            <span aria-hidden="true" className="block h-16 w-16 shrink-0 rounded-lg bg-[#efe9e0]" />
+            <span aria-hidden="true" className="block h-16 w-16 shrink-0 rounded-lg bg-surface-muted" />
           )}
           <div className="min-w-0">
-            <p className="truncate text-lg font-medium text-[#2b1d14]">{product?.name}</p>
-            <p className="mt-1 text-sm text-[#6b5d52]">{formatRupiah(product?.price)}</p>
+            <p className="truncate text-lg font-medium text-text">{product?.name}</p>
+            <p className="mt-1 text-sm text-text-secondary">{formatRupiah(product?.price)}</p>
           </div>
         </div>
 
-        <p id={`${uid}-desc`} className="mt-6 text-[15px] leading-relaxed text-[#6b5d52]">
+        <p id={`${uid}-desc`} className="mt-6 text-[15px] leading-relaxed text-text-secondary">
           This permanently removes it from the catalog. This can’t be undone.
         </p>
 
@@ -103,7 +103,7 @@ export default function DeleteProductDialog({ product, busy = false, onConfirm, 
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="basis-1/3 rounded-[10px] border border-[#e8e1d8] bg-white px-5 py-3.5 text-sm font-medium text-[#2b1d14] hover:bg-canvas focus:outline-none focus:ring-2 focus:ring-[#b4532a] focus:ring-offset-2 disabled:opacity-60"
+            className="basis-1/3 rounded-[10px] border border-border bg-surface px-5 py-3.5 text-sm font-medium text-text hover:bg-canvas focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-60"
           >
             Cancel
           </button>
@@ -112,7 +112,7 @@ export default function DeleteProductDialog({ product, busy = false, onConfirm, 
             type="button"
             onClick={onConfirm}
             disabled={busy}
-            className="flex-1 rounded-[10px] bg-[#9b2b2b] px-5 py-3.5 text-sm font-semibold text-white hover:bg-[#862323] focus:outline-none focus:ring-2 focus:ring-[#9b2b2b] focus:ring-offset-2 disabled:opacity-60"
+            className="flex-1 rounded-[10px] bg-error px-5 py-3.5 text-sm font-semibold text-on-primary hover:bg-error focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2 disabled:opacity-60"
           >
             {busy ? 'Deleting...' : 'Delete product'}
           </button>

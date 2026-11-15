@@ -36,15 +36,15 @@ export function DashboardHeader({ orders: orderSection, summary }) {
   return (
     <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
-        <p className="text-[13px] text-[#6F6358]">{todayFormat.format(new Date())} WIB</p>
-        <h1 className="mt-1 text-[28px] font-semibold leading-[1.2] text-[#2B2118] md:text-[36px]">Dashboard</h1>
+        <p className="text-[13px] text-text-secondary">{todayFormat.format(new Date())} WIB</p>
+        <h1 className="mt-1 text-[28px] font-semibold leading-[1.2] text-text md:text-[36px]">Dashboard</h1>
         {/* Fixed line height while loading, so the page does not jump when the sentence arrives. */}
         <div className="mt-1.5 min-h-7">
           {loading ? (
             <Skeleton className="h-6 w-72 max-w-full rounded" />
           ) : (
             sentence && (
-              <p aria-live="polite" className="text-[16px] text-[#2B2118] md:text-[18px]">
+              <p aria-live="polite" className="text-[16px] text-text md:text-[18px]">
                 {sentence}
               </p>
             )
@@ -54,7 +54,7 @@ export function DashboardHeader({ orders: orderSection, summary }) {
       <Link
         href="/admin/products/new"
         className={cn(
-          'hidden min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#B5532E] px-5 text-sm font-semibold text-white hover:bg-[#9C4425] md:inline-flex',
+          'hidden min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-hover md:inline-flex',
           focusRing
         )}
       >

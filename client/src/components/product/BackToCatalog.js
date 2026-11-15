@@ -37,20 +37,20 @@ export default function BackToCatalog({ href, label = 'Back to catalog', name = 
 
   if (variant === 'bar') {
     return (
-      <div className="sticky top-[73px] z-30 h-12 border-b border-[#EAE4DA] bg-[#FAF7F2] lg:hidden">
+      <div className="sticky top-[73px] z-30 h-12 border-b border-border bg-canvas lg:hidden">
         <div className="mx-auto flex h-full w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-8">
           <Link
             href={target}
             aria-label={label}
             title={label}
-            className="-ml-2 inline-flex size-11 shrink-0 items-center justify-center rounded-full text-[#2B2118] hover:bg-[#F5F0E8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E]"
+            className="-ml-2 inline-flex size-11 shrink-0 items-center justify-center rounded-full text-text hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <ArrowLeft />
           </Link>
           {/* Always rendered (fixed bar height); only its visibility changes, so nothing shifts. */}
           <p
             aria-hidden={!titleGone || undefined}
-            className={`min-w-0 truncate text-[13px] text-[#6F6358] transition-opacity duration-150 motion-reduce:transition-none ${
+            className={`min-w-0 truncate text-[13px] text-text-secondary transition-opacity duration-150 motion-reduce:transition-none ${
               titleGone && name ? 'opacity-100' : 'opacity-0'
             }`}
           >
@@ -64,7 +64,7 @@ export default function BackToCatalog({ href, label = 'Back to catalog', name = 
   return (
     <Link
       href={target}
-      className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border-[1.5px] border-[#D9CFC1] bg-white px-4 text-sm font-semibold text-[#2B2118] transition-colors hover:border-[#B5532E] hover:bg-[#F5F0E8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+      className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border-[1.5px] border-border bg-surface px-4 text-sm font-semibold text-text transition-colors hover:border-primary hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
     >
       <ArrowLeft />
       {label}

@@ -7,10 +7,10 @@ function OrdersFallback() {
   return (
     <div aria-busy="true">
       <span className="sr-only">Loading orders</span>
-      <div className="h-10 w-72 animate-pulse rounded-lg bg-[#efe9e0]" />
-      <div className="mt-6 h-14 animate-pulse rounded-2xl bg-[#efe9e0]" />
-      <div className="mt-4 h-12 animate-pulse rounded-xl bg-[#efe9e0]" />
-      <div className="mt-4 h-80 animate-pulse rounded-[20px] bg-[#efe9e0]" />
+      <div className="h-10 w-72 animate-pulse rounded-lg bg-surface-muted" />
+      <div className="mt-6 h-14 animate-pulse rounded-2xl bg-surface-muted" />
+      <div className="mt-4 h-12 animate-pulse rounded-xl bg-surface-muted" />
+      <div className="mt-4 h-80 animate-pulse rounded-[20px] bg-surface-muted" />
     </div>
   );
 }

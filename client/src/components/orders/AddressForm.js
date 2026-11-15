@@ -5,11 +5,11 @@ import { useId } from 'react';
 // The five delivery-address fields, shared by checkout and the order page's address dialog.
 // Validation lives in lib/shippingAddress.js; this only renders values and errors.
 
-// 44px fields: 1.5px #D9CFC1 edge; focus = terracotta edge + #FBE6DC ring; error = #B3402A edge.
+// 44px fields: 1.5px var(--border) edge; focus = terracotta edge + var(--primary-tint) ring; error = var(--error) edge.
 // 16px text below sm so mobile browsers don't zoom into the field.
 const fieldBase =
-  'w-full rounded-xl border-[1.5px] bg-white px-3 text-base text-[#2B2118] placeholder:text-[#7A6D61] outline-none transition-[border-color,box-shadow] duration-150 focus:border-[#B5532E] focus:shadow-[0_0_0_3px_#FBE6DC] disabled:cursor-not-allowed disabled:bg-[#F5F0E8] disabled:text-[#6F6358] motion-reduce:transition-none sm:text-sm';
-const fieldClass = (error) => `${fieldBase} ${error ? 'border-[#B3402A]' : 'border-[#D9CFC1]'}`;
+  'w-full rounded-xl border-[1.5px] bg-surface px-3 text-base text-text placeholder:text-text-secondary outline-none transition-[border-color,box-shadow] duration-150 focus:border-primary focus:shadow-[0_0_0_3px_var(--primary-tint)] disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-text-secondary motion-reduce:transition-none sm:text-sm';
+const fieldClass = (error) => `${fieldBase} ${error ? 'border-error' : 'border-border'}`;
 
 const ADDRESS_INPUTS = {
   recipientName: { label: 'Recipient name', autoComplete: 'name', maxLength: 100 },
@@ -37,7 +37,7 @@ function AddressField({ name, value, error, onChange, disabled, idBase, classNam
   };
   return (
     <div className={`min-w-0 ${className}`}>
-      <label htmlFor={id} className="text-sm font-semibold text-[#2B2118]">
+      <label htmlFor={id} className="text-sm font-semibold text-text">
         {spec.label}
       </label>
       <div className="mt-1.5">
@@ -48,12 +48,12 @@ function AddressField({ name, value, error, onChange, disabled, idBase, classNam
         )}
       </div>
       {error ? (
-        <p id={`${id}-error`} className="mt-1.5 break-words text-[13px] font-medium text-[#B3402A]">
+        <p id={`${id}-error`} className="mt-1.5 break-words text-[13px] font-medium text-error">
           {error}
         </p>
       ) : (
         spec.hint && (
-          <p id={`${id}-hint`} className="mt-1.5 text-[13px] text-[#6F6358]">
+          <p id={`${id}-hint`} className="mt-1.5 text-[13px] text-text-secondary">
             {spec.hint}
           </p>
         )

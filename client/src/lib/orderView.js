@@ -5,15 +5,15 @@ export const ORDER_STATUS_ORDER = ['PENDING', 'PROCESSING', 'SHIPPED', 'COMPLETE
 
 // Fixed status colours, used by every badge, tab dot and history entry on the order pages.
 export const ORDER_STATUS_META = {
-  PENDING: { label: 'Pending', badge: 'bg-[#f7e9c4] text-[#6B4C0C]', dot: 'bg-[#B07D12]' },
-  PROCESSING: { label: 'Processing', badge: 'bg-[#f8ebe4] text-[#8F3B23]', dot: 'bg-primary' },
-  SHIPPED: { label: 'Shipped', badge: 'bg-[#dce9f2] text-[#1F4B66]', dot: 'bg-[#2E6A8F]' },
-  COMPLETED: { label: 'Completed', badge: 'bg-[#dff0e0] text-[#1F5A2B]', dot: 'bg-[#2F7A3E]' },
-  CANCELLED: { label: 'Cancelled', badge: 'bg-[#E8E1D8] text-[#5C4D40]', dot: 'bg-[#8A7A6B]' },
+  PENDING: { label: 'Pending', badge: 'bg-badge-warning text-text', dot: 'bg-badge-warning' },
+  PROCESSING: { label: 'Processing', badge: 'bg-badge-info text-text', dot: 'bg-primary' },
+  SHIPPED: { label: 'Shipped', badge: 'bg-badge-info text-text', dot: 'bg-badge-info' },
+  COMPLETED: { label: 'Completed', badge: 'bg-badge-success text-text', dot: 'bg-secondary' },
+  CANCELLED: { label: 'Cancelled', badge: 'bg-badge-neutral text-text', dot: 'bg-text-secondary' },
 };
 
 export const statusMeta = (status) =>
-  ORDER_STATUS_META[status] ?? { label: status ?? 'Unknown', badge: 'bg-[#efe9e0] text-[#4A3F35]', dot: 'bg-[#8A7A6B]' };
+  ORDER_STATUS_META[status] ?? { label: status ?? 'Unknown', badge: 'bg-badge-neutral text-text', dot: 'bg-text-secondary' };
 
 // Snapshot first: it survives later product edits and deletion.
 export const orderItem = (order) => {

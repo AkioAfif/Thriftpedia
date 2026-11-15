@@ -175,15 +175,15 @@ export default function FilterSelect({
   }
 
   const border = open
-    ? 'border-[#B5532E]'
+    ? 'border-primary'
     : invalid
-      ? 'border-[#B3402A]'
+      ? 'border-error'
       : isActive
-        ? 'border-[#EBC3AE]'
-        : 'border-[#D9CFC1] hover:border-[#B5A595]';
+        ? 'border-primary-tint'
+        : 'border-border hover:border-border';
   const tone = isActive
-    ? 'bg-[#FBE6DC] font-semibold text-[#B5532E]'
-    : `bg-white ${isField && !value ? 'text-[#6F6358]' : 'text-[#2B2118]'}`;
+    ? 'bg-primary-tint font-semibold text-primary'
+    : `bg-surface ${isField && !value ? 'text-text-secondary' : 'text-text'}`;
 
   return (
     <div ref={rootRef} className="relative min-w-0">
@@ -202,13 +202,13 @@ export default function FilterSelect({
         disabled={disabled}
         onClick={() => (open ? close() : openList())}
         onKeyDown={onTriggerKeyDown}
-        className={`flex ${compact ? 'h-10' : 'h-11'} w-full items-center justify-between gap-2 rounded-xl border-[1.5px] px-3.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:bg-[#F5F0E8] disabled:text-[#6F6358] ${border} ${tone}`}
+        className={`flex ${compact ? 'h-10' : 'h-11'} w-full items-center justify-between gap-2 rounded-xl border-[1.5px] px-3.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-text-secondary ${border} ${tone}`}
       >
         {inlineLabel ? (
           // Label + value inside the trigger; the button's text is its accessible name.
           <span className="flex min-w-0 items-baseline gap-1.5">
-            <span className={`shrink-0 text-[13px] font-normal ${isActive ? 'text-[#B5532E]' : 'text-[#6F6358]'}`}>{inlineLabel}</span>
-            <span className={`min-w-0 truncate font-semibold ${isActive ? 'text-[#B5532E]' : 'text-[#2B2118]'}`}>{triggerText}</span>
+            <span className={`shrink-0 text-[13px] font-normal ${isActive ? 'text-primary' : 'text-text-secondary'}`}>{inlineLabel}</span>
+            <span className={`min-w-0 truncate font-semibold ${isActive ? 'text-primary' : 'text-text'}`}>{triggerText}</span>
           </span>
         ) : (
           <span className="min-w-0 truncate">{triggerText}</span>
@@ -216,7 +216,7 @@ export default function FilterSelect({
         <span
           aria-hidden="true"
           className={`shrink-0 transition-transform duration-150 motion-reduce:transition-none ${open ? 'rotate-180' : ''} ${
-            isActive || open ? 'text-[#B5532E]' : 'text-[#6F6358]'
+            isActive || open ? 'text-primary' : 'text-text-secondary'
           }`}
         >
           <ChevronIcon />
@@ -234,7 +234,7 @@ export default function FilterSelect({
             aria-activedescendant={optionId(activeIndex)}
             onKeyDown={onListKeyDown}
             style={panel.style}
-            className="fixed z-[60] overflow-y-auto rounded-[14px] border border-[#D9CFC1] bg-white p-1.5 shadow-[0_8px_24px_rgba(43,33,24,0.08)] focus:outline-none"
+            className="fixed z-[60] overflow-y-auto rounded-[14px] border border-border bg-surface p-1.5 shadow-[0_8px_24px_rgba(43,33,24,0.08)] focus:outline-none"
           >
             {list.map((opt, i) => {
               const selected = opt.value === value;
@@ -248,8 +248,8 @@ export default function FilterSelect({
                   onPointerEnter={() => setActiveIndex(i)}
                   onClick={() => choose(i)}
                   className={`flex h-10 cursor-pointer items-center justify-between gap-3 rounded-[10px] px-3 text-sm ${
-                    selected ? 'bg-[#FBE6DC] font-semibold text-[#B5532E]' : `text-[#2B2118] ${active ? 'bg-[#F5F0E8]' : ''}`
-                  } ${active && selected ? 'ring-1 ring-inset ring-[#B5532E]' : ''}`}
+                    selected ? 'bg-primary-tint font-semibold text-primary' : `text-text ${active ? 'bg-surface-muted' : ''}`
+                  } ${active && selected ? 'ring-1 ring-inset ring-primary' : ''}`}
                 >
                   <span className="truncate">{opt.label}</span>
                   {selected && <CheckIcon />}

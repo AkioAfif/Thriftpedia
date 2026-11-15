@@ -6,12 +6,12 @@ export function Badge({ children, variant = 'default', className, ...props }) {
     return (
       <span
         className={cn(
-          'px-2.5 py-1 rounded-full text-xs font-bold shadow-xs bg-text text-white flex items-center gap-1 select-none',
+          'px-2.5 py-1 rounded-full text-xs font-bold shadow-xs bg-text text-on-primary flex items-center gap-1 select-none',
           className
         )}
         {...props}
       >
-        <LockIcon className="w-3.5 h-3.5 text-white" />
+        <LockIcon className="w-3.5 h-3.5 text-on-primary" />
         <span>Sold</span>
       </span>
     );
@@ -21,7 +21,7 @@ export function Badge({ children, variant = 'default', className, ...props }) {
     return (
       <span
         className={cn(
-          'h-5 min-w-[20px] px-1.5 rounded-full bg-[#FBEDE6] text-primary text-[11px] font-mono font-bold flex items-center justify-center select-none',
+          'h-5 min-w-[20px] px-1.5 rounded-full bg-primary-tint text-primary text-[11px] font-mono font-bold flex items-center justify-center select-none',
           className
         )}
         {...props}
