@@ -15,6 +15,7 @@ import { canOptimizeImage } from '@/lib/imageHosts';
 import { ADDRESS_FIELDS, EMPTY_ADDRESS, validateAddress } from '@/lib/shippingAddress';
 import { draftKey, usePersistedForm } from '@/hooks/usePersistedForm';
 import { AddressForm } from '@/components/orders/AddressForm';
+import { LoadingDots } from '@/components/ui/LoadingDots';
 
 const btnBase =
   'inline-flex w-full min-h-[44px] items-center justify-center rounded-md px-5 text-body-md font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
@@ -241,7 +242,7 @@ export default function CheckoutPage() {
                   aria-describedby={isAdmin ? 'admin-order-note' : undefined}
                   className={btnPrimary}
                 >
-                  {submitting ? <Spinner /> : 'Place order'}
+                  {submitting ? <LoadingDots /> : 'Place order'}
                 </button>
                 {isAdmin && (
                   <p id="admin-order-note" className="text-[13px] text-text-secondary">
