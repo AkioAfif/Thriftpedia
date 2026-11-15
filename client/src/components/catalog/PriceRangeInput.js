@@ -96,12 +96,12 @@ export function PriceRangeInput({
         isMobile && 'pb-4'
       )}
     >
-      <span className="text-sm font-semibold text-text block font-sans">
+      <span className="text-sm font-semibold text-[#2B2118] block font-sans">
         {isMobile ? 'Price' : 'Price Range'}
       </span>
       <div
         className={cn(
-          'grid grid-cols-2 gap-3 items-end',
+          'grid grid-cols-2 gap-3 items-end min-w-0',
           isMobile && 'flex items-center gap-2'
         )}
       >
@@ -114,7 +114,7 @@ export function PriceRangeInput({
               Min
             </label>
           )}
-          <div className="h-10 bg-white border border-[#E6DDD2] rounded-xl px-3 flex items-center focus-within:border-primary focus-within:ring-2 focus-within:ring-primary transition-all shadow-xs">
+          <div className="h-10 bg-white border border-[#E6DDD2] rounded-xl px-3 flex items-center focus-within:border-[#B5532E] focus-within:ring-2 focus-within:ring-[#B5532E] transition-all shadow-xs">
             <span className="text-xs text-[#5C4D40] font-sans mr-1.5 shrink-0 font-semibold select-none">
               Rp
             </span>
@@ -128,7 +128,7 @@ export function PriceRangeInput({
               onBlur={!isMobile ? validateAndApply : undefined}
               onKeyDown={handleKeyDown}
               placeholder={isMobile ? 'Min' : '150,000'}
-              className="w-full bg-transparent border-0 p-0 text-xs font-sans text-text focus:ring-0 focus:outline-none placeholder:text-[#8C7E72]"
+              className="w-full min-w-0 flex-1 bg-transparent border-0 p-0 text-xs font-sans text-[#2B2118] focus:ring-0 focus:outline-none placeholder:text-[#8C7E72]"
             />
           </div>
         </div>
@@ -146,7 +146,7 @@ export function PriceRangeInput({
               Max
             </label>
           )}
-          <div className="h-10 bg-white border border-[#E6DDD2] rounded-xl px-3 flex items-center focus-within:border-primary focus-within:ring-2 focus-within:ring-primary transition-all shadow-xs">
+          <div className="h-10 bg-white border border-[#E6DDD2] rounded-xl px-3 flex items-center focus-within:border-[#B5532E] focus-within:ring-2 focus-within:ring-[#B5532E] transition-all shadow-xs">
             <span className="text-xs text-[#5C4D40] font-sans mr-1.5 shrink-0 font-semibold select-none">
               Rp
             </span>
@@ -160,13 +160,13 @@ export function PriceRangeInput({
               onBlur={!isMobile ? validateAndApply : undefined}
               onKeyDown={handleKeyDown}
               placeholder={isMobile ? 'Max' : '850,000'}
-              className="w-full bg-transparent border-0 p-0 text-xs font-sans text-text focus:ring-0 focus:outline-none placeholder:text-[#8C7E72]"
+              className="w-full min-w-0 flex-1 bg-transparent border-0 p-0 text-xs font-sans text-[#2B2118] focus:ring-0 focus:outline-none placeholder:text-[#8C7E72]"
             />
           </div>
         </div>
       </div>
       {error && (
-        <p className="text-[11px] text-error font-medium pt-1">{error}</p>
+        <p className="text-[11px] text-[#BA1A1A] font-medium pt-1">{error}</p>
       )}
     </div>
   );

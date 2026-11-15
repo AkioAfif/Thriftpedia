@@ -25,7 +25,9 @@ export function FilterSidebar() {
     <aside
       id="desktop-sidebar"
       data-layer="Sidebar"
-      className="hidden md:flex flex-col w-[260px] shrink-0 sticky max-h-[calc(100vh-100px)] overflow-y-auto pr-3 gap-6 top-6"
+      // Side column from lg only (below lg: the "Filters" bottom sheet). pl-1 keeps focus rings and
+      // borders at the left edge from being clipped by the scroll container.
+      className="hidden lg:flex flex-col w-[260px] shrink-0 sticky max-h-[calc(100vh-100px)] overflow-y-auto pl-1 pr-3 gap-6 top-6"
     >
       {/* Header */}
       <div className="flex items-center justify-between pb-4 border-b border-[#E6DDD2]">

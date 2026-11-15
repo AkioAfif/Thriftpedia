@@ -14,6 +14,8 @@ export function MobileMenu({ isOpen, onClose, isLoggedIn = false, user = null, o
 
   const isHome = pathname === '/';
   const isCatalog = pathname?.startsWith('/catalog') ?? false;
+  // Admins: "Back to dashboard" on top, no buyer-only wishlist/orders links.
+  const isAdmin = isLoggedIn && String(user?.role ?? '').toUpperCase() === 'ADMIN';
 
   const name = user?.name || 'Account';
   const initials = name
@@ -29,6 +31,21 @@ export function MobileMenu({ isOpen, onClose, isLoggedIn = false, user = null, o
       id="mobile-nav-menu"
       className="md:hidden fixed inset-x-0 top-[65px] bg-canvas border-b border-[#E6DDD2] px-5 py-5 shadow-lg flex flex-col gap-3 transition-all z-40"
     >
+      {isAdmin && (
+        <Link
+          href="/admin/dashboard"
+          onClick={onClose}
+          className="flex min-h-12 w-full items-center gap-3 rounded-xl bg-[#B5532E] px-4 text-sm font-semibold text-white hover:bg-[#9C4425] transition-colors focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2 focus-visible:outline-none"
+        >
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="3" width="7" height="7" rx="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" />
+            <rect x="14" y="14" width="7" height="7" rx="1.5" />
+          </svg>
+          Back to dashboard
+        </Link>
+      )}
       <Link
         href="/"
         onClick={onClose}
@@ -48,8 +65,12 @@ export function MobileMenu({ isOpen, onClose, isLoggedIn = false, user = null, o
 
       {isLoggedIn ? (
         <>
-          <Link href="/wishlist" onClick={onClose} className={`${linkBase} buyer-control min-h-11`}>Your wishlist</Link>
-          <Link href="/orders" onClick={onClose} className={`${linkBase} buyer-control min-h-11`}>Your orders</Link>
+          {!isAdmin && (
+            <>
+              <Link href="/wishlist" onClick={onClose} className={`${linkBase} buyer-control min-h-11`}>Your wishlist</Link>
+              <Link href="/orders" onClick={onClose} className={`${linkBase} buyer-control min-h-11`}>Your orders</Link>
+            </>
+          )}
           <div className="pt-2 flex flex-col gap-2">
             <div className="p-3 bg-white rounded-xl border border-[#E6DDD2] flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-[#E7DCD0] text-text font-bold text-xs flex items-center justify-center border border-[#CFBEAE] shrink-0">

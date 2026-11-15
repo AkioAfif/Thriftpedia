@@ -4,20 +4,12 @@ import Link from 'next/link';
 import { ErrorOutlineIcon, HeartIcon, LockIcon } from '@/components/ui/Icons';
 import { conditionLabel, formatRupiah, sizeLabel } from '@/lib/adminProducts';
 import { cn } from '@/lib/utils';
+import { LoadingDots } from '@/components/ui/LoadingDots';
 
 const btnBase =
   'inline-flex w-full min-h-[48px] items-center justify-center gap-2 rounded-md px-5 text-body-md font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
 const btnPrimary = `${btnBase} bg-primary text-on-primary hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-primary`;
 const btnSecondary = `${btnBase} border border-border bg-surface text-text hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:border-border disabled:text-text-muted disabled:hover:text-text-muted`;
-
-function Spinner() {
-  return (
-    <span
-      aria-hidden="true"
-      className="h-4 w-4 animate-spin rounded-full border-2 border-on-primary border-t-transparent motion-reduce:animate-none"
-    />
-  );
-}
 
 // Three states that must read differently at a glance: colour, icon and words all change.
 function StatusPanel({ view }) {
@@ -63,6 +55,7 @@ export function PurchasePanel({
   product,
   view,
   checking,
+  checkError = '',
   isAdmin,
   onBuy,
   catalogHref,
@@ -97,18 +90,24 @@ export function PurchasePanel({
               onClick={onBuy}
               disabled={checking || isAdmin}
               aria-busy={checking}
-              aria-describedby={isAdmin ? 'admin-buy-note' : undefined}
+              aria-describedby={isAdmin ? 'admin-buy-note' : checkError ? 'buy-check-error' : undefined}
               className={btnPrimary}
             >
               {checking ? (
                 <>
-                  <Spinner />
-                  <span role="status">Checking availability…</span>
+                  <LoadingDots />
+                  <span role="status">Checking availability</span>
                 </>
               ) : (
                 'Buy Now'
               )}
             </button>
+            {checkError && !checking && (
+              <p id="buy-check-error" role="alert" className="flex gap-2 text-body-sm font-medium text-error">
+                <ErrorOutlineIcon className="mt-0.5 h-4 w-4 shrink-0" />
+                {checkError}
+              </p>
+            )}
             {isAdmin && (
               <p id="admin-buy-note" className="text-body-sm text-text-secondary">
                 Admin accounts can’t buy products. Log in with a buyer account to order.

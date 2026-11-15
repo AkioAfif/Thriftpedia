@@ -120,6 +120,12 @@ export default function OrdersView() {
           }}
           sort={query.sort}
           onSortChange={(sort) => update({ sort })}
+          appliedQ={query.q}
+          // One navigation for both, so neither change overwrites the other. The status tab stays.
+          onResetFilters={() => {
+            setSearchInput('');
+            update({ q: '', sort: 'newest' });
+          }}
         />
       </div>
 

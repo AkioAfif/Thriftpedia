@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
+import MobileBackBar from '../MobileBackBar';
 import DetailCard from './DetailCard';
 import OrderItemCard from './OrderItemCard';
 import OrderStatusBadge from './OrderStatusBadge';
@@ -22,21 +23,22 @@ import {
   updateOrderStatus,
 } from '@/lib/adminOrders';
 
-const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5532E] focus-visible:ring-offset-2';
 const cardCls = 'rounded-[20px] border border-[#D9CFC1] bg-white p-5 sm:p-7';
 const pulse = 'animate-pulse rounded-[20px] bg-[#efe9e0]';
 
 function Breadcrumb({ backHref, current }) {
   return (
-    <nav aria-label="Breadcrumb">
-      <ol className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-text-secondary">
+    // Below lg the mobile top bar carries the way back, so the breadcrumb is desktop-only.
+    <nav aria-label="Breadcrumb" className="hidden lg:block">
+      <ol className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-[#6F6358]">
         <li>
-          <Link href={backHref} className={`rounded hover:text-text hover:underline ${focusRing}`}>
+          <Link href={backHref} className={`rounded hover:text-[#2B2118] hover:underline ${focusRing}`}>
             Order Management
           </Link>
         </li>
         <li aria-hidden="true">›</li>
-        <li aria-current="page" className="min-w-0 truncate text-text">
+        <li aria-current="page" className="min-w-0 truncate text-[#2B2118]">
           {current}
         </li>
       </ol>
@@ -47,8 +49,8 @@ function Breadcrumb({ backHref, current }) {
 function StateMessage({ title, children, action }) {
   return (
     <div className={`${cardCls} px-6 py-16 text-center`}>
-      <p className="text-lg font-semibold text-text">{title}</p>
-      <p className="mx-auto mt-2 max-w-[28rem] text-sm text-text-secondary">{children}</p>
+      <p className="text-lg font-semibold text-[#2B2118]">{title}</p>
+      <p className="mx-auto mt-2 max-w-[28rem] text-sm text-[#6F6358]">{children}</p>
       {action}
     </div>
   );
@@ -139,8 +141,9 @@ export default function OrderDetailView() {
   if (state.status === 'loading') {
     return (
       <div>
+        <MobileBackBar href={backHref} label="Orders" title="Order" />
         <Breadcrumb backHref={backHref} current="Order" />
-        <div className="mt-6">
+        <div className="lg:mt-6">
           <DetailSkeleton />
         </div>
       </div>
@@ -152,8 +155,9 @@ export default function OrderDetailView() {
     const notFound = status === 404 || status === 400;
     return (
       <div>
+        <MobileBackBar href={backHref} label="Orders" title="Order" />
         <Breadcrumb backHref={backHref} current="Order" />
-        <div className="mt-6">
+        <div className="lg:mt-6">
           {status === 403 ? (
             <StateMessage title="Access denied">Only admin accounts can view and manage orders.</StateMessage>
           ) : notFound ? (
@@ -167,7 +171,7 @@ export default function OrderDetailView() {
                 <button
                   type="button"
                   onClick={reload}
-                  className={`mt-5 min-h-11 rounded-xl bg-primary px-5 text-sm font-semibold text-white hover:bg-primary-hover ${focusRing}`}
+                  className={`mt-5 min-h-11 rounded-xl bg-[#B5532E] px-5 text-sm font-semibold text-white hover:bg-[#9C4425] ${focusRing}`}
                 >
                   Try again
                 </button>
@@ -188,21 +192,22 @@ export default function OrderDetailView() {
 
   return (
     <div className="mx-auto w-full max-w-[1200px]">
+      <MobileBackBar href={backHref} label="Orders" title={order.orderNumber ? `Order ${label}` : 'Order'} />
       <Breadcrumb backHref={backHref} current={order.orderNumber ? `Order ${label}` : 'Order'} />
 
-      <header className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <header className="flex lg:mt-4 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="break-words text-[32px] font-semibold leading-tight tabular-nums text-text">Order {label}</h1>
+            <h1 className="break-words text-[32px] font-semibold leading-tight tabular-nums text-[#2B2118]">Order {label}</h1>
             <OrderStatusBadge status={order.status} size="lg" />
           </div>
-          <p className="mt-1.5 text-sm tabular-nums text-text-secondary">
+          <p className="mt-1.5 text-sm tabular-nums text-[#6F6358]">
             Placed <time dateTime={order.createdAt}>{formatOrderDateTime(order.createdAt)}</time>
           </p>
         </div>
         <Link
           href={backHref}
-          className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl border-[1.5px] border-primary bg-white px-5 text-sm font-semibold text-primary hover:bg-[#FBE6DC] ${focusRing}`}
+          className={`hidden min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl border-[1.5px] border-[#B5532E] bg-white px-5 text-sm font-semibold text-[#B5532E] hover:bg-[#FBE6DC] lg:inline-flex ${focusRing}`}
         >
           <span aria-hidden="true">←</span> Back to orders
         </Link>

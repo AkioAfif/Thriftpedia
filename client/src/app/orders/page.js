@@ -7,10 +7,10 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 import { useWishlist } from '@/context/BuyerContext';
 import { getOrdersPage } from '@/lib/services/orderService';
-import { ORDER_STATUS_ORDER, formatOrderDateTime, orderItem, orderLabel, statusMeta } from '@/lib/orderView';
-import { formatRupiah, sizeLabel } from '@/lib/adminProducts';
-import OrderStatusBadge from '@/components/admin/orders/OrderStatusBadge';
-import { OrderThumb } from '@/components/orders/OrderThumb';
+import { ORDER_STATUS_ORDER } from '@/lib/orderView';
+import { BackToCatalogLink } from '@/components/orders/BackToCatalogLink';
+import { OrderCard } from '@/components/orders/OrderCard';
+import StatusChips from '@/components/ui/StatusChips';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorOutlineIcon } from '@/components/ui/Icons';
 import { cn } from '@/lib/utils';
@@ -18,11 +18,11 @@ import { cn } from '@/lib/utils';
 const PAGE_SIZE = 10;
 const PAGE = 'mx-auto w-full max-w-[1120px] flex-1 px-margin-mobile py-lg md:px-margin-tablet lg:py-xl';
 const CARD = 'rounded-2xl border border-border bg-surface p-md sm:p-lg';
-const TABS = [{ value: '', label: 'All', countKey: 'ALL' }, ...ORDER_STATUS_ORDER.map((s) => ({ value: s, label: statusMeta(s).label, countKey: s }))];
 
 export default function OrdersPage() {
   return (
     <main className={PAGE}>
+      <BackToCatalogLink />
       <h1 className="text-headline-mobile font-semibold text-text md:text-headline-lg">My orders</h1>
       <div className="mt-lg">
         <Suspense fallback={<ListSkeleton />}>
@@ -89,30 +89,7 @@ function OrdersView() {
 
   return (
     <div className="flex flex-col gap-lg">
-      <nav aria-label="Filter orders by status" className="-mx-margin-mobile overflow-x-auto px-margin-mobile md:mx-0 md:px-0">
-        <ul className="flex min-w-max border-b border-border">
-          {TABS.map((tab) => {
-            const active = tab.value === status;
-            const count = counts?.[tab.countKey];
-            return (
-              <li key={tab.countKey}>
-                <button
-                  type="button"
-                  aria-current={active ? 'page' : undefined}
-                  onClick={() => go({ status: tab.value, page: 1 })}
-                  className={cn(
-                    'buyer-control -mb-px flex min-h-11 items-center gap-1.5 rounded-t-md border-b-2 px-md text-body-md transition-colors',
-                    active ? 'border-primary font-semibold text-primary' : 'border-transparent text-text-secondary hover:text-text'
-                  )}
-                >
-                  {tab.label}
-                  {typeof count === 'number' && <span className="text-body-sm tabular-nums text-text-muted">{count}</span>}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+      <StatusChips value={status} counts={counts} onSelect={(next) => go({ status: next, page: 1 })} />
 
       {query.isPending ? (
         <ListSkeleton />
@@ -125,7 +102,7 @@ function OrdersView() {
         </div>
       ) : data.items.length === 0 ? (
         status || page > 1 ? (
-          <EmptyCard title={status ? `No ${statusMeta(status).label.toLowerCase()} orders` : 'No orders on this page'}>
+          <EmptyCard title={status ? 'No orders in this status' : 'No orders on this page'}>
             <button type="button" className="buyer-secondary w-full sm:w-[200px]" onClick={() => go({ status: '', page: 1 })}>
               Show all orders
             </button>
@@ -138,7 +115,7 @@ function OrdersView() {
       ) : (
         <>
           <ul aria-busy={query.isFetching} className={cn('flex flex-col gap-md transition-opacity', query.isPlaceholderData && 'opacity-60')}>
-            {data.items.map((order) => <OrderRow key={order._id} order={order} />)}
+            {data.items.map((order) => <OrderCard key={order._id} order={order} />)}
           </ul>
           {meta.totalPages > 1 && (
             <nav aria-label="Pagination" className="flex items-center justify-between gap-md">
@@ -169,39 +146,6 @@ function OrdersView() {
   );
 }
 
-function OrderRow({ order }) {
-  const item = orderItem(order);
-  const label = orderLabel(order);
-  return (
-    <li className={`${CARD} grid grid-cols-[64px_minmax(0,1fr)] gap-x-md gap-y-md sm:grid-cols-[80px_minmax(0,1fr)_auto]`}>
-      <OrderThumb src={item.photo} alt={item.name} sizes="80px" className="h-20 w-16 sm:h-[100px] sm:w-20" />
-      <div className="flex min-w-0 flex-col gap-1">
-        <h2 className="break-words text-title-md font-semibold text-text">{item.name}</h2>
-        {item.size && <p className="text-body-md text-text-secondary">Size {sizeLabel(item.size)}</p>}
-        <p className="mt-auto text-body-sm tabular-nums text-text-secondary">
-          {label} · <time dateTime={order.createdAt}>{formatOrderDateTime(order.createdAt)}</time>
-        </p>
-      </div>
-      <div className="col-span-2 flex items-end justify-between gap-md border-t border-border pt-md sm:col-span-1 sm:flex-col sm:items-end sm:border-0 sm:pt-0">
-        <div className="sm:text-right">
-          <p className="text-body-sm text-text-secondary">Total</p>
-          <p className="text-headline-sm font-semibold tabular-nums text-text">{formatRupiah(order.total ?? item.price)}</p>
-        </div>
-        <div className="flex items-center gap-md">
-          <OrderStatusBadge status={order.status} />
-          <Link
-            href={`/orders/${order._id}`}
-            aria-label={`View order ${label}`}
-            className="buyer-control inline-flex min-h-11 items-center rounded-md px-1 text-body-md font-semibold text-primary hover:text-primary-hover"
-          >
-            View
-          </Link>
-        </div>
-      </div>
-    </li>
-  );
-}
-
 function EmptyCard({ title, children }) {
   return (
     <div className={`${CARD} flex flex-col items-center gap-lg py-xl text-center`}>
@@ -215,14 +159,35 @@ function ListSkeleton() {
   return (
     <div aria-busy="true" aria-label="Loading orders" className="flex flex-col gap-md">
       {[0, 1, 2].map((i) => (
-        <div key={i} className={`${CARD} flex gap-md`}>
-          <Skeleton className="h-20 w-16 rounded-lg sm:h-[100px] sm:w-20" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-5 w-1/2 rounded" />
-            <Skeleton className="h-4 w-16 rounded" />
-            <Skeleton className="h-4 w-2/3 rounded" />
+        <div key={i} className="rounded-2xl border border-[#D9CFC1] bg-white p-4 md:p-5">
+          <div className="hidden items-center gap-5 md:flex">
+            <Skeleton className="size-[72px] rounded-xl" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-5 w-1/2 rounded" />
+              <Skeleton className="h-4 w-32 rounded" />
+              <Skeleton className="h-4 w-48 rounded" />
+            </div>
+            <Skeleton className="h-11 w-24 rounded" />
+            <Skeleton className="h-6 w-24 rounded-full" />
+            <Skeleton className="h-11 w-32 rounded-xl" />
           </div>
-          <Skeleton className="hidden h-6 w-28 rounded sm:block" />
+          <div className="md:hidden">
+            <div className="flex justify-between">
+              <Skeleton className="h-4 w-24 rounded" />
+              <Skeleton className="h-6 w-20 rounded-full" />
+            </div>
+            <div className="mt-3 flex gap-3">
+              <Skeleton className="size-14 rounded-xl" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-3/4 rounded" />
+                <Skeleton className="h-3.5 w-1/2 rounded" />
+              </div>
+            </div>
+            <div className="mt-3 flex items-center justify-between border-t border-[#EAE4DA] pt-3">
+              <Skeleton className="h-5 w-24 rounded" />
+              <Skeleton className="h-11 w-32 rounded-xl" />
+            </div>
+          </div>
         </div>
       ))}
     </div>
