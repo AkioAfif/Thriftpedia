@@ -13,6 +13,12 @@ const { errorHandler } = require('./middleware/error.middleware');
 
 const app = express();
 
+// Number of reverse proxies in front of the app, so req.ip (and the password-reset rate
+// limiter) sees the visitor's IP instead of the proxy's. Production: 2 (Vercel rewrite +
+// Railway edge). Unset/0 locally, where there is no proxy.
+const trustProxyHops = Number.parseInt(process.env.TRUST_PROXY_HOPS ?? '', 10);
+if (trustProxyHops > 0) app.set('trust proxy', trustProxyHops);
+
 // Exact-match allowlist from CORS_ORIGINS (comma-separated). Unset means no cross-origin
 // browser access; production browsers reach the API through the Vercel /api rewrite anyway.
 const corsOrigins = (process.env.CORS_ORIGINS || '')
