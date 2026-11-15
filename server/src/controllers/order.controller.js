@@ -38,4 +38,10 @@ async function cancel(req, res) {
   res.status(200).json({ message: 'Order cancelled', data: order });
 }
 
-module.exports = { create, list, getById, updateStatus, cancel };
+async function updateAddress(req, res) {
+  // Shape checked and trimmed by validateUpdateAddress.
+  const order = await orderService.updateShippingAddress(req.user, req.params.orderId, req.body.shippingAddress);
+  res.status(200).json({ message: 'Address saved', data: order });
+}
+
+module.exports = { create, list, getById, updateStatus, cancel, updateAddress };

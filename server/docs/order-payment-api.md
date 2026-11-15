@@ -89,6 +89,43 @@ Respons:
 - `404` order tidak ada
 - `409` status bukan `PENDING` (sudah diproses, dikirim, selesai, atau sudah dibatalkan)
 
+### Simpan / ganti alamat pengiriman (oleh pembeli)
+
+`PATCH /api/orders/:orderId/address`. Hanya BUYER pemilik order.
+
+```json
+{
+  "shippingAddress": {
+    "recipientName": "Budi Santoso",
+    "phone": "081234567890",
+    "address": "Jl. Merdeka No. 1",
+    "city": "Bandung",
+    "postalCode": "40111"
+  }
+}
+```
+
+- `shippingAddress` **wajib** (tidak boleh kosong atau `null`). Aturan field **sama persis**
+  dengan [Checkout](#checkout) (validator yang sama): `recipientName` maks 100, `phone` 8–15
+  digit boleh diawali `+`, `address` maks 500, `city` maks 100, `postalCode` tepat 5 digit.
+  Nilai di-trim. Field lain di dalam `shippingAddress`, atau field lain di body, ditolak.
+- Hanya bisa saat `status === 'PENDING'`, `paymentStatus === 'UNPAID'` (order lama tanpa
+  `paymentStatus` dianggap `UNPAID`) dan order **belum** punya `paymentToken`. Setelah token
+  dibuat, Midtrans sudah menerima alamat lama, jadi alamat tidak bisa diganti lagi.
+- Boleh menimpa alamat yang sudah ada. Syarat di atas dicek di dalam satu update atomik,
+  jadi tidak bisa balapan dengan pembuatan token, webhook, atau perubahan status.
+
+Respons:
+- `200` `{ message: "Address saved", data }`. `data` berbentuk sama dengan
+  `GET /api/orders/:orderId` (pembeli tidak melihat `statusHistory.by`).
+- `400` id tidak valid, body bukan objek, `shippingAddress` tidak ada / `null`, field tidak
+  dikenal, atau alamat tidak valid
+- `401` token tidak ada / tidak valid
+- `403` bukan pemilik, atau login sebagai ADMIN
+- `404` order tidak ada
+- `409` `"Address can no longer be changed: ..."`: status bukan `PENDING`, `paymentStatus`
+  bukan `UNPAID`, atau sudah ada `paymentToken`
+
 ### Buat token pembayaran
 
 `POST /api/payments/:orderId`. Hanya BUYER pemilik order. Tanpa body.
@@ -159,6 +196,7 @@ Setelah `PROCESSING`, alur admin tetap sama: `SHIPPED` → `COMPLETED`.
 | Tombol **Batalkan** | `status === 'PENDING'` |
 | Badge pembayaran | selalu, dari `paymentStatus ?? 'UNPAID'` |
 | Form alamat di checkout | opsional, tapi tanpa alamat order tidak bisa dibayar |
+| Tambah / ubah alamat di detail order | `status === 'PENDING' && (paymentStatus ?? 'UNPAID') === 'UNPAID' && !paymentToken` |
 
 Setelah bayar, jangan anggap order lunas hanya dari callback Snap di browser. Ambil ulang
 `GET /api/orders/:orderId`, karena status resmi datang dari webhook.
@@ -208,4 +246,5 @@ curl -X POST https://api.sandbox.midtrans.com/v2/<orderId>/expire \
 | Tanggal | Perubahan |
 |---|---|
 | 2026-11-14 | Versi pertama: field pembayaran + alamat, `POST /api/payments/:orderId`, webhook, `PATCH /api/orders/:orderId/cancel`. |
+| 2026-11-15 | `PATCH /api/orders/:orderId/address`: pembeli menyimpan atau mengganti alamat selama order `PENDING`, `UNPAID`, dan belum punya `paymentToken`. |
 | 2026-11-14 | Webhook diverifikasi dengan `MIDTRANS_SIGNATURE_KEY` (Signature Secret Key). Tidak ada perubahan untuk FE. |
