@@ -34,6 +34,7 @@ Module._extensions['.js'] = function (module, filename) {
   });
   module._compile(result.code, filename);
 };
+Module._extensions['.jsx'] = Module._extensions['.js'];
 const { render, screen, fireEvent, waitFor, cleanup, act } = require('@testing-library/react');
 const { useQueryClient } = require('@tanstack/react-query');
 const { AuthProvider } = require('../../src/context/AuthContext');
