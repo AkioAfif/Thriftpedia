@@ -31,12 +31,13 @@ const registerUser = async ({ name, email, password }) => {
 
   const userResponse = user.toObject();
   delete userResponse.password;
+  delete userResponse.tokenVersion;
 
   return userResponse;
 };
 
 const loginUser = async ({ email, password }) => {
-  const user = await User.findOne({ email }).select('+password');
+  const user = await User.findOne({ email }).select('+password +tokenVersion');
   if (!user) {
     throw new AppError(401, 'Invalid email or password');
   }
@@ -46,7 +47,7 @@ const loginUser = async ({ email, password }) => {
     throw new AppError(401, 'Invalid email or password');
   }
 
-  const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, {
+  const token = jwt.sign({ id: user._id, role: user.role, tokenVersion: user.tokenVersion ?? 0 }, JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
   });
 
@@ -129,6 +130,7 @@ const resetPassword = async (token, newPassword) => {
   if (
     typeof newPassword !== 'string' ||
     newPassword.length < 8 ||
+    Buffer.byteLength(newPassword, 'utf8') > 72 ||
     !/\d/.test(newPassword)
   ) {
     throw new AppError(
@@ -138,13 +140,16 @@ const resetPassword = async (token, newPassword) => {
   }
 
   // Hash password baru
-  user.password = await bcrypt.hash(newPassword, 10);
-
-  // Hapus token agar tidak bisa digunakan lagi
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpires = undefined;
-
-  await user.save();
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+  // Consume once atomically and revoke every previously issued access token.
+  const result = await User.updateOne({
+    _id: user._id, resetPasswordToken: hashedToken, resetPasswordExpires: { $gt: new Date() },
+  }, {
+    $set: { password: passwordHash },
+    $inc: { tokenVersion: 1 },
+    $unset: { resetPasswordToken: '', resetPasswordExpires: '' },
+  });
+  if (!result.modifiedCount) throw new AppError(400, 'Invalid or expired reset token');
 
   return { message: 'Password reset successfully' };
 };

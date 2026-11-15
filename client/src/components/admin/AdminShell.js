@@ -6,7 +6,7 @@ import AdminMobileNav from './AdminMobileNav';
 import { AdminTopBarProvider } from './MobileBackBar';
 import Sidebar from './Sidebar';
 import { apiFetch } from '../../lib/adminApi';
-import { extractUser, getToken } from '../../lib/adminAuth';
+import { extractUser } from '../../lib/adminAuth';
 import { useAuth } from '@/context/AuthContext';
 
 function FullScreenMessage({ title, message, children }) {
@@ -28,7 +28,7 @@ export default function AdminShell({ children }) {
   const [errorMessage, setErrorMessage] = useState('');
 
   // useAuth().logout clears token, user and thriftpedia_token together (and updates the Navbar).
-  const { logout: endSession } = useAuth();
+  const { token, ready, user: sessionUser, logout: endSession } = useAuth();
   const logout = useCallback(() => {
     endSession();
     router.replace('/login');
@@ -38,7 +38,8 @@ export default function AdminShell({ children }) {
     let active = true;
 
     async function check() {
-      if (!getToken()) {
+      if (!ready) return;
+      if (!token) {
         router.replace('/login');
         return;
       }
@@ -64,9 +65,9 @@ export default function AdminShell({ children }) {
     return () => {
       active = false;
     };
-  }, [endSession, router]);
+  }, [endSession, router, ready, token]);
 
-  if (status === 'checking') {
+  if (!ready || !token || status === 'checking') {
     return (
       <div className="min-h-screen bg-[#faf7f2] p-10">
         <div className="h-10 w-64 animate-pulse rounded-lg bg-[#efe9e0]" />
@@ -78,7 +79,7 @@ export default function AdminShell({ children }) {
     );
   }
 
-  if (status === 'denied') {
+  if (status === 'denied' || sessionUser?.role !== 'ADMIN') {
     return (
       <FullScreenMessage
         title="Akses ditolak"

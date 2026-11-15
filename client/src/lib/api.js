@@ -1,3 +1,5 @@
+import { rejectSession } from './sessionEvents';
+
 export class ApiError extends Error {
   constructor(status, message, data = null) {
     super(message);
@@ -49,6 +51,10 @@ export async function apiClient(endpoint, options = {}) {
   }
 
   if (!response.ok) {
+    if (response.status === 401) {
+      const authorization = new Headers(config.headers).get('Authorization');
+      rejectSession(authorization?.replace(/^Bearer /, ''));
+    }
     if (response.status === 400) {
       const message =
         data?.message || 'Invalid request. Please check your inputs.';

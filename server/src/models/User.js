@@ -13,6 +13,7 @@ const userSchema = new Schema(
     },
     password: { type: String, required: [true, 'Password is required'], select: false },
     role: { type: String, enum: ['ADMIN', 'BUYER'], default: 'BUYER' },
+    tokenVersion: { type: Number, default: 0, select: false },
     resetPasswordToken: {
       type: String,
       select: false,

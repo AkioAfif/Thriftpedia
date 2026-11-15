@@ -1,8 +1,8 @@
 'use client';
 
-import { clearToken, setToken } from '@/lib/adminAuth';
+import { getCurrentUser } from '@/lib/services/authApi';
 import { clearAllDrafts } from '@/hooks/usePersistedForm';
-import { createContext, useCallback, useContext, useEffect, useMemo, useSyncExternalStore } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 
 const TOKEN_KEY = 'token';
 const USER_KEY = 'user';
@@ -58,6 +58,8 @@ const subscribeNoop = () => () => {};
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  const [verifiedToken, setVerifiedToken] = useState(null);
+  const [sessionError, setSessionError] = useState(false);
   const raw = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const ready = useSyncExternalStore(subscribeNoop, () => true, () => false);
 
@@ -73,18 +75,14 @@ export function AuthProvider({ children }) {
   }, [raw]);
 
   const login = useCallback((newToken, newUser) => {
-    const isAdmin = String(newUser?.role ?? '').toUpperCase() === 'ADMIN';
-
     // Simpan sesi utama untuk semua pengguna
     localStorage.setItem(TOKEN_KEY, newToken);
     localStorage.setItem(USER_KEY, JSON.stringify(newUser ?? null));
 
-    // Token khusus admin hanya disimpan untuk role ADMIN
-    if (isAdmin) {
-      setToken(newToken);
-    } else {
-      clearToken();
-    }
+    // Remove the legacy duplicate token; all roles share one session.
+    localStorage.removeItem('thriftpedia_token');
+    setVerifiedToken(newToken);
+    setSessionError(false);
 
     notify();
   }, []);
@@ -93,18 +91,44 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem('thriftpedia_token');
     localStorage.removeItem(USER_KEY);
-    clearToken(); // also end the admin session stored by adminAuth
+    setVerifiedToken(null);
+    setSessionError(false);
     clearAllDrafts(); // unsaved form drafts belong to the account that wrote them
     notify();
   }, []);
+
+  useEffect(() => {
+    window.addEventListener('auth:unauthorized', logout);
+    return () => window.removeEventListener('auth:unauthorized', logout);
+  }, [logout]);
+
+  useEffect(() => {
+    if (!token || !isTokenValid(token)) return;
+    let active = true;
+    getCurrentUser(token).then((response) => {
+      if (!active) return;
+      if (!['ADMIN', 'BUYER'].includes(response.data?.role)) { logout(); return; }
+      localStorage.setItem(USER_KEY, JSON.stringify(response.data));
+      setVerifiedToken(token);
+      setSessionError(false);
+      notify();
+    }).catch((error) => {
+      if (!active) return;
+      if (error.status === 401 || error.status === 404) logout();
+      else setSessionError(true);
+    });
+    return () => { active = false; };
+  }, [token, logout]);
 
   useEffect(() => {
     if (!token) return;
 
     // Jika token sudah expired atau formatnya tidak valid
     if (!isTokenValid(token)) {
-      logout();
-      return;
+      const timeout = setTimeout(() => {
+        logout();
+      }, 0);
+      return () => clearTimeout(timeout);
     }
 
     const payload = JSON.parse(
@@ -122,17 +146,22 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(
     () => ({
-      token,
+      token: verifiedToken === token ? token : null,
       user,
-      isLoggedIn: isTokenValid(token),
-      ready,
+      isLoggedIn: verifiedToken === token && isTokenValid(token),
+      ready: ready && (!token || verifiedToken === token),
       login,
       logout,
     }),
-    [token, user, ready, login, logout]
+    [token, user, ready, login, logout, verifiedToken]
   );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>{sessionError ? (
+    <div role="alert" className="p-8 text-center">
+      <p>Sesi belum dapat diverifikasi. Periksa koneksi ke server.</p>
+      <button onClick={() => window.location.reload()} className="mt-4 underline">Coba lagi</button>
+    </div>
+  ) : children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
