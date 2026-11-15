@@ -15,7 +15,7 @@ const btnSecondary = `${btnBase} border border-border bg-surface text-text hover
 function StatusPanel({ view }) {
   if (view === 'taken') {
     return (
-      <div role="alert" className="flex gap-3 rounded-lg border border-error/30 bg-error-tint px-4 py-3 text-[#7A1010]">
+      <div role="alert" className="flex gap-3 rounded-lg border border-error/30 bg-error-tint px-4 py-3 text-error">
         <ErrorOutlineIcon className="mt-0.5 h-5 w-5 shrink-0 text-error" />
         <div>
           <p className="text-body-md font-semibold">Someone just bought this</p>
@@ -26,18 +26,18 @@ function StatusPanel({ view }) {
   }
   if (view === 'sold') {
     return (
-      <div className="flex gap-3 rounded-lg bg-[#4A3F35] px-4 py-3 text-white">
+      <div className="flex gap-3 rounded-lg bg-text px-4 py-3 text-on-primary">
         <LockIcon className="mt-0.5 h-5 w-5 shrink-0" />
         <div>
           <p className="text-body-md font-semibold">Sold · one of a kind</p>
-          <p className="text-body-sm text-white/85">This piece has been sold.</p>
+          <p className="text-body-sm text-on-primary/85">This piece has been sold.</p>
         </div>
       </div>
     );
   }
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-[#CFE0CB] bg-badge-success/60 px-4 py-3 text-[#2F5A2C]">
-      <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#3F7A3A]" />
+    <div className="flex items-center gap-3 rounded-lg border border-secondary-tint bg-badge-success/60 px-4 py-3 text-secondary">
+      <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full bg-secondary" />
       <p className="text-body-md font-semibold">Available · 1 of 1 piece</p>
     </div>
   );
@@ -116,7 +116,7 @@ export function PurchasePanel({
           </>
         ) : (
           <>
-            <button type="button" disabled className={`${btnBase} cursor-not-allowed bg-[#EFEBE4] text-[#6E5D4F]`}>
+            <button type="button" disabled className={`${btnBase} cursor-not-allowed bg-surface-muted text-text-secondary`}>
               <LockIcon className="h-4 w-4" />
               Sold out
             </button>

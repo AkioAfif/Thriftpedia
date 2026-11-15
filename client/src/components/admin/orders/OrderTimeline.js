@@ -25,11 +25,11 @@ function CheckMark() {
   );
 }
 
-// done = green with a check, current = terracotta with a #FBE6DC ring, upcoming = outlined.
+// done = green with a check, current = terracotta with a var(--primary-tint) ring, upcoming = outlined.
 const CIRCLE = {
-  done: 'bg-secondary text-white',
-  current: 'bg-primary text-white ring-4 ring-[#FBE6DC]',
-  upcoming: 'border-2 border-[#D9CFC1] bg-white text-text-secondary',
+  done: 'bg-secondary text-on-primary',
+  current: 'bg-primary text-on-primary ring-4 ring-primary-tint',
+  upcoming: 'border-2 border-border bg-surface text-text-secondary',
 };
 
 // Shared by the admin detail page and the buyer page (/orders/[orderId]).
@@ -55,7 +55,7 @@ export function OrderStepper({ status, history }) {
               <span
                 aria-hidden="true"
                 className={`absolute left-[15px] top-8 h-[calc(100%-2rem)] w-0.5 ${
-                  states[i + 1] === 'upcoming' ? 'bg-[#D9CFC1]' : 'bg-secondary'
+                  states[i + 1] === 'upcoming' ? 'bg-border' : 'bg-secondary'
                 }`}
               />
             )}

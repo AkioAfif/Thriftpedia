@@ -5,7 +5,7 @@ import { focusRing, formatCount, panel, secondaryButton, SectionError } from './
 
 const plural = (n, one, many) => `${formatCount(n)} ${n === 1 ? one : many}`;
 
-// One 16px bar (Available #5F7A5E, Sold #B5532E). The numbers are written out below it,
+// One 16px bar (Available var(--secondary), Sold var(--primary)). The numbers are written out below it,
 // each with a 10px square swatch, so the bar itself is decorative.
 function InventoryBody({ products }) {
   const available = Number(products.available) || 0;
@@ -15,23 +15,23 @@ function InventoryBody({ products }) {
   const availablePct = counted === 0 ? 0 : (available / counted) * 100;
   return (
     <>
-      <p className="mt-3 text-[28px] font-semibold leading-tight text-[#2B2118]">{plural(total, 'piece', 'pieces')}</p>
-      <div aria-hidden="true" className="mt-3 flex h-4 w-full overflow-hidden rounded-full bg-[#F5F0E8]">
-        <div className="h-full bg-[#5F7A5E]" style={{ width: `${availablePct}%` }} />
-        <div className="h-full bg-[#B5532E]" style={{ width: `${counted === 0 ? 0 : 100 - availablePct}%` }} />
+      <p className="mt-3 text-[28px] font-semibold leading-tight text-text">{plural(total, 'piece', 'pieces')}</p>
+      <div aria-hidden="true" className="mt-3 flex h-4 w-full overflow-hidden rounded-full bg-surface-muted">
+        <div className="h-full bg-secondary" style={{ width: `${availablePct}%` }} />
+        <div className="h-full bg-primary" style={{ width: `${counted === 0 ? 0 : 100 - availablePct}%` }} />
       </div>
-      <p className="mt-2 flex flex-wrap justify-between gap-x-4 gap-y-1 text-[13px] text-[#2B2118]">
+      <p className="mt-2 flex flex-wrap justify-between gap-x-4 gap-y-1 text-[13px] text-text">
         <span className="inline-flex items-center gap-2">
-          <span aria-hidden="true" className="size-2.5 bg-[#5F7A5E]" />
+          <span aria-hidden="true" className="size-2.5 bg-secondary" />
           {formatCount(available)} available
         </span>
         <span className="inline-flex items-center gap-2">
-          <span aria-hidden="true" className="size-2.5 bg-[#B5532E]" />
+          <span aria-hidden="true" className="size-2.5 bg-primary" />
           {formatCount(sold)} sold
         </span>
       </p>
       {available === 0 && (
-        <p role="status" className="mt-4 rounded-xl bg-badge-warning px-4 py-3 text-sm text-[#6B4C0C]">
+        <p role="status" className="mt-4 rounded-xl bg-badge-warning px-4 py-3 text-sm text-text">
           No pieces available. Add products so buyers have something to buy.
         </p>
       )}
@@ -42,7 +42,7 @@ function InventoryBody({ products }) {
 export function InventoryPanel({ section }) {
   return (
     <section aria-labelledby="inventory-title" className={cn(panel, 'flex flex-col p-4 md:p-6')}>
-      <h2 id="inventory-title" className="text-lg font-semibold text-[#2B2118]">Inventory</h2>
+      <h2 id="inventory-title" className="text-lg font-semibold text-text">Inventory</h2>
 
       {section.status === 'loading' && (
         <div aria-hidden="true">
@@ -63,7 +63,7 @@ export function InventoryPanel({ section }) {
         </Link>
         <Link
           href="/admin/products?status=SOLD"
-          className={cn('inline-flex min-h-11 w-full items-center justify-center rounded-md px-1 text-sm font-semibold text-[#B5532E] hover:underline', focusRing)}
+          className={cn('inline-flex min-h-11 w-full items-center justify-center rounded-md px-1 text-sm font-semibold text-primary hover:underline', focusRing)}
         >
           View sold items
         </Link>

@@ -43,12 +43,12 @@ export function BottomSheet({
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="w-full max-h-[85vh] bg-canvas rounded-t-3xl border-t border-[#E6DDD2] p-5 flex flex-col gap-4 shadow-pop overflow-hidden animate-in slide-in-from-bottom duration-200">
-        <div className="flex items-center justify-between pb-3 border-b border-[#E6DDD2]">
+      <div className="w-full max-h-[85vh] bg-canvas rounded-t-3xl border-t border-border p-5 flex flex-col gap-4 shadow-pop overflow-hidden animate-in slide-in-from-bottom duration-200">
+        <div className="flex items-center justify-between pb-3 border-b border-border">
           <div className="flex items-center gap-2">
             <span className="font-bold text-base text-text">{title}</span>
             {badgeText && (
-              <span className="h-6 px-2.5 rounded-full bg-[#FBEDE6] text-primary text-xs font-mono font-bold flex items-center justify-center">
+              <span className="h-6 px-2.5 rounded-full bg-primary-tint text-primary text-xs font-mono font-bold flex items-center justify-center">
                 {badgeText}
               </span>
             )}
@@ -57,7 +57,7 @@ export function BottomSheet({
             type="button"
             aria-label="Close filters"
             onClick={onClose}
-            className="min-w-[40px] min-h-[40px] rounded-full text-[#5C4D40] hover:text-text hover:bg-border/50 flex items-center justify-center transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+            className="min-w-[40px] min-h-[40px] rounded-full text-text-secondary hover:text-text hover:bg-border/50 flex items-center justify-center transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
           >
             <CloseIcon className="w-5 h-5" />
           </button>
@@ -68,7 +68,7 @@ export function BottomSheet({
         </div>
 
         {footer && (
-          <div className="pt-3 border-t border-[#E6DDD2] flex items-center gap-3">
+          <div className="pt-3 border-t border-border flex items-center gap-3">
             {footer}
           </div>
         )}

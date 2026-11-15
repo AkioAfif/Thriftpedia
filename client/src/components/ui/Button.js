@@ -6,13 +6,13 @@ const variants = {
   primary:
     'bg-primary text-on-primary hover:bg-primary-hover shadow-level-1',
   secondary:
-    'border border-border bg-canvas text-text hover:bg-primary hover:text-on-primary',
+    'border border-border bg-canvas text-text hover:bg-surface hover:text-primary',
   outline:
     'border border-primary text-primary hover:bg-primary-tint shadow-level-1',
   subtle:
     'border border-border bg-surface text-text hover:bg-surface-muted shadow-level-1',
   ghost:
-    'text-text-secondary hover:bg-surface-muted hover:text-text',
+    'text-text-secondary hover:bg-primary-tint hover:text-primary',
   sold:
     'bg-surface-muted text-text-muted cursor-not-allowed',
   buyerPrimary:

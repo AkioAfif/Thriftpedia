@@ -30,7 +30,7 @@ export function FilterSidebar() {
       className="hidden lg:flex flex-col w-[260px] shrink-0 sticky max-h-[calc(100vh-100px)] overflow-y-auto pl-1 pr-3 gap-6 top-6"
     >
       {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-[#E6DDD2]">
+      <div className="flex items-center justify-between pb-4 border-b border-border">
         <div className="flex items-center gap-2">
           <span className="text-xl font-bold text-text font-sans">
             Filters

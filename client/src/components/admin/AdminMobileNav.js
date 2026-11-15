@@ -8,7 +8,7 @@ import { NAV_ITEMS, SidebarLogo, focusRing, formatRole, getInitials, isActivePat
 
 const LG_QUERY = '(min-width: 1024px)';
 const FOCUSABLE = 'a[href], button:not([disabled])';
-const iconBtn = `flex size-11 items-center justify-center rounded-xl text-[#2B2118] hover:bg-[#F5F0E8] ${focusRing}`;
+const iconBtn = `flex size-11 items-center justify-center rounded-xl text-text hover:bg-surface-muted ${focusRing}`;
 
 function MenuIcon() {
   return (
@@ -102,13 +102,13 @@ export default function AdminMobileNav({ user, onLogout }) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-2 border-b border-[#D9CFC1] bg-[#FAF7F2] px-4 lg:hidden">
+      <header className="sticky top-0 z-40 flex h-14 items-center justify-between gap-2 border-b border-border bg-canvas px-4 lg:hidden">
         {backBar ? (
           <div className="-ml-2 flex min-w-0 flex-1 items-center gap-1">
             <Link href={backBar.href} aria-label={`Back to ${backBar.label}`} className={`${iconBtn} shrink-0`}>
               <BackIcon />
             </Link>
-            <p className="min-w-0 truncate text-base font-semibold text-[#2B2118]">{backBar.title}</p>
+            <p className="min-w-0 truncate text-base font-semibold text-text">{backBar.title}</p>
           </div>
         ) : (
           <SidebarLogo />
@@ -129,7 +129,7 @@ export default function AdminMobileNav({ user, onLogout }) {
       <div
         aria-hidden="true"
         onClick={() => close({ refocus: true })}
-        className={`fixed inset-0 z-40 bg-[#2B2118]/40 transition-opacity duration-200 motion-reduce:transition-none lg:hidden ${
+        className={`fixed inset-0 z-40 bg-text/40 transition-opacity duration-200 motion-reduce:transition-none lg:hidden ${
           open ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       />
@@ -142,11 +142,11 @@ export default function AdminMobileNav({ user, onLogout }) {
         aria-label="Admin menu"
         inert={!open}
         onKeyDown={onDrawerKeyDown}
-        className={`fixed inset-y-0 left-0 z-50 flex w-[288px] max-w-[85vw] flex-col border-r border-[#D9CFC1] bg-white transition-transform duration-200 motion-reduce:transition-none lg:hidden ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-[288px] max-w-[85vw] flex-col border-r border-border bg-surface transition-transform duration-200 motion-reduce:transition-none lg:hidden ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex h-14 shrink-0 items-center justify-between border-b border-[#EAE4DA] px-4">
+        <div className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
           <SidebarLogo />
           <button ref={closeButtonRef} type="button" onClick={() => close({ refocus: true })} aria-label="Close menu" className={iconBtn}>
             <CloseIcon />
@@ -163,7 +163,7 @@ export default function AdminMobileNav({ user, onLogout }) {
                 onClick={() => close()}
                 aria-current={active ? 'page' : undefined}
                 className={`flex min-h-12 items-center gap-3 rounded-[10px] px-4 text-sm font-medium ${focusRing} ${
-                  active ? 'bg-[#b4532a] text-white' : 'text-[#2b1d14] hover:bg-[#faf7f2]'
+                  active ? 'bg-primary text-on-primary' : 'text-text hover:bg-canvas'
                 }`}
               >
                 <Icon />
@@ -173,20 +173,20 @@ export default function AdminMobileNav({ user, onLogout }) {
           })}
         </nav>
 
-        <div className="mt-auto flex flex-col gap-3 border-t border-[#EAE4DA] p-4">
-          <div className="flex items-center gap-3 rounded-xl bg-[#f5f1ea] p-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#e8e1d8] text-xs font-bold text-[#2b1d14]">
+        <div className="mt-auto flex flex-col gap-3 border-t border-border p-4">
+          <div className="flex items-center gap-3 rounded-xl bg-surface-muted p-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-border text-xs font-bold text-text">
               {getInitials(user.name)}
             </span>
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-[#2b1d14]">{user.name}</p>
-              <p className="text-xs text-[#6b5d52]">{formatRole(user.role)}</p>
+              <p className="truncate text-sm font-medium text-text">{user.name}</p>
+              <p className="text-xs text-text-secondary">{formatRole(user.role)}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onLogout}
-            className={`min-h-11 w-full rounded-[10px] border border-[#D9CFC1] bg-white px-4 text-sm font-medium text-[#2b1d14] hover:bg-[#faf7f2] ${focusRing}`}
+            className={`min-h-11 w-full rounded-[10px] border border-border bg-surface px-4 text-sm font-medium text-text hover:bg-canvas ${focusRing}`}
           >
             Log out
           </button>

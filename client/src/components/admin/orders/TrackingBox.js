@@ -32,7 +32,7 @@ export default function TrackingBox({ trackingNumber, courier }) {
           type="button"
           onClick={copy}
           aria-label="Copy tracking number"
-          className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border border-[#B7D3E0] bg-white px-3 text-sm font-semibold text-[#1F4B66] hover:bg-[#F5F9FB] ${detailFocusRing}`}
+          className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border border-badge-info bg-surface px-3 text-sm font-semibold text-text hover:bg-badge-info ${detailFocusRing}`}
         >
           <CopyIcon />
           Copy
