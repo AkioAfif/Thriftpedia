@@ -7,7 +7,7 @@ const { runInTransaction } = require('../utils/transaction');
 const { ensureCounter, nextOrderNumber } = require('./counter.service');
 const ROLES = require('../constants/roles');
 const { PRODUCT_STATUS } = require('../constants/product');
-const { ORDER_STATUS, ORDER_TRANSITIONS } = require('../constants/order');
+const { ORDER_STATUS, ORDER_TRANSITIONS, PAYMENT_STATUS } = require('../constants/order');
 
 const PRODUCT_FIELDS = 'name brand photos size condition price status';
 const BUYER_FIELDS = 'name email'; // never expose password/passwordHash
@@ -213,6 +213,35 @@ async function cancelOrderByBuyer(user, orderId) {
   return getOrderById(user, orderId);
 }
 
+// Buyer adds or replaces the delivery address of their own order. Only while nothing about the
+// payment has started: PENDING, UNPAID (orders from before payments have no paymentStatus at all)
+// and no Snap token yet, because Midtrans already received the old address with the token.
+async function updateShippingAddress(user, orderId, shippingAddress) {
+  const order = await Order.findById(orderId).select('buyer').lean();
+  if (!order) throw new AppError(404, 'Order not found');
+  if (String(order.buyer) !== String(user.id)) throw new AppError(403, 'You are not allowed to change this order');
+
+  const { recipientName, phone, address, city, postalCode } = shippingAddress; // trimmed by the validator
+  // The same conditions sit in the filter, so a concurrent payment token, webhook or status change
+  // makes this match nothing instead of overwriting.
+  const result = await Order.updateOne(
+    {
+      _id: orderId,
+      buyer: order.buyer,
+      status: ORDER_STATUS.PENDING,
+      paymentStatus: { $in: [PAYMENT_STATUS.UNPAID, null] },
+      paymentToken: null,
+    },
+    { $set: { shippingAddress: { recipientName, phone, address, city, postalCode } } },
+    { runValidators: true }
+  );
+  if (result.matchedCount === 0) {
+    throw new AppError(409, 'Address can no longer be changed: the order is no longer pending or payment has started');
+  }
+
+  return getOrderById(user, orderId);
+}
+
 // Review module: eligibility (PRD §19). Only COMPLETED orders count.
 async function hasCompletedPurchase(buyerId, productId) {
   return Boolean(await Order.exists({ buyer: buyerId, product: productId, status: ORDER_STATUS.COMPLETED }));
@@ -230,6 +259,7 @@ module.exports = {
   getOrderById,
   updateOrderStatus,
   cancelOrderByBuyer,
+  updateShippingAddress,
   releaseProduct,
   hasCompletedPurchase,
   productHasOrders,
