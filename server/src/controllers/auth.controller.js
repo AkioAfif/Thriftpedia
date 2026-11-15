@@ -15,8 +15,8 @@ const register = async (req, res, next) => {
     if (name.trim().length > 100) {
       return res.status(400).json({ message: 'Name must be at most 100 characters' });
     }
-    if (password.length < 8 || password.length > 72) {
-      return res.status(400).json({ message: 'Password must be 8 to 72 characters' });
+    if (password.length < 8 || Buffer.byteLength(password, 'utf8') > 72 || !/\d/.test(password)) {
+      return res.status(400).json({ message: 'Password must contain at least 8 characters, a number, and at most 72 UTF-8 bytes' });
     }
 
     const user = await authService.registerUser({ name, email: normalizeEmail(email), password });
@@ -110,7 +110,7 @@ const resetPassword = async (req, res, next) => {
     // Samakan aturan password dengan registrasi
     if (
       password.length < 8 ||
-      password.length > 72 ||
+      Buffer.byteLength(password, 'utf8') > 72 ||
       !/\d/.test(password)
     ) {
       return res.status(400).json({

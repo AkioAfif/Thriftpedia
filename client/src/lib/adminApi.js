@@ -1,4 +1,5 @@
 import { getToken } from './adminAuth';
+import { rejectSession } from './sessionEvents';
 
 export class ApiError extends Error {
   constructor(message, status) {
@@ -35,6 +36,7 @@ export async function apiFetch(path, options = {}) {
   }
 
   if (!res.ok) {
+    if (res.status === 401 && path !== '/auth/login') rejectSession(token);
     throw new ApiError(body?.message || `Permintaan gagal (status ${res.status})`, res.status);
   }
   return body;

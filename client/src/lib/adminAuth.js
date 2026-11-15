@@ -1,4 +1,4 @@
-const TOKEN_KEY = 'thriftpedia_token';
+const TOKEN_KEY = 'token';
 
 export function getToken() {
   if (typeof window === 'undefined') return null;

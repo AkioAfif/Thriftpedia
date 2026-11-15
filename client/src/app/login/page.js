@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '../../lib/adminApi';
-import { extractToken, setToken } from '../../lib/adminAuth';
+import { extractToken } from '../../lib/adminAuth';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
@@ -26,7 +27,6 @@ export default function LoginPage() {
       });
       const token = extractToken(body);
       if (!token) throw new Error('Token tidak ditemukan pada respons login.');
-      setToken(token);
       const user = body?.data?.user;
       login(token, user);
       const returnTo = new URLSearchParams(window.location.search).get('returnTo');
@@ -48,6 +48,7 @@ export default function LoginPage() {
         className="w-full max-w-[24rem] rounded-2xl border border-[#e8e1d8] bg-white p-8"
       >
         <h1 className="text-2xl font-bold">Log in</h1>
+        <p className="mt-3 text-sm">Belum punya akun? <Link href="/register" className="underline">Daftar</Link></p>
 
         <label className="mt-6 block text-sm font-medium">
           Email

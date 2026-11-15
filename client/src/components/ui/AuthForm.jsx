@@ -12,11 +12,12 @@ const loginSchema = z.object({
 
 const registerSchema = z
   .object({
-    name: z.string().trim().min(1, 'Full name is required'),
+    name: z.string().trim().min(1, 'Full name is required').max(100, 'Name must be at most 100 characters'),
     email: z.email('Enter a valid email address'),
     password: z
       .string()
       .min(8, 'Password must contain at least 8 characters')
+      .refine((value) => new TextEncoder().encode(value).length <= 72, 'Password must be at most 72 UTF-8 bytes')
       .regex(/\d/, 'Password must include a number'),
     confirmPassword: z
       .string()
@@ -63,7 +64,7 @@ export default function AuthForm({
   });
 
   const handleValid = (values) => {
-    // Slicing UI: belum mengirim request ke backend.
+    // The parent handles the request and displays loading/errors.
     onValidSubmit?.(values);
   };
 

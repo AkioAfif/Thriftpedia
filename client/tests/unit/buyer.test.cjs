@@ -36,7 +36,7 @@ Module._extensions['.js'] = function (module, filename) {
 };
 const { render, screen, fireEvent, waitFor, cleanup, act } = require('@testing-library/react');
 const { useQueryClient } = require('@tanstack/react-query');
-const { AuthProvider } = require('../../src/context/AuthContext');
+const { AuthProvider, useAuth } = require('../../src/context/AuthContext');
 const { BuyerProvider, useWishlist } = require('../../src/context/BuyerContext');
 const { WishlistButton } = require('../../src/components/catalog/WishlistButton');
 const { ProductReviews } = require('../../src/components/reviews/ProductReviews');
@@ -44,6 +44,7 @@ const WishlistPage = require('../../src/app/wishlist/page').default;
 const toast = require('react-hot-toast').default;
 
 const user = { _id: 'buyer-1', name: 'Nayla', role: 'BUYER' };
+const sessionToken = `header.${Buffer.from(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 })).toString('base64url')}.signature`;
 const product = { _id: '507f1f77bcf86cd799439011', name: 'Denim Trucker Jacket', size: 'M', condition: 'LIKE_NEW', status: 'SOLD', price: 680000, photos: [] };
 let saved, reviews, requests, failNext;
 function Inspector() {
@@ -53,8 +54,14 @@ function Inspector() {
   return h('output', { 'data-testid': 'count' }, String(count));
 }
 function mount(child) { return render(h(AuthProvider, null, h(BuyerProvider, null, h(Inspector), child))); }
-function authenticate() { localStorage.setItem('token', 'buyer-token'); localStorage.setItem('user', JSON.stringify(user)); }
+function authenticate() { localStorage.setItem('token', sessionToken); localStorage.setItem('user', JSON.stringify(user)); }
 const pause = () => new Promise((resolve) => setTimeout(resolve, 10));
+function SessionInspector() {
+  const { ready, isLoggedIn, user, logout } = useAuth();
+  return h('div', null,
+    h('output', { 'data-testid': 'session' }, !ready ? 'checking' : isLoggedIn ? user.role : 'guest'),
+    h('button', { onClick: logout }, 'End session'));
+}
 beforeEach(() => {
   localStorage.clear(); saved = [{ product }]; reviews = []; requests = []; failNext = '';
   global.fetch = async (url, options = {}) => {
@@ -63,7 +70,8 @@ beforeEach(() => {
     await pause();
     const response = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
     if (`${method} ${route}` === failNext) { failNext = ''; return response({ message: 'Temporary failure' }, 500); }
-    if (route === '/api/auth/login') return response({ data: { token: 'buyer-token', user } });
+    if (route === '/api/auth/login') return response({ data: { token: sessionToken, user } });
+    if (route === '/api/auth/me') return response({ data: user });
     if (route === '/api/wishlist' && method === 'GET') return response({ data: saved });
     if (route === '/api/wishlist' && method === 'POST') { saved = [{ product }]; return response({ data: { product: product._id } }, 201); }
     if (route.startsWith('/api/wishlist/') && method === 'DELETE') { saved = []; return response({ message: 'Removed' }); }
@@ -74,6 +82,42 @@ beforeEach(() => {
   };
 });
 afterEach(async () => { await act(async () => { cleanup(); toast.remove(); }); });
+
+test('session restoration uses the server role instead of the cached role', async () => {
+  authenticate();
+  localStorage.setItem('user', JSON.stringify({ ...user, role: 'ADMIN' }));
+  render(h(AuthProvider, null, h(SessionInspector)));
+  assert.equal(screen.getByTestId('session').textContent, 'checking');
+  await waitFor(() => assert.equal(screen.getByTestId('session').textContent, 'BUYER'));
+  assert.equal(JSON.parse(localStorage.getItem('user')).role, 'BUYER');
+  fireEvent.click(screen.getByRole('button', { name: 'End session' }));
+  await waitFor(() => assert.equal(screen.getByTestId('session').textContent, 'guest'));
+  assert.equal(localStorage.getItem('token'), null);
+});
+
+test('a rejected authenticated request clears the current session', async () => {
+  authenticate();
+  render(h(AuthProvider, null, h(SessionInspector)));
+  await waitFor(() => assert.equal(screen.getByTestId('session').textContent, 'BUYER'));
+  const { apiClient } = require('../../src/lib/api');
+  global.fetch = async () => new Response(JSON.stringify({ message: 'Invalid token' }), {
+    status: 401, headers: { 'content-type': 'application/json' },
+  });
+  await act(async () => {
+    await assert.rejects(apiClient('/wishlist', { headers: { Authorization: `Bearer ${sessionToken}` } }));
+  });
+  assert.equal(screen.getByTestId('session').textContent, 'guest');
+  assert.equal(localStorage.getItem('token'), null);
+});
+
+test('an expired token is removed without exposing a logged-in session', async () => {
+  const expired = `header.${Buffer.from(JSON.stringify({ exp: 1 })).toString('base64url')}.signature`;
+  localStorage.setItem('token', expired);
+  localStorage.setItem('user', JSON.stringify(user));
+  render(h(AuthProvider, null, h(SessionInspector)));
+  await waitFor(() => assert.equal(screen.getByTestId('session').textContent, 'guest'));
+  assert.equal(localStorage.getItem('token'), null);
+});
 
 test('wishlist failure keeps card and count; one retry removes final item with no duplicate request', async () => {
   authenticate(); mount(h(WishlistPage));
@@ -88,7 +132,7 @@ test('wishlist failure keeps card and count; one retry removes final item with n
   await screen.findByRole('link', { name: 'Explore catalog' });
   assert.equal(screen.getByTestId('count').textContent, '0');
   assert.equal(requests.filter((req) => req.method === 'DELETE').length, 2);
-  assert.ok(requests.filter((req) => req.method === 'DELETE').every((req) => req.headers.Authorization === 'Bearer buyer-token'));
+  assert.ok(requests.filter((req) => req.method === 'DELETE').every((req) => req.headers.Authorization === `Bearer ${sessionToken}`));
 });
 
 test('contextual login resumes guest save and synchronizes all hearts and badge', async () => {
@@ -101,8 +145,9 @@ test('contextual login resumes guest save and synchronizes all hearts and badge'
   await waitFor(() => assert.equal(screen.getByTestId('count').textContent, '1'));
   const saves = requests.filter((req) => req.method === 'POST' && req.route === '/api/wishlist');
   assert.equal(saves.length, 1); assert.deepEqual(saves[0].body, { productId: product._id });
-  assert.equal(saves[0].headers.Authorization, 'Bearer buyer-token');
-  assert.equal(localStorage.getItem('thriftpedia_token'), 'buyer-token');
+  assert.equal(saves[0].headers.Authorization, `Bearer ${sessionToken}`);
+  assert.equal(localStorage.getItem('token'), sessionToken);
+  assert.equal(localStorage.getItem('thriftpedia_token'), null);
 });
 
 test('review validates, confirms dirty close, preserves failed draft and submits an integer once', async () => {
@@ -126,7 +171,7 @@ test('review validates, confirms dirty close, preserves failed draft and submits
   assert.equal(screen.queryByRole('button', { name: 'Write a review' }), null);
   const posts = requests.filter((req) => req.method === 'POST' && req.route.endsWith('/reviews'));
   assert.equal(posts.length, 2); assert.deepEqual(posts[1].body, { rating: 3, comment: 'A beautiful vintage find.' });
-  assert.equal(posts[1].headers.Authorization, 'Bearer buyer-token');
+  assert.equal(posts[1].headers.Authorization, `Bearer ${sessionToken}`);
 });
 
 test('all four ineligible order statuses omit write action; public reviews require no token', async () => {
