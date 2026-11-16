@@ -24,11 +24,13 @@ import { BuyerShippingAddress } from '@/components/orders/ShippingAddress';
 import { AddressDialog } from '@/components/orders/AddressDialog';
 import { useOrderPayment } from '@/components/orders/useOrderPayment';
 import { ProductReviews } from '@/components/reviews/ProductReviews';
+import { EmailLink } from '@/components/legal/EmailLink';
 import { ActionDialog } from '@/components/ui/ActionDialog';
 import { LoadingDots } from '@/components/ui/LoadingDots';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { CheckIcon, CloseIcon, ErrorOutlineIcon } from '@/components/ui/Icons';
 import { canEditAddress, canPay, hasAddress } from '@/lib/payment';
+
 
 const PAGE = 'mx-auto w-full max-w-[1120px] flex-1 px-margin-mobile py-lg md:px-margin-tablet lg:px-8 lg:py-xl';
 const CARD = 'rounded-[20px] border border-border bg-surface p-4 sm:p-6';
@@ -57,6 +59,10 @@ function OrderView({ orderId }) {
   // Read once: the flag is stripped from the URL right away so a refresh shows the detail page.
   // "View order" / "Pay now" on the confirmation switch to the detail view in place.
   const [placed, setPlaced] = useState(() => searchParams.get('placed') === '1');
+  // Read once, like `placed`. pay=1 (from "Pay online now" at checkout) opens payment as soon as the order loads.
+  const autoPay = useRef(searchParams.get('pay') === '1');
+  // "Arrange with seller" lands on "Order placed" with the store's contact details.
+  const [viaSeller] = useState(() => searchParams.get('placed') === '1' && searchParams.get('pay') !== '1');
   const { token, user, ready, logout } = useAuth();
   const { requestLogin } = useWishlist();
   const client = useQueryClient();
@@ -93,6 +99,16 @@ function OrderView({ orderId }) {
     if (searchParams.has('placed')) router.replace(pathname, { scroll: false });
   }, [searchParams, router, pathname]);
 
+  useEffect(() => {
+    if (!autoPay.current || !order) return;
+    autoPay.current = false;
+    queueMicrotask(() => {
+      if (!canPay(order) || !hasAddress(order) || payment.unavailable) return;
+      showDetail();
+      payment.pay();
+    });
+  });
+
   let body;
   if (!ready || (buyer && query.isPending)) body = <DetailSkeleton />;
   else if (!token || unauthorized) {
@@ -114,6 +130,7 @@ function OrderView({ orderId }) {
       <PlacedView
         order={order}
         payment={payment}
+        contact={viaSeller}
         onEditAddress={openAddress}
         onViewOrder={showDetail}
         onPay={() => {
@@ -158,7 +175,7 @@ function Notice({ title, message, alert = false, children }) {
   );
 }
 
-function PlacedView({ order, payment, onEditAddress, onViewOrder, onPay }) {
+function PlacedView({ order, payment, contact, onEditAddress, onViewOrder, onPay }) {
   const item = orderItem(order);
   const heading = useRef(null);
   useEffect(() => heading.current?.focus(), []);
@@ -203,6 +220,20 @@ function PlacedView({ order, payment, onEditAddress, onViewOrder, onPay }) {
       </section>
 
       {notice && <div className="w-full text-left">{notice}</div>}
+
+      {contact && payable && (
+        <section aria-labelledby="next-step-title" className={`${CARD} w-full text-left`}>
+          <h2 id="next-step-title" className={CARD_TITLE}>Next step</h2>
+          <p className="mt-2 text-sm text-text-secondary">
+            Message the store to agree on payment and shipping cost. Mention order{' '}
+            <span className="font-semibold tabular-nums text-text">{orderLabel(order)}</span>.
+          </p>
+          <p className="mt-3 text-base">
+            <EmailLink />
+          </p>
+          <p className="mt-3 text-[13px] text-text-secondary">Your piece is reserved while the order is Pending.</p>
+        </section>
+      )}
 
       {/* At most two buttons. Pay now (when possible) is the main one; otherwise View order is. */}
       <div className="flex w-full flex-col gap-3 sm:flex-row-reverse sm:justify-center">
@@ -422,9 +453,8 @@ function PayNowButton({ busy, disabled, onPay }) {
       disabled={busy || disabled}
       aria-busy={busy}
       aria-describedby={disabled ? 'pay-note' : undefined}
-      className={`relative ${BTN} focus-visible:ring-primary ${
-        disabled ? 'cursor-not-allowed bg-border text-text-secondary' : `bg-primary text-on-primary ${busy ? 'cursor-wait' : 'hover:bg-primary-hover'}`
-      }`}
+      className={`relative ${BTN} focus-visible:ring-primary ${disabled ? 'cursor-not-allowed bg-border text-text-secondary' : `bg-primary text-on-primary ${busy ? 'cursor-wait' : 'hover:bg-primary-hover'}`
+        }`}
     >
       {/* The label keeps the button width while the dots show. */}
       <span className={busy ? 'invisible' : undefined}>Pay now</span>

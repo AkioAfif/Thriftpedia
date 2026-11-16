@@ -13,7 +13,7 @@ const fieldClass = (error) => `${fieldBase} ${error ? 'border-error' : 'border-b
 
 const ADDRESS_INPUTS = {
   recipientName: { label: 'Recipient name', autoComplete: 'name', maxLength: 100 },
-  phone: { label: 'Phone number', autoComplete: 'tel', inputMode: 'tel', type: 'tel', maxLength: 20, hint: 'Digits only, e.g. 0812 3456 7890.' },
+    phone: { label: 'Phone number', autoComplete: 'tel', inputMode: 'tel', type: 'tel', maxLength: 20, hint: 'Digits only, e.g. 081234567890.' },
   address: { label: 'Street address', autoComplete: 'street-address', maxLength: 500, multiline: true },
   city: { label: 'City', autoComplete: 'address-level2', maxLength: 100 },
   postalCode: { label: 'Postal code', autoComplete: 'postal-code', inputMode: 'numeric', maxLength: 5 },
