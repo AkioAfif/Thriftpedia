@@ -8,7 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { ChevronDownIcon, ErrorOutlineIcon } from '@/components/ui/Icons';
+import { ErrorOutlineIcon } from '@/components/ui/Icons';
 import { getProduct, createOrder } from '@/lib/services/orderService';
 import { conditionLabel, formatRupiah, sizeLabel } from '@/lib/adminProducts';
 import { canOptimizeImage } from '@/lib/imageHosts';
@@ -41,16 +41,18 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [authOpen, setAuthOpen] = useState(false);
-  // Optional delivery address: only needed to pay online. All blank = the order is placed without one.
-  const [addressOpen, setAddressOpen] = useState(false);
+  // How the buyer pays. 'online' needs a delivery address; 'seller' places the order and
+  // the payment is agreed with the store (the address stays optional).
+  const [method, setMethod] = useState('online'); // 'online' | 'seller'
+  const [addressOpen, setAddressOpen] = useState(false); // only used by 'seller'
   const [address, setAddress] = useState(EMPTY_ADDRESS);
   const [addressErrors, setAddressErrors] = useState({});
   const addressFormRef = useRef(null);
-  // The address and the disclosure survive a refresh (per account and product); cleared once the order exists.
+  // Method, address and the disclosure survive a refresh (per account and product); cleared once the order exists.
   const addressDraft = usePersistedForm({
     key: draftKey(user, 'checkout-address', productId),
-    value: { open: addressOpen, address },
-    baseline: { open: false, address: EMPTY_ADDRESS },
+    value: { open: addressOpen, address, method },
+    baseline: { open: false, address: EMPTY_ADDRESS, method: 'online' },
     enabled: ready,
     onRestore: (draft) => {
       const restored = { ...EMPTY_ADDRESS };
@@ -59,6 +61,7 @@ export default function CheckoutPage() {
       }
       setAddress(restored);
       setAddressOpen(Boolean(draft.open));
+      setMethod(draft.method === 'seller' ? 'seller' : 'online');
     },
   });
   // Set by the login dialog; the effect below places the order once the new token is in context.
@@ -97,14 +100,22 @@ export default function CheckoutPage() {
     setAddressErrors((current) => (current[key] ? { ...current, [key]: undefined } : current));
   }
 
+  function chooseMethod(next) {
+    if (next === method) return;
+    setMethod(next);
+    setAddressErrors({});
+    setSubmitError('');
+  }
+
   async function placeOrder() {
     if (submitting) return;
-    const checked = validateAddress(address);
+    // Paying online needs the whole address; with the seller it is optional (all blank = none sent).
+    const checked = validateAddress(address, { required: method === 'online' });
     setAddressErrors(checked.errors);
     const firstInvalid = ADDRESS_FIELDS.find((key) => checked.errors[key]);
     if (firstInvalid) {
       setAddressOpen(true);
-      // After the disclosure has rendered open.
+      // After the panel has rendered open.
       requestAnimationFrame(() => addressFormRef.current?.querySelector(`[name="${firstInvalid}"]`)?.focus());
       return;
     }
@@ -117,7 +128,7 @@ export default function CheckoutPage() {
     try {
       const order = await createOrder(token, productId, checked.address ?? undefined);
       addressDraft.clear();
-      router.push(`/orders/${order._id}?placed=1`);
+      router.push(`/orders/${order._id}?placed=1${method === 'online' ? '&pay=1' : ''}`);
     } catch (err) {
       setSubmitting(false);
       // backend re-checks stock atomically; 409 means another buyer got it first
@@ -201,9 +212,11 @@ export default function CheckoutPage() {
           )}
 
           {product && !reason && !isAdmin && (
-            <AddressDisclosure
-              open={addressOpen}
-              onToggle={() => setAddressOpen((value) => !value)}
+            <PaymentChoice
+              method={method}
+              onMethod={chooseMethod}
+              addressOpen={addressOpen}
+              onToggleAddress={() => setAddressOpen((value) => !value)}
               values={address}
               errors={addressErrors}
               onChange={changeAddress}
@@ -242,11 +255,17 @@ export default function CheckoutPage() {
                   aria-describedby={isAdmin ? 'admin-order-note' : undefined}
                   className={btnPrimary}
                 >
-                  {submitting ? <LoadingDots /> : 'Place order'}
+                 {submitting ? <LoadingDots /> : method === 'online' ? 'Place order and pay' : 'Place order'}
                 </button>
-                {isAdmin && (
+                {isAdmin ? (
                   <p id="admin-order-note" className="text-[13px] text-text-secondary">
                     Admin accounts can&apos;t place orders.
+                  </p>
+                ) : (
+                  <p className="text-[13px] text-text-secondary">
+                    {method === 'online'
+                      ? 'Next you’ll pay for this order. You can cancel while it’s Pending.'
+                      : 'You’ll agree on payment with the store. You can cancel while it’s Pending.'}
                   </p>
                 )}
                 <Link href="/catalog" className={btnSecondary}>
@@ -303,32 +322,95 @@ function ProductRow({ product, sold }) {
   );
 }
 
-// Closed by default. The fields are the shared AddressForm (one column below sm, pairs from sm).
-function AddressDisclosure({ open, onToggle, values, errors, onChange, disabled, formRef }) {
-  const panelId = `${useId()}-panel`;
+function MethodCard({ value, checked, onSelect, disabled, title, text }) {
   return (
-    <section className="mt-lg overflow-hidden rounded-[20px] border border-border bg-surface">
-      <h2 className="m-0">
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-controls={panelId}
-          onClick={onToggle}
-          className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left transition-colors duration-150 hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none sm:px-5"
+    <label
+      className={`flex cursor-pointer items-start gap-3 rounded-[20px] border-[1.5px] p-4 transition-colors duration-150 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 motion-reduce:transition-none ${
+        checked ? 'border-primary bg-primary-tint' : 'border-border bg-surface hover:border-text-secondary'
+      } ${disabled ? 'cursor-not-allowed opacity-60' : ''}`}
+    >
+      <input
+        type="radio"
+        name="payment-method"
+        value={value}
+        checked={checked}
+        disabled={disabled}
+        onChange={() => onSelect(value)}
+        className="sr-only"
+      />
+      <span
+        aria-hidden="true"
+        className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-[1.5px] ${
+          checked ? 'border-primary' : 'border-border'
+        }`}
+      >
+        {checked && <span className="size-2.5 rounded-full bg-primary" />}
+      </span>
+      <span className="min-w-0">
+        <span className="block text-base font-semibold text-text">{title}</span>
+        <span className="mt-0.5 block text-[13px] text-text-secondary">{text}</span>
+      </span>
+    </label>
+  );
+}
+
+// Online: the address is required and always visible. Seller: it stays hidden behind a small link.
+function PaymentChoice({ method, onMethod, addressOpen, onToggleAddress, values, errors, onChange, disabled, formRef }) {
+  const panelId = `${useId()}-panel`;
+  const online = method === 'online';
+  return (
+    <fieldset className="mt-lg min-w-0">
+      <legend className="text-base font-semibold text-text">How will you pay?</legend>
+      <div className="mt-3 flex flex-col gap-3">
+        <MethodCard
+          value="online"
+          checked={online}
+          onSelect={onMethod}
+          disabled={disabled}
+          title="Pay online now"
+          text="Card, virtual account or QRIS. A delivery address is required."
+        />
+        <MethodCard
+          value="seller"
+          checked={!online}
+          onSelect={onMethod}
+          disabled={disabled}
+          title="Arrange with seller"
+          text="Place the order first, then agree on payment with the store. You can add an address later."
+        />
+      </div>
+
+      <div className="mt-4">
+        {!online && (
+          <button
+            type="button"
+            aria-expanded={addressOpen}
+            aria-controls={panelId}
+            onClick={onToggleAddress}
+            className="inline-flex min-h-11 items-center rounded-lg text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
+            {addressOpen ? 'Hide address' : 'Add address anyway (optional)'}
+          </button>
+        )}
+        {/* Hidden, not unmounted: what was typed stays, and Place order can still focus the first bad field. */}
+        <div
+          id={panelId}
+          ref={formRef}
+          hidden={!online && !addressOpen}
+          className="mt-2 rounded-[20px] border border-border bg-surface px-4 pb-5 pt-4 sm:px-5"
         >
-          <span className="min-w-0 flex-1 text-base font-semibold text-text">Add delivery address</span>
-          <span className="shrink-0 rounded-full bg-surface-muted px-2.5 py-0.5 text-[13px] font-medium text-text-secondary">Optional</span>
-          <ChevronDownIcon className={`size-4 shrink-0 text-text-secondary transition-transform duration-150 motion-reduce:transition-none ${open ? 'rotate-180' : ''}`} />
-        </button>
-      </h2>
-      {/* Hidden, not unmounted: closing keeps what was typed. Anything typed is still checked and sent. */}
-      <div id={panelId} ref={formRef} hidden={!open} className="border-t border-border px-4 pb-5 pt-4 sm:px-5">
-        <p className="text-[13px] text-text-secondary">Needed only if you want to pay online. Shipping cost is arranged separately.</p>
-        <div className="mt-4">
-          <AddressForm values={values} errors={errors} onChange={onChange} disabled={disabled} />
+          <h2 className="text-base font-semibold text-text">Delivery address</h2>
+          <p className="mt-1 text-[13px] text-text-secondary">
+            {online
+              ? 'Check it carefully: it can’t be changed once payment opens. Shipping cost is arranged separately.'
+              : 'Optional. Shipping cost is arranged separately.'}
+          </p>
+          <div className="mt-4">
+            <AddressForm values={values} errors={errors} onChange={onChange} disabled={disabled} />
+          </div>
         </div>
       </div>
-    </section>
+    </fieldset>
   );
 }
 
@@ -349,15 +431,5 @@ function CheckoutSkeleton() {
       <Skeleton className="mt-lg h-11 w-full rounded-md" />
       <Skeleton className="mt-sm h-11 w-full rounded-md" />
     </div>
-  );
-}
-
-function Spinner() {
-  return (
-    <span
-      role="status"
-      aria-label="Placing order"
-      className="h-5 w-5 animate-spin rounded-full border-2 border-on-primary border-t-transparent motion-reduce:animate-none"
-    />
   );
 }
