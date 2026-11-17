@@ -9,6 +9,7 @@ Repository ini berisi backend (REST API dengan Express.js) dan frontend (Next.js
 ## Demo
 
 Aplikasi bisa diakses di https://thriftpedia.vercel.app/
+[▶ Watch Website Demo](https://drive.google.com/drive/folders/1DVEe4T3WsVoTiHRRLwQ3hZCrjeHDQONx?usp=sharing)
 
 ## Apa yang Bisa Dilakukan?
 
